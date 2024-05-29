@@ -142,24 +142,34 @@ CREATE TABLE Documento (
     FOREIGN KEY (cedulaInquilino) REFERENCES Inquilino(cedula) ON DELETE CASCADE
 );
 
+-- Tabla para la entidad Amenidades
+CREATE TABLE Amenidades (
+    idAmenidad INT PRIMARY KEY,
+    tipoAmenidad VARCHAR(12),
+    descripcion VARCHAR(100) NOT NULL,
+    costoUso INT NOT NULL,
+    estado VARCHAR(20) NOT NULL
+);
+
 -- Tabla para la entidad Alquiler
 CREATE TABLE Alquiler (
     cedulaUsuario INT,
-    idRecurso INT,
+    idRecurso INT PRIMARY KEY,
     fechaInicio DATE NOT NULL,
     fechaFin DATE,
     FOREIGN KEY (cedulaUsuario) REFERENCES Usuario(cedula) ON DELETE CASCADE,
 );
 
 CREATE TABLE alquilerPropiedad (
-    idPropiedad INT 
-    FOREIGN KEY (idPropiedad) REFERENCES Propiedad(idPropiedad) ON DELETE CASCADE,
+    idPropiedad INT PRIMARY KEY,
+    FOREIGN KEY (idPropiedad) REFERENCES Alquiler(idRecurso) ON DELETE CASCADE,
 );
 
 CREATE TABLE alquilerAmenidades (
-    idAmenidad INT 
-    FOREIGN KEY (idAmenidad) REFERENCES Amenidades(idAmenidad) ON DELETE CASCADE,
+    idAmenidad INT PRIMARY KEY,
+    FOREIGN KEY (idAmenidad) REFERENCES Alquiler(idRecurso) ON DELETE CASCADE,
 ); 
+
 -- Tabla para la entidad Pagos
 CREATE TABLE Pagos (
     idPago INT PRIMARY KEY,
@@ -253,15 +263,6 @@ CREATE TABLE ComentariosInquilino (
     FOREIGN KEY (idSolicitud) REFERENCES SolicitudMantenimiento(idSolicitud) ON DELETE CASCADE
 );
 
--- Tabla para la entidad Amenidades
-CREATE TABLE Amenidades (
-    idAmenidad INT PRIMARY KEY,
-    tipoAmenidad VARCHAR(12),
-    descripcion VARCHAR(100) NOT NULL,
-    costoUso INT NOT NULL,
-    estado VARCHAR(20) NOT NULL
-);
-
 CREATE TABLE solicitudesAlquier (
     idPropiedad INT, 
     idUsuario INT,
@@ -289,84 +290,84 @@ CREATE TABLE ingresosUsuario (
 
 
 
---Ejmeplos
+--Ejmeplos *** hay que actualizarlo según los cambios
 -- Insertar datos de ejemplo en la base de datos Proyecto1
 
--- Insertar usuarios
-INSERT INTO Usuario (cedula, nombre, apellido1, apellido2, telefono, correo) 
-VALUES 
-    (123456789, 'Juan', 'Perez', 'Garcia', '5551234567', 'juan@example.com'),
-    (987654321, 'Maria', 'Gomez', 'Lopez', '5559876543', 'maria@example.com');
+-- -- Insertar usuarios
+-- INSERT INTO Usuario (cedula, nombre, apellido1, apellido2, telefono, correo) 
+-- VALUES 
+--     (123456789, 'Juan', 'Perez', 'Garcia', '5551234567', 'juan@example.com'),
+--     (987654321, 'Maria', 'Gomez', 'Lopez', '5559876543', 'maria@example.com');
 
--- Insertar propietarios e inquilinos
-INSERT INTO Propietario (cedula) VALUES (123456789);
-INSERT INTO Inquilino (cedula) VALUES (987654321);
+-- -- Insertar propietarios e inquilinos
+-- INSERT INTO Propietario (cedula) VALUES (123456789);
+-- INSERT INTO Inquilino (cedula) VALUES (987654321);
 
--- Insertar tipos de propiedad
-INSERT INTO TiposPropiedad (idTipoPropiedad, tipoPropiedad) 
-VALUES 
-    (1, 'Apartamento'),
-    (2, 'Casa'),
-    (3, 'Oficina');
+-- -- Insertar tipos de propiedad
+-- INSERT INTO TiposPropiedad (idTipoPropiedad, tipoPropiedad) 
+-- VALUES 
+--     (1, 'Apartamento'),
+--     (2, 'Casa'),
+--     (3, 'Oficina');
 
--- Insertar propiedades
-INSERT INTO Propiedad (idPropiedad, direccion, idTipoPropiedad, numeroHabitaciones, tamanoMetros, descripcion, estadoActual, precioAlquiler, cedulaPropietario) 
-VALUES (1, 'Calle Principal 123', 1, 2, 100, 'Apartamento acogedor', 1, 1000, 123456789);
+-- -- Insertar propiedades
+-- INSERT INTO Propiedad (idPropiedad, direccion, idTipoPropiedad, numeroHabitaciones, tamanoMetros, descripcion, estadoActual, precioAlquiler, cedulaPropietario) 
+-- VALUES (1, 'Calle Principal 123', 1, 2, 100, 'Apartamento acogedor', 1, 1000, 123456789);
 
--- Insertar tipos de gastos adicionales
-INSERT INTO TiposGastosAdicionales (idTipoGasto, tipoGasto) 
-VALUES 
-    (1, 'Servicios'),
-    (2, 'Comunidad'),
-    (3, 'Mantenimiento');
+-- -- Insertar tipos de gastos adicionales
+-- INSERT INTO TiposGastosAdicionales (idTipoGasto, tipoGasto) 
+-- VALUES 
+--     (1, 'Servicios'),
+--     (2, 'Comunidad'),
+--     (3, 'Mantenimiento');
 
--- Insertar gastos adicionales de propiedad
-INSERT INTO GastosAdicionalesPropiedad (idPropiedad, idTipoGasto, monto) 
-VALUES (1, 1, 50), (1, 3, 80);
+-- -- Insertar gastos adicionales de propiedad
+-- INSERT INTO GastosAdicionalesPropiedad (idPropiedad, idTipoGasto, monto) 
+-- VALUES (1, 1, 50), (1, 3, 80);
 
 
--- Insertar tipos de pago permitidos
-INSERT INTO TiposPagoPermitidos (idTipoPago, tipoPago) 
-VALUES 
-    (1, 'Alquiler'),
-    (2, 'Servicios'),
-    (3, 'Mantenimiento');
+-- -- Insertar tipos de pago permitidos
+-- INSERT INTO TiposPagoPermitidos (idTipoPago, tipoPago) 
+-- VALUES 
+--     (1, 'Alquiler'),
+--     (2, 'Servicios'),
+--     (3, 'Mantenimiento');
 
--- Insertar estados de pago permitidos
-INSERT INTO EstadosPagoPermitidos (idEstadoPago, estadoPago) 
-VALUES 
-    (1, 'Pendiente'),
-    (2, 'Realizado'),
-    (3, 'Atrasado');
+-- -- Insertar estados de pago permitidos
+-- INSERT INTO EstadosPagoPermitidos (idEstadoPago, estadoPago) 
+-- VALUES 
+--     (1, 'Pendiente'),
+--     (2, 'Realizado'),
+--     (3, 'Atrasado');
 
--- Insertar estados de mantenimiento permitidos
-INSERT INTO EstadosMantenimientoPermitidos (idEstadoMantenimiento, estadoMantenimiento) 
-VALUES 
-    (1, 'Pendiente'),
-    (2, 'En proceso'),
-    (3, 'Resuelto');
+-- -- Insertar estados de mantenimiento permitidos
+-- INSERT INTO EstadosMantenimientoPermitidos (idEstadoMantenimiento, estadoMantenimiento) 
+-- VALUES 
+--     (1, 'Pendiente'),
+--     (2, 'En proceso'),
+--     (3, 'Resuelto');
 
--- Insertar prioridades permitidas
-INSERT INTO PrioridadesPermitidas (idPrioridad, prioridad) 
-VALUES 
-    (1, 'Baja'),
-    (2, 'Media'),
-    (3, 'Alta');
+-- -- Insertar prioridades permitidas
+-- INSERT INTO PrioridadesPermitidas (idPrioridad, prioridad) 
+-- VALUES 
+--     (1, 'Baja'),
+--     (2, 'Media'),
+--     (3, 'Alta');
 
--- Insertar proveedores
-INSERT INTO Proveedores (idProveedor, nombre, primerApellido, segundoApellido, especialidad, correo, telefono) 
-VALUES
-    (1, 'Juan', 'Perez', 'Garcia', 'Electricista', 'juanperez@example.com', '123456789'),
-    (2, 'Maria', 'Gomez', 'Lopez', 'Jardinero', 'mariagomez@example.com', '987654321'),
-    (3, 'Carlos', 'Martinez', 'Fernandez', 'Carpintero', 'carlosmartinez@example.com', '555666777');
+-- -- Insertar proveedores
+-- INSERT INTO Proveedores (idProveedor, nombre, primerApellido, segundoApellido, especialidad, correo, telefono) 
+-- VALUES
+--     (1, 'Juan', 'Perez', 'Garcia', 'Electricista', 'juanperez@example.com', '123456789'),
+--     (2, 'Maria', 'Gomez', 'Lopez', 'Jardinero', 'mariagomez@example.com', '987654321'),
+--     (3, 'Carlos', 'Martinez', 'Fernandez', 'Carpintero', 'carlosmartinez@example.com', '555666777');
 
--- Insertar solicitud de mantenimiento
-INSERT INTO SolicitudMantenimiento (idSolicitud, idPropiedad, descripcionProblema, idProveedor, fechaSolicitud, estado, idPrioridad, costoMantenimiento) 
-VALUES (1, 1, 'Fuga de agua en el bano', 1, '2024-05-25', 1, 2, 80);
+-- -- Insertar solicitud de mantenimiento
+-- INSERT INTO SolicitudMantenimiento (idSolicitud, idPropiedad, descripcionProblema, idProveedor, fechaSolicitud, estado, idPrioridad, costoMantenimiento) 
+-- VALUES (1, 1, 'Fuga de agua en el bano', 1, '2024-05-25', 1, 2, 80);
 
--- Insertar amenidades
-INSERT INTO Amenidades (idAmenidad, descripcion, costoUso, estado) 
-VALUES (1, 'Piscina', 10, 'Disponible');
+-- -- Insertar amenidades
+-- INSERT INTO Amenidades (idAmenidad, descripcion, costoUso, estado) 
+-- VALUES (1, 'Piscina', 10, 'Disponible');
 
 -- Seleccionar todos los usuarios
 SELECT * FROM Usuario;
