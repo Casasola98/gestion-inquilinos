@@ -55,15 +55,28 @@ app.get('/libros', (req, res) => {
 //O sea, post para todo lo que ocupa info del FE
 app.post('/libro', jsonParser, (req, res) => {
 	const datos = req.body;
+	//variables enviados por el body
+	let ID_Author = datos.ID_Author;
+	//------------------------------
 	mssql.connect(config, function (err) {
 		let request = new mssql.Request();
-		let query = `SELECT ID_Libro, Titulo, Genero.Descripcio AS Genero, Descripcion, Author.Nombre AS Autor FROM Libro JOIN Author ON Author.ID_Autor = Libro.Author JOIN Genero ON Genero.ID_Genero = Libro.Genero WHERE Libro.Author = ${datos.ID_Author}`;
+		let query = `SELECT ID_Libro, Titulo, Genero.Descripcio AS Genero, Descripcion, Author.Nombre AS Autor FROM Libro JOIN Author ON Author.ID_Autor = Libro.Author JOIN Genero ON Genero.ID_Genero = Libro.Genero WHERE Libro.Author = ${ID_Author}`;
 		request.query(query,
 			function (err, records) {
 				if (err) {
 					console.log(err)
 				}
-				res.send(records);
+				if (records.recordset.length > 0) {
+					res.send({
+						existeUsuario: true
+					});
+				}
+				else {
+					res.send({
+						existeUsuario: false
+					});
+				}
+				// res.send(records.recordset);
 			}
 		);
 	});
