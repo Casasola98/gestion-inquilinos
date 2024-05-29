@@ -10,7 +10,7 @@ var jsonParser = bodyParser.json();
 
 const config = {
 	user: 'newSA',
-	password: 'myPassword24',
+	password: 'mypassword',
 	server: 'localhost',
 	database: 'Libreria',
 	trustServerCertificate: true
