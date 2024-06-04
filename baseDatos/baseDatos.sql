@@ -152,22 +152,26 @@ CREATE TABLE Amenidades (
 );
 
 -- Tabla para la entidad Alquiler
-CREATE TABLE Alquiler (
+CREATE TABLE Alquiler ( 
+    idAlquiler INT IDENTITY(1,1) PRIMARY KEY,
     cedulaUsuario INT,
-    idRecurso INT PRIMARY KEY,
     fechaInicio DATE NOT NULL,
     fechaFin DATE,
-    FOREIGN KEY (cedulaUsuario) REFERENCES Usuario(cedula) ON DELETE CASCADE,
+    FOREIGN KEY (cedulaUsuario) REFERENCES Inquilino(cedula) ON DELETE CASCADE,
 );
 
 CREATE TABLE alquilerPropiedad (
-    idPropiedad INT PRIMARY KEY,
-    FOREIGN KEY (idPropiedad) REFERENCES Alquiler(idRecurso) ON DELETE CASCADE,
+    idPropiedad INT,
+    idAlquiler INT,
+    FOREIGN KEY (idPropiedad) REFERENCES Propiedad(idPropiedad) ON DELETE CASCADE,
+    FOREIGN KEY (idAlquiler) REFERENCES Alquiler(idAlquiler) ON DELETE CASCADE,
 );
 
 CREATE TABLE alquilerAmenidades (
     idAmenidad INT PRIMARY KEY,
-    FOREIGN KEY (idAmenidad) REFERENCES Alquiler(idRecurso) ON DELETE CASCADE,
+    idAlquiler INT,
+    FOREIGN KEY (idAlquiler) REFERENCES Alquiler(idAlquiler) ON DELETE CASCADE,
+    FOREIGN KEY (idAmenidad) REFERENCES Amenidades(idAmenidad) ON DELETE CASCADE,
 ); 
 
 -- Tabla para la entidad Pagos
@@ -282,13 +286,10 @@ CREATE TABLE ingresosUsuario (
     FOREIGN KEY (idUsuario) REFERENCES Usuario(cedula) ON DELETE CASCADE 
 )
 
-
-
-
-
-
-
-
+CREATE TABLE admin (
+    idUsuario INT PRIMARY KEY,
+    correo varchar(100) UNIQUE, 
+)
 
 --Ejmeplos *** hay que actualizarlo según los cambios
 -- Insertar datos de ejemplo en la base de datos Proyecto1
@@ -296,70 +297,24 @@ CREATE TABLE ingresosUsuario (
 -- -- Insertar usuarios
 -- INSERT INTO Usuario (cedula, nombre, apellido1, apellido2, telefono, correo) 
 -- VALUES 
---     (123456789, 'Juan', 'Perez', 'Garcia', '5551234567', 'juan@example.com'),
---     (987654321, 'Maria', 'Gomez', 'Lopez', '5559876543', 'maria@example.com');
+-- --(123456789, 'Juan', 'Perez', 'Garcia', '5551234567', 'juan@example.com'),
+-- (987654321, 'Maria', 'Gomez', 'Lopez', '5559876543', 'maria@example.com');
 
 -- -- Insertar propietarios e inquilinos
 -- INSERT INTO Propietario (cedula) VALUES (123456789);
--- INSERT INTO Inquilino (cedula) VALUES (987654321);
+--INSERT INTO Inquilino (cedula) VALUES (987654321);
 
--- -- Insertar tipos de propiedad
--- INSERT INTO TiposPropiedad (idTipoPropiedad, tipoPropiedad) 
--- VALUES 
---     (1, 'Apartamento'),
---     (2, 'Casa'),
---     (3, 'Oficina');
 
 -- -- Insertar propiedades
 -- INSERT INTO Propiedad (idPropiedad, direccion, idTipoPropiedad, numeroHabitaciones, tamanoMetros, descripcion, estadoActual, precioAlquiler, cedulaPropietario) 
 -- VALUES (1, 'Calle Principal 123', 1, 2, 100, 'Apartamento acogedor', 1, 1000, 123456789);
 
--- -- Insertar tipos de gastos adicionales
--- INSERT INTO TiposGastosAdicionales (idTipoGasto, tipoGasto) 
--- VALUES 
---     (1, 'Servicios'),
---     (2, 'Comunidad'),
---     (3, 'Mantenimiento');
 
 -- -- Insertar gastos adicionales de propiedad
 -- INSERT INTO GastosAdicionalesPropiedad (idPropiedad, idTipoGasto, monto) 
 -- VALUES (1, 1, 50), (1, 3, 80);
 
 
--- -- Insertar tipos de pago permitidos
--- INSERT INTO TiposPagoPermitidos (idTipoPago, tipoPago) 
--- VALUES 
---     (1, 'Alquiler'),
---     (2, 'Servicios'),
---     (3, 'Mantenimiento');
-
--- -- Insertar estados de pago permitidos
--- INSERT INTO EstadosPagoPermitidos (idEstadoPago, estadoPago) 
--- VALUES 
---     (1, 'Pendiente'),
---     (2, 'Realizado'),
---     (3, 'Atrasado');
-
--- -- Insertar estados de mantenimiento permitidos
--- INSERT INTO EstadosMantenimientoPermitidos (idEstadoMantenimiento, estadoMantenimiento) 
--- VALUES 
---     (1, 'Pendiente'),
---     (2, 'En proceso'),
---     (3, 'Resuelto');
-
--- -- Insertar prioridades permitidas
--- INSERT INTO PrioridadesPermitidas (idPrioridad, prioridad) 
--- VALUES 
---     (1, 'Baja'),
---     (2, 'Media'),
---     (3, 'Alta');
-
--- -- Insertar proveedores
--- INSERT INTO Proveedores (idProveedor, nombre, primerApellido, segundoApellido, especialidad, correo, telefono) 
--- VALUES
---     (1, 'Juan', 'Perez', 'Garcia', 'Electricista', 'juanperez@example.com', '123456789'),
---     (2, 'Maria', 'Gomez', 'Lopez', 'Jardinero', 'mariagomez@example.com', '987654321'),
---     (3, 'Carlos', 'Martinez', 'Fernandez', 'Carpintero', 'carlosmartinez@example.com', '555666777');
 
 -- -- Insertar solicitud de mantenimiento
 -- INSERT INTO SolicitudMantenimiento (idSolicitud, idPropiedad, descripcionProblema, idProveedor, fechaSolicitud, estado, idPrioridad, costoMantenimiento) 
@@ -389,3 +344,249 @@ SELECT * FROM Proveedores;
 
 -- Seleccionar todas las amenidades
 SELECT * FROM Amenidades;
+
+
+--- PROCEDURE
+
+-- EXISTEN 
+
+-- existeUsuario
+CREATE PROCEDURE obtenerUsuario(@cedula int)
+AS
+BEGIN
+    (SELECT * FROM Usuario WHERE cedula= @cedula)
+END
+
+-- exec obtenerUsuario 987654321; 
+
+-- existeInquilinoBD
+CREATE PROCEDURE obtenerInquilino (@cedula int)
+AS
+BEGIN
+    (SELECT * FROM Inquilino WHERE cedula = @cedula)
+END
+
+-- exec obtenerInquilino 987654321;
+
+--existePropietario
+
+CREATE PROCEDURE obtenerPropietario (@cedula int)
+AS
+BEGIN
+    SELECT * FROM Propietario WHERE cedula = @cedula
+END
+
+--EXEC obtenerPropietario 123;
+
+--existePropiedad(idPropiedad)
+
+CREATE PROCEDURE obtenerPropiedad (@idPropiedad int)
+AS
+BEGIN
+    SELECT * FROM Propiedad WHERE idPropiedad = @idPropiedad
+END
+
+--EXEC obtenerPropiedad 1;
+
+CREATE PROCEDURE obtenerPropiedadPropietario (@idPropiedad int, @cedulaUsuario int)
+AS
+BEGIN
+    SELECT * FROM Propiedad 
+    WHERE idPropiedad = @idPropiedad 
+        AND cedulaPropietario = @cedulaUsuario
+END
+
+-- EXEC obtenerPropiedadPropietario 1,123456789
+
+-- existeInquilinosPropietario
+
+CREATE PROCEDURE obtenerInquilinosPropietario (@cedulaUsuario int)
+AS
+BEGIN
+    SELECT 
+        Inquilino.cedula, 
+        Usuario.nombre, 
+        Usuario.apellido1, 
+        Usuario.apellido2, 
+        Usuario.telefono, 
+        Usuario.correo, 
+        Propiedad.idPropiedad, 
+        Alquiler.fechaInicio, 
+        Alquiler.fechaFin 
+    FROM Inquilino  
+    JOIN Usuario 
+    ON Inquilino.cedula = Usuario.cedula 
+    JOIN Alquiler 
+    ON Alquiler.cedulaUsuario = Inquilino.cedula 
+    JOIN Propiedad ON Alquiler.idRecurso = Propiedad.idPropiedad
+    WHERE Propiedad.cedulaPropietario = @cedulaUsuario
+END
+
+-- EXEC obtenerInquilinosPropietario 123;
+
+-- existeSolicitudesPropietario
+
+CREATE PROCEDURE obtenerSolicitudesManteProp (@cedulaUsuario int)
+AS
+BEGIN
+    SELECT * FROM SolicitudMantenimiento 
+    JOIN Propiedad 
+    ON Propiedad.idPropiedad = SolicitudMantenimiento.idPropiedad 
+    WHERE cedulaPropietario = @cedulaUsuario
+END
+
+--EXEC obtenerSolicitudesManteProp 123456789;
+
+-- existeSolicitudMantenimiento
+
+CREATE PROCEDURE obtenerSolicitudesMantenimiento (@idSolicitud int)
+AS
+BEGIN
+    SELECT * FROM SolicitudMantenimiento WHERE idSolicitud = @idSolicitud
+END
+
+--EXEC obtenerSolicitudesMantenimiento 1;
+
+-- existenReportesPropietario / No se probó
+
+CREATE PROCEDURE obtenerReportesPropietario (@cedulaUsuario int, @fechaInicial date, @fechaFinal date)
+AS
+BEGIN
+    SELECT * FROM Pagos 
+    JOIN Alquiler 
+    ON Pagos.cedulaInquilino = Alquiler.cedulaUsuario 
+    JOIN Propiedad 
+    ON Alquiler.idRecurso = Propiedad.idPropiedad 
+    WHERE (Propiedad.cedulaPropietario = @cedulaUsuario)
+         AND (Pagos.fechaPago BETWEEN @fechaInicial AND @fechaFinal)
+END
+
+EXEC obtenerReportesPropietario 123, '2024-01-01', '2025-01-01' 
+
+--existeReportesInquilino / No se probó
+
+
+CREATE PROCEDURE obtenerReportesInquilino (@cedulaUsuario int, @fechaInicial date, @fechaFinal date)
+AS
+BEGIN
+    SELECT * FROM Pagos 
+    WHERE (Pagos.cedulaInquilino = @cedulaUsuario) AND (Pagos.fechaPago BETWEEN @fechaInicial AND @fechaFinal)
+END
+
+-- EXEC obtenerReportesInquilino 123, '2024-01-01', '2025-01-01' 
+
+--existePagoId
+
+CREATE PROCEDURE obtenerPago (@idPago int)
+AS
+BEGIN
+    SELECT * FROM Pagos WHERE idPago= @idPago
+END
+
+--EXEC obtenerPago 1;
+
+-- existeAlquiler
+
+CREATE PROCEDURE obtenerAlquilerUsuario (@idPropiedad int, @cedulaUsuario int)
+AS
+BEGIN
+    SELECT * FROM Alquiler WHERE idRecurso = @idPropiedad AND cedulaUsuario = @cedulaUsuario
+END
+
+-- EXEC obtenerAlquilerUsuario 1, 123; 
+
+-- propiedad/Amenidad Disponible
+
+CREATE PROCEDURE obtenerRecurso (@idRecurso int, @fechaInicio date, @fechaFin date)
+AS
+BEGIN
+    SELECT * FROM Alquiler WHERE (idRecurso = @idRecurso) AND ((@fechaInicio BETWEEN fechaInicio AND fechaFin) OR (@fechaFin BETWEEN fechaInicio AND fechaFin))
+END
+
+-- obtenerAdmin
+
+CREATE PROCEDURE obtenerAdmin (@idUsuario INT)
+AS
+BEGIN
+    SELECT * FROM admin WHERE idUsuario = @idUsuario;
+END
+
+--EXEC obtenerAdmin 1123;
+
+-- insertarAdmin 
+
+CREATE PROCEDURE insertarAdmin (@idUsuario INT, @correo varchar(100)) 
+AS
+BEGIN
+    INSERT INTO admin (idUsuario, correo) VALUES (@idUsuario, @correo)  
+END
+
+EXEC insertarAdmin 1123,'example1@gmail.com' 
+
+-- insertarUsuario(Inquilino/Propietario) 
+
+CREATE PROCEDURE insertarInquilino (@cedula int, @nombre varchar(20), @apellido1 varchar(20), @apellido2 varchar(20), @telefono varchar(15), @correo varchar(100)) 
+AS
+BEGIN
+    INSERT INTO Usuario (cedula, nombre, apellido1, apellido2, telefono, correo) VALUES (@cedula, @nombre, @apellido1, @apellido2, @telefono, @correo)
+    INSERT INTO Inquilino (cedula) VALUES (@cedula)
+END
+
+
+CREATE PROCEDURE insertarPropietario (@cedula int, @nombre varchar(20), @apellido1 varchar(20), @apellido2 varchar(20), @telefono varchar(15), @correo varchar(100)) 
+AS
+BEGIN
+    INSERT INTO Usuario (cedula, nombre, apellido1, apellido2, telefono, correo) VALUES (@cedula, @nombre, @apellido1, @apellido2, @telefono, @correo)
+    INSERT INTO Propietario (cedula) VALUES (@cedula) 
+END
+
+-- exec insertarInquilino 7, 'Kiki', 'A', 'B', '5769879', 'example'
+-- exec insertarPropietario 15, 'Kiki', 'A', 'B', '5769879', 'example1'
+
+--insertarPropiedad
+
+CREATE PROCEDURE insertarPropiedad( @idPropiedad INT, @direccion VARCHAR(90), @idTipoPropiedad INT, @numeroHabitaciones INT, @tamanoMetros INT, @descripcion VARCHAR(90), @estadoActual INT, @precioAlquiler INT, @cedulaPropietario INT) 
+AS
+BEGIN
+    INSERT INTO Propiedad (idPropiedad, direccion, idTipoPropiedad, numeroHabitaciones, tamanoMetros, cedulaPropietario,descripcion, estadoActual, precioAlquiler) 
+        VALUES (@idPropiedad, @direccion, @idTipoPropiedad, @numeroHabitaciones, @tamanoMetros,@cedulaPropietario, @descripcion, @estadoActual, @precioAlquiler) 
+END
+
+-- EXEC insertarPropiedad  23, 'Cartago', 1, 4, 200, 'Blanca', 1, 200, 15
+-- EXEC obtenerPropiedadPropietario 23,15
+
+--insertarAlquiler()
+
+CREATE PROCEDURE insertarAlquilerProp(@cedulaUsuario INT, @fechaInicio DATE, @fechaFin DATE, @idPropiedad INT)
+AS
+BEGIN
+    DECLARE @idAlquiler int
+    INSERT INTO Alquiler (cedulaUsuario, fechaInicio, fechaFin) VALUES (@cedulaUsuario, @fechaInicio, @fechaFin)
+    SET @idAlquiler = (SELECT TOP 1 (idAlquiler) AS nuevoAlquiler FROM Alquiler ORDER BY idAlquiler DESC )
+    INSERT INTO alquilerPropiedad (idPropiedad,idAlquiler) VALUES (@idPropiedad, @idAlquiler)
+END
+
+CREATE PROCEDURE insertarAlquilerAmen(@cedulaUsuario INT, @fechaInicio DATE, @fechaFin DATE, @idAmenidad INT)
+AS
+BEGIN
+    DECLARE @idAlquiler int
+    INSERT INTO Alquiler (cedulaUsuario, fechaInicio, fechaFin) VALUES (@cedulaUsuario, @fechaInicio, @fechaFin)
+    SET @idAlquiler = (SELECT TOP 1 (idAlquiler) AS nuevoAlquiler FROM Alquiler ORDER BY idAlquiler DESC )
+    INSERT INTO alquilerAmenidades (idAmenidad, idAlquiler) VALUES (@idAmenidad, @idAlquiler)
+END
+
+-- EXEC insertarAlquilerProp 7, '2024/01/01', '2025/01/01', 1 
+-- EXEC insertarAlquilerProp 4, '2024/01/01', '2025/01/01', 23 
+
+--insertarPago
+
+CREATE PROCEDURE insertarPago(@idPago INT, @cedulaUsuario INT, @fechaPago DATE, @monto INT, @tipoPago INT, @estadoPago INT, @metodoPago VARCHAR(20))
+AS
+BEGIN
+    INSERT INTO Pagos (idPago,cedulaInquilino,fechaPago,monto,tipoPago,estadoPago, metodoPago) 
+    VALUES (@idPago, @cedulaUsuario, @fechaPago, @monto, @tipoPago, @estadoPago, @metodoPago)
+END
+
+--EXEC insertarPago 2, 7, '2024/01/01', 100, 1, 1, 'tarjeta';
+
+---	insertarMantenimiento(mantenimiento)
