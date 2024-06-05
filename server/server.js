@@ -24,127 +24,94 @@ app.post('/login', jsonParser, (req, res) => {
 	let rol = datos.rol;
 	//------------------------------
 	mssql.connect(config, function (err) {
-		let request = new mssql.Request();
-		if (rol == 'admin') {
-			let query = `EXEC obtenerAdmin ${cedula}`;
-			request.query(query,
-				function (err, records) {
-					if (err) {
-						console.log(err)
-					}
-					if (records.recordset.length > 0) {
-						res.send({
-							existeUsuario: true
-						});
-					}
-					else {
-						res.send({
-							existeUsuario: false
-						});
-					}
-				}
-			);
-		} 
-		else if (rol == 'propietario') {
-			let query = `EXEC obtenerPropietario ${cedula}`;
-			request.query(query,
-				function (err, records) {
-					if (err) {
-						console.log(err)
-					}
-					if (records.recordset.length > 0) {
-						res.send({
-							existeUsuario: true
-						});
-					}
-					else {
-						res.send({
-							existeUsuario: false
-						});
-					}
-				}
-			);
-		} 
-		else {
-			let query = `EXEC obtenerInquilino ${cedula}`;
-			request.query(query,
-				function (err, records) {
-					if (err) {
-						console.log(err)
-					}
-					if (records.recordset.length > 0) {
-						res.send({
-							existeUsuario: true
-						});
-					}
-					else {
-						res.send({
-							existeUsuario: false
-						});
-					}
-				}
-			);
+	let request = new mssql.Request();
+	let query = '';
+	if (rol == 'admin') {
+		query = `EXEC obtenerAdmin ${cedula}`;
+	} 
+	else if (rol == 'propietario') {
+			query = `EXEC obtenerPropietario ${cedula}`;
+	} 
+	else {
+			query = `EXEC obtenerInquilino ${cedula}`;
+	}
+	request.query(query,
+		function (err, records) {
+			if (err) {
+				console.log(err)
+			}
+			if (records.recordset.length > 0) {
+				res.send({
+					existeUsuario: true
+				});
+			}
+			else {
+				res.send({
+					existeUsuario: false
+				});
+			}
 		}
+	);
 	});
 })
 
 //registrarInquilinosPropietarios
 
 app.post('/registrar', jsonParser, (req, res) => {
+	const datos = req.body;
 	let cedula = datos.cedula;
 	let nombre = datos.nombre; 
 	let apellido1 = datos.apellido1;
 	let apellido2 = datos.apellido2;
 	let telefono = datos.telefono;
 	let correo = datos.correo;
-	let rol = datos.rol;
+	let rol = datos.rol
 
 	mssql.connect(config, function (err) {
-	let request = new mssql.Request();
-
+		let request = new mssql.Request();
+		let query = '';
 		if (rol == 'propietario') {
-			let query = `EXEC obtenerPropietario ${cedula}`;
-			request.query(query,
-				function (err, records) {
-					if (err) {
-						console.log(err)
-					}
-					if (records.recordset.length == 0) {
-						res.send({
-							//let query = `EXEC insertarPropietario ${cedula}, ${nombre}, ${apellido1}, ${apellido2}, ${telefono}, ${correo}`
-							insertarUsuario: true
-						});
-					}
-					else {
-						res.send({
-							insertarUsuario: false
-						});
-					}
-				}
-			);
-		} 
-		else {
-			let query = `EXEC obtenerInquilino ${cedula}`;
-			request.query(query,
-				function (err, records) {
-					if (err) {
-						console.log(err)
-					}
-					if (records.recordset.length = 0) {
-						res.send({
-							//aqui llama el request de insertar inquilino
-							//let query = `EXEC insertarInquilino ${cedula}, ${nombre}, ${apellido1}, ${apellido2}, ${telefono}, ${correo}`
-							existeUsuario: true
-						});
-					}
-					else {
-						res.send({
-							existeUsuario: false
-						});
-					}
-				}
-			);
+			query = `EXEC obtenerPropietario ${cedula}`;
 		}
+		else {
+			query = `EXEC obtenerInquilino ${cedula}`;
+		}
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				if (records.recordset.length == 0) {
+					let query2 = '';
+					if (rol == 'propietario') {
+						query2 = `EXEC insertarPropietario ${cedula}, '${nombre}', '${apellido1}', '${apellido2}', ${telefono}, '${correo}'`;
+					}
+					else {
+						query2 = `EXEC insertarInquilino ${cedula}, '${nombre}', '${apellido1}', '${apellido2}', ${telefono}, '${correo}'`;
+					}
+					let request2 = new mssql.Request();
+					request2.query(query2,
+						function (err2, records2) {
+							if (err2) {
+								res.send({
+									registrarAdmin: false
+								});
+							}
+							else {
+								res.send({
+									registrarAdmin: true
+								});
+							}							
+						});
+					
+				}
+				else {
+					res.send({
+						insertarUsuario: false
+					});
+				}
+			}
+		);
 	});
 })
 
@@ -157,17 +124,28 @@ app.post('/registrarAdmin', jsonParser, (req, res) => {
 	//------------------------------
 	mssql.connect(config, function (err) {
 		let request = new mssql.Request();
-		let query = `obtenerAdmin ${idUsuario}`;
-		request.query1(query,
+		let query = `EXEC obtenerAdmin ${idUsuario}`;
+		request.query(query,
 			function (err, records) {
 				if (err) {
 					console.log(err)
 				}
 				if (records.recordset.length == 0) {
-					res.send({
-						// let query = `insertarAdmin ${idUsuario}, ${correo}`
-						registrarAdmin: true
-					});
+					let request2 = new mssql.Request();
+					let query2 = `EXEC insertarAdmin ${idUsuario}, '${correo}'`;
+					request2.query(query2,
+						function (err2, records2) {
+							if (err2) {
+								res.send({
+									registrarAdmin: false
+								});
+							}
+							else {
+								res.send({
+									registrarAdmin: true
+								});
+							}							
+						});
 				}
 				else {
 					res.send({
@@ -187,7 +165,20 @@ app.post('/crearPropiedad', jsonParser, (req, res) => {
 })
 
 app.post('/visualizarPropiedades', jsonParser, (req, res) => {
-	
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerPropiedad ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				res.send(records);
+			});
+	});
 })
 
 app.post('/editarPropiedad', jsonParser, (req, res) => {
