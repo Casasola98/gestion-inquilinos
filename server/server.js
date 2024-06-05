@@ -12,22 +12,173 @@ const config = {
 	user: 'newSA',
 	password: 'mypassword',
 	server: 'localhost',
-	database: 'Libreria',
+	database: 'Proyecto1',
 	trustServerCertificate: true
 };
 
-
+//ingresarSistema
 app.post('/login', jsonParser, (req, res) => {
-	//ingresarSistema
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;
+	let rol = datos.rol;
+	//------------------------------
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		if (rol == 'admin') {
+			let query = `EXEC obtenerAdmin ${cedula}`;
+			request.query(query,
+				function (err, records) {
+					if (err) {
+						console.log(err)
+					}
+					if (records.recordset.length > 0) {
+						res.send({
+							existeUsuario: true
+						});
+					}
+					else {
+						res.send({
+							existeUsuario: false
+						});
+					}
+				}
+			);
+		} 
+		else if (rol == 'propietario') {
+			let query = `EXEC obtenerPropietario ${cedula}`;
+			request.query(query,
+				function (err, records) {
+					if (err) {
+						console.log(err)
+					}
+					if (records.recordset.length > 0) {
+						res.send({
+							existeUsuario: true
+						});
+					}
+					else {
+						res.send({
+							existeUsuario: false
+						});
+					}
+				}
+			);
+		} 
+		else {
+			let query = `EXEC obtenerInquilino ${cedula}`;
+			request.query(query,
+				function (err, records) {
+					if (err) {
+						console.log(err)
+					}
+					if (records.recordset.length > 0) {
+						res.send({
+							existeUsuario: true
+						});
+					}
+					else {
+						res.send({
+							existeUsuario: false
+						});
+					}
+				}
+			);
+		}
+	});
 })
 
+//registrarInquilinosPropietarios
+
 app.post('/registrar', jsonParser, (req, res) => {
-	//registrarInquilinosPropietarios
+	let cedula = datos.cedula;
+	let nombre = datos.nombre; 
+	let apellido1 = datos.apellido1;
+	let apellido2 = datos.apellido2;
+	let telefono = datos.telefono;
+	let correo = datos.correo;
+	let rol = datos.rol;
+
+	mssql.connect(config, function (err) {
+	let request = new mssql.Request();
+
+		if (rol == 'propietario') {
+			let query = `EXEC obtenerPropietario ${cedula}`;
+			request.query(query,
+				function (err, records) {
+					if (err) {
+						console.log(err)
+					}
+					if (records.recordset.length == 0) {
+						res.send({
+							//let query = `EXEC insertarPropietario ${cedula}, ${nombre}, ${apellido1}, ${apellido2}, ${telefono}, ${correo}`
+							insertarUsuario: true
+						});
+					}
+					else {
+						res.send({
+							insertarUsuario: false
+						});
+					}
+				}
+			);
+		} 
+		else {
+			let query = `EXEC obtenerInquilino ${cedula}`;
+			request.query(query,
+				function (err, records) {
+					if (err) {
+						console.log(err)
+					}
+					if (records.recordset.length = 0) {
+						res.send({
+							//aqui llama el request de insertar inquilino
+							//let query = `EXEC insertarInquilino ${cedula}, ${nombre}, ${apellido1}, ${apellido2}, ${telefono}, ${correo}`
+							existeUsuario: true
+						});
+					}
+					else {
+						res.send({
+							existeUsuario: false
+						});
+					}
+				}
+			);
+		}
+	});
 })
 
 app.post('/registrarAdmin', jsonParser, (req, res) => {
 	//registrar solo Admin
+	const datos = req.body;
+	//variables enviados por el body
+	let idUsuario = datos.idUsuario;
+	let correo = datos.correo
+	//------------------------------
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `obtenerAdmin ${idUsuario}`;
+		request.query1(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				if (records.recordset.length == 0) {
+					res.send({
+						// let query = `insertarAdmin ${idUsuario}, ${correo}`
+						registrarAdmin: true
+					});
+				}
+				else {
+					res.send({
+						registrarAdmin: false
+					});
+				}
+			}
+		);
+	});
 })
+
 
 //       ********** PROPIETARIO **********
 // MODULO PROPIEDAD (propietario)
