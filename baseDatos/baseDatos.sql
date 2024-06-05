@@ -263,7 +263,7 @@ CREATE TABLE ComentariosInquilino (
 CREATE TABLE solicitudesAlquierPropiedad (
     idPropiedad INT, 
     cedula INT,
-    estadoSolicitud INT,
+    estadoSolicitud VARCHAR(50),
     fechaSolicitud DATE, 
     fechaInicio DATE,
     FechaFin DATE,
@@ -274,13 +274,15 @@ CREATE TABLE solicitudesAlquierPropiedad (
 CREATE TABLE solicitudesAlquierAmenidad (
     idAmenidad INT, 
     cedula INT,
-    estadoSolicitud INT,
+    estadoSolicitud VARCHAR(50),
     fechaSolicitud DATE, 
     fechaInicio DATE,
     FechaFin DATE,
     FOREIGN KEY (idAmenidad) REFERENCES Amenidades(idAmenidad) ON DELETE CASCADE,
     FOREIGN KEY (cedula) REFERENCES Inquilino(cedula) ON DELETE CASCADE,
 )
+
+
 
 CREATE TABLE ingresosUsuario (
     cedulaPropietario INT,
@@ -642,16 +644,20 @@ END
 
 ---	InsertarSolicitudAlquiler
 
-CREATE PROCEDURE insertarSolicitudAlquilerP(@idPropiedad INT, @cedula INT, @estadoSolicitud INT, @fechaSolicitud DATE, @fechaInicio DATE, @FechaFin DATE)
+CREATE PROCEDURE insertarSolicitudAlquilerP(@idPropiedad INT, @cedula INT, @fechaSolicitud DATE, @fechaInicio DATE, @FechaFin DATE)
 AS
 BEGIN
+    DECLARE @estadoSolicitud VARCHAR(50)
+    SET @estadoSolicitud  = 'Pendiente'
     INSERT INTO solicitudesAlquierPropiedad (idPropiedad, cedula, estadoSolicitud, fechaSolicitud, fechaInicio, FechaFin) 
     VALUES (@idPropiedad, @cedula, @estadoSolicitud, @fechaSolicitud, @fechaInicio, @FechaFin)  
 END
 
-CREATE PROCEDURE insertarSolicitudAlquilerA(@idAmenidad INT, @cedula INT, @estadoSolicitud INT, @fechaSolicitud DATE, @fechaInicio DATE, @FechaFin DATE)
+CREATE PROCEDURE insertarSolicitudAlquilerA(@idAmenidad INT, @cedula INT, @fechaSolicitud DATE, @fechaInicio DATE, @FechaFin DATE)
 AS
 BEGIN
+    DECLARE @estadoSolicitud VARCHAR(50)
+    SET @estadoSolicitud  = 'Pendiente'
     INSERT INTO solicitudesAlquierAmenidad (idAmenidad, cedula, estadoSolicitud, fechaSolicitud, fechaInicio, FechaFin) 
     VALUES (@idAmenidad, @cedula, @estadoSolicitud, @fechaSolicitud, @fechaInicio, @FechaFin)  
 END
@@ -726,6 +732,35 @@ CREATE PROCEDURE cambiarInquilino (@cedulaInquilino int, @nombre VARCHAR(20), @a
 AS
 BEGIN 
     UPDATE Usuario SET nombre = @nombre, apellido1= @apellido1, apellido2 = @apellido2, telefono = @telefono, correo = @correo WHERE cedula = @cedulaInquilino
+END
+
+-- cambiarSolicitudAlquiler (aceptar/ denegar)
+
+CREATE PROCEDURE cambiarSolicitudAlquilerP(@idPropiedad INT, @estadoSolicitud INT)
+AS
+BEGIN
+    UPDATE solicitudesAlquierPropiedad SET estadoSolicitud = @estadoSolicitud WHERE idPropiedad = @idPropiedad
+END
+
+CREATE PROCEDURE cambiarSolicitudAlquilerA(@idAmenidad INT, @estadoSolicitud INT)
+AS
+BEGIN
+    UPDATE solicitudesAlquierAmenidad SET estadoSolicitud = @estadoSolicitud WHERE idAmenidad = @idAmenidad
+END
+
+-- cambiarEstadoSolMante()
+
+CREATE PROCEDURE cambiarEstadoSolMante (@idSolicitud INT, @estado INT)
+AS
+BEGIN
+    UPDATE SolicitudMantenimiento SET estado = @estado WHERE idSolicitud = @idSolicitud
+END
+
+-- actualizarPropiedadAlquiler
+CREATE PROCEDURE actualizarPropiedadAlquiler (@idPropiedad INT)
+AS
+BEGIN
+    UPDATE Propiedad SET estadoActual = 2 WHERE idPropiedad = @idPropiedad
 END
 
 --insertar gasto
