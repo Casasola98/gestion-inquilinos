@@ -161,6 +161,51 @@ app.post('/registrarAdmin', jsonParser, (req, res) => {
 //       ********** PROPIETARIO **********
 // MODULO PROPIEDAD (propietario)
 app.post('/crearPropiedad', jsonParser, (req, res) => {
+	const datos = req.body;
+	//variables enviados por el body
+	let idPropiedad = datos.idPropiedad;
+	let direccion = datos.direccion; 
+	let idTipoPropiedad = datos.idTipoPropiedad ;
+	let numeroHabitaciones = datos.numeroHabitaciones; 
+	let tamanoMetros = datos.tamanoMetros; 
+	let descripcion = datos.descripcion;  
+	let estadoActual = datos.estadoActual;
+	let precioAlquiler = datos.precioAlquiler; 
+	let cedula = datos.cedula;
+
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerPropiedad ${idPropiedad}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				if (records.recordset.length == 0) {
+					let request2 = new mssql.Request();
+					let query2 = `EXEC insertarPropiedad ${idPropiedad}, "${direccion}", ${idTipoPropiedad}, ${numeroHabitaciones}, ${tamanoMetros}, "${descripcion}", ${estadoActual}, ${precioAlquiler}, ${cedula}`;
+					request2.query(query2,
+						function (err2, records2) {
+							if (err2) {
+								res.send({
+									registrarPropiedad: false
+								});
+							}
+							else {
+								res.send({
+									registrarPropiedad: true
+								});
+							}							
+						});
+				}
+				else {
+					res.send({
+						registrarPropiedad: false
+					});
+				}
+			}
+		);
+	});
 	
 })
 
@@ -182,16 +227,115 @@ app.post('/visualizarPropiedades', jsonParser, (req, res) => {
 })
 
 app.post('/editarPropiedad', jsonParser, (req, res) => {
+	const datos = req.body;
+	//variables enviados por el body
+	let idPropiedad = datos.idPropiedad;
+	let direccion = datos.direccion; 
+	let idTipoPropiedad = datos.idTipoPropiedad ;
+	let numeroHabitaciones = datos.numeroHabitaciones; 
+	let tamanoMetros = datos.tamanoMetros; 
+	let descripcion = datos.descripcion;  
+	let estadoActual = datos.estadoActual;
+	let precioAlquiler = datos.precioAlquiler; 
+	let cedula = datos.cedula;
 
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC cambiarPropiedad ${idPropiedad}, "${direccion}", ${idTipoPropiedad}, ${numeroHabitaciones}, ${tamanoMetros}, "${descripcion}", ${estadoActual}, ${precioAlquiler}, ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						editarPropiedad: false
+					});
+				}
+				else {
+					res.send({
+						editarPropiedad: true
+					});
+				}	
+			});
+	});
 })
 
+//No valida que exista la propiedad porque se supone que en la tabla ya aprecen solo las que tiene el propietario
 app.post('/eliminarPropiedad', jsonParser, (req, res) => {
+	const datos = req.body;
+	//variables enviados por el body
+	let idPropiedad = datos.idPropiedad;
+
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC eliminarPropiedad ${idPropiedad}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						editarPropiedad: false
+					});
+				}
+				else {
+					res.send({
+						editarPropiedad: true
+					});
+				}	
+			});
+	});
 
 })
 
 // MODULO INQUILINOS (Propietario)
-app.post('/crearInquilino', jsonParser, (req, res) => {
+
+//Cuando se hace click en aceptar la solicitud
+
+app.post('/crearInquilinoAmenidad', jsonParser, (req, res) => {
+	//obtiene los datos de la tabla de solicitudes para aceptar, cambian las solicitudes 
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;
+	let fechaInicio = datos.fechaInicio; 
+	let fechaFin = datos.fechaFin ;
+	let idAmenidad = datos.idAmenidad; 
+	let estadoSolicitud = 'ACEPTADA'; 
+
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC insertarAlquilerAmen ${cedula}, '${fechaInicio}', '${fechaFin}', ${idAmenidad}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						editarPropiedad: false
+					});
+				}
+				else {
+					let query2 = `cambiarSolicitudAlquilerA ${idAmenidad}, '${estadoSolicitud}'`
+					let request2 = new mssql.Request();
+					request2.query(query2,
+						function (err2, records) {
+							if (err2) {
+								res.send({
+									editarPropiedad: false
+								});
+							}
+							else {
+								res.send({
+									editarPropiedad: true
+								});
+							}	
+						});
+				}	
+			});
+	});
+})
+
+
+
+app.post('/crearInquilinoPropiedad', jsonParser, (req, res) => {
 	//obtiene los datos de la tabla de solicitudes para aceptar y denegar, cambian las solicitudes 
+	
+	//insertarAlquilerProp(@cedulaUsuario INT, @fechaInicio DATE, @fechaFin DATE, @idPropiedad INT)
+	//cambiarSolicitudAlquilerP(@idPropiedad INT, @estadoSolicitud INT)
 })
 
 app.post('/visualizarInquilino', jsonParser, (req, res) => {
