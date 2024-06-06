@@ -389,13 +389,12 @@ SELECT * FROM Amenidades;
 -- EXISTEN 
 
 -- existeUsuario / obtenerInquilino
-CREATE PROCEDURE obtenerUsuario(@cedula int)
+CREATE PROCEDURE obtenerAdmin(@idUsuario int)
 AS
 BEGIN
-    (SELECT * FROM Usuario WHERE cedula= @cedula)
+    (SELECT * FROM admin WHERE idUsuario= @idUsuario)
 END
-
--- exec obtenerUsuario 987654321; 
+-- exec obtenerAdmin 1; 
 
 -- existeInquilinoBD
 CREATE PROCEDURE obtenerInquilino (@cedula int)
@@ -404,7 +403,7 @@ BEGIN
     (SELECT * FROM Inquilino WHERE cedula = @cedula)
 END
 
--- exec obtenerInquilino 987654321;
+-- EXEC obtenerInquilino 987654321;
 
 --existePropietario
 
@@ -415,6 +414,8 @@ BEGIN
 END
 
 --EXEC obtenerPropietario 123;
+
+SELECT * FROM Propietario
 
 --existePropiedad(idPropiedad)
 
@@ -563,7 +564,7 @@ BEGIN
     INSERT INTO admin (idUsuario, correo) VALUES (@idUsuario, @correo)  
 END
 
-EXEC insertarAdmin 1123,'example1@gmail.com' 
+--EXEC insertarAdmin 1123,'example1@gmail.com' 
 
 -- insertarUsuario(Inquilino/Propietario) 
 
@@ -688,7 +689,11 @@ END
 CREATE PROCEDURE obtenerPropiedad (@cedulaUsuario INT)
 AS
 BEGIN
-    SELECT idPropiedad, idTipoPropiedad, tamanoMetros, descripcion, precioAlquiler, direccion, numeroHabitaciones, estado FROM Propiedad JOIN EstadosPermitidos ON estadoActual = idEstado WHERE cedulaPropietario = @cedulaUsuario
+    SELECT idPropiedad, idTipoPropiedad, tamanoMetros, descripcion, precioAlquiler, direccion, numeroHabitaciones, estado 
+    FROM Propiedad 
+    JOIN EstadosPermitidos 
+    ON Propiedad.estadoActual = EstadosPermitidos.idEstado 
+    WHERE cedulaPropietario = @cedulaUsuario
 END
 
 --obtenerMsjRecibidos
