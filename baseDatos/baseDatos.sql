@@ -1,4 +1,5 @@
 -- Crear la base de datos
+USE master;
 CREATE DATABASE Proyecto1;
 USE Proyecto1;
 
@@ -150,9 +151,12 @@ CREATE TABLE Amenidades (
     costoUso INT NOT NULL,
     estado VARCHAR(20) NOT NULL,
     estadoActual INT,
-    FOREIGN KEY (estadoActual) REFERENCES EstadosPermitidos(idEstado)
+    cedulaPropietario INT NOT NULL,
+    FOREIGN KEY (estadoActual) REFERENCES EstadosPermitidos(idEstado) ON DELETE CASCADE, 
+    FOREIGN KEY (cedulaPropietario) REFERENCES Propietario(cedula) ON DELETE CASCADE
 );
 
+DROP TABLE Amenidades
 -- Tabla para la entidad Alquiler
 CREATE TABLE Alquiler ( 
     idAlquiler INT IDENTITY(1,1) PRIMARY KEY,
@@ -270,18 +274,6 @@ CREATE TABLE solicitudesAlquierPropiedad (
     FOREIGN KEY (idPropiedad) REFERENCES Propiedad(idPropiedad) ON DELETE CASCADE,
     FOREIGN KEY (cedula) REFERENCES Inquilino(cedula) ON DELETE CASCADE,
 )
-
-CREATE TABLE solicitudesAlquierAmenidad (
-    idAmenidad INT, 
-    cedula INT,
-    estadoSolicitud VARCHAR(50),
-    fechaSolicitud DATE, 
-    fechaInicio DATE,
-    FechaFin DATE,
-    FOREIGN KEY (idAmenidad) REFERENCES Amenidades(idAmenidad) ON DELETE CASCADE,
-    FOREIGN KEY (cedula) REFERENCES Inquilino(cedula) ON DELETE CASCADE,
-)
-
 
 
 CREATE TABLE ingresosUsuario (
@@ -437,9 +429,9 @@ END
 
 -- EXEC obtenerPropiedadPropietario 1,123456789
 
--- existeInquilinosPropietario / obtenerInquilinos
+-- existeInquilinosPropietario / obtenerInquilinosPropietario
 
-CREATE PROCEDURE obtenerInquilinosPropietario (@cedulaUsuario int)
+CREATE PROCEDURE obtenerInquilinosPropietarioP (@cedulaUsuario int)
 AS
 BEGIN
     SELECT 
@@ -457,11 +449,42 @@ BEGIN
     ON Inquilino.cedula = Usuario.cedula 
     JOIN Alquiler 
     ON Alquiler.cedulaUsuario = Inquilino.cedula 
-    JOIN Propiedad ON Alquiler.idRecurso = Propiedad.idPropiedad
+    JOIN alquilerPropiedad
+    ON Alquiler.idAlquiler = alquilerPropiedad.idAlquiler
+    JOIN Propiedad 
+    ON alquilerPropiedad.idPropiedad = Propiedad.idPropiedad
     WHERE Propiedad.cedulaPropietario = @cedulaUsuario
 END
 
--- EXEC obtenerInquilinosPropietario 123;
+Inquilinos amenidad 
+CREATE PROCEDURE obtenerInquilinosPropietarioA (@cedulaUsuario int)
+AS
+BEGIN
+    SELECT 
+        Inquilino.cedula, 
+        Usuario.nombre, 
+        Usuario.apellido1, 
+        Usuario.apellido2, 
+        Usuario.telefono, 
+        Usuario.correo, 
+        Propiedad.idPropiedad, 
+        Alquiler.fechaInicio, 
+        Alquiler.fechaFin 
+    FROM Inquilino  
+    JOIN Usuario 
+    ON Inquilino.cedula = Usuario.cedula 
+    JOIN Alquiler 
+    ON Alquiler.cedulaUsuario = Inquilino.cedula 
+    JOIN alquilerAmenidades
+    ON Alquiler.idAlquiler = alquilerAmenidades.idAlquiler
+    JOIN Amenidades 
+    ON alquilerAmenidades.idAmenidad = Amenidades.idAmenidad
+    WHERE Amenidades. = @cedulaUsuario
+END
+
+
+
+-- EXEC obtenerInquilinosPropietarioP 123456789;
 
 -- existeSolicitudesPropietario/ obtenerSolicitudesP()
 
@@ -598,6 +621,7 @@ END
 -- EXEC insertarPropiedad  23, 'Cartago', 1, 4, 200, 'Blanca', 1, 200, 15
 -- EXEC obtenerPropiedadPropietario 23,15
 
+SELECT * FROM Propiedad
 --insertarAlquiler()
 
 CREATE PROCEDURE insertarAlquilerProp(@cedulaUsuario INT, @fechaInicio DATE, @fechaFin DATE, @idPropiedad INT)
@@ -641,7 +665,7 @@ BEGIN
     VALUES (@idSolicitud, @idPropiedad, @descripcionProblema, @idProveedor, @fechaSolicitud, @estado, @idPrioridad, @costoMantenimiento)  
 END
 
--- EXEC insertarMantenimiento 5, 23, 'ejemplo descripcion ',1, '2024/01/01', 1, 1, 1000
+-- EXEC insertarMantenimiento 45, 23, 'ejemplo descripcion ',1, '2024/01/01', 1, 1, 1000 
 
 ---	InsertarSolicitudAlquiler
 
@@ -649,10 +673,11 @@ CREATE PROCEDURE insertarSolicitudAlquilerP(@idPropiedad INT, @cedula INT, @fech
 AS
 BEGIN
     DECLARE @estadoSolicitud VARCHAR(50)
-    SET @estadoSolicitud  = 'Pendiente'
+    SET @estadoSolicitud  = 'PENDIENTE'
     INSERT INTO solicitudesAlquierPropiedad (idPropiedad, cedula, estadoSolicitud, fechaSolicitud, fechaInicio, FechaFin) 
     VALUES (@idPropiedad, @cedula, @estadoSolicitud, @fechaSolicitud, @fechaInicio, @FechaFin)  
 END
+
 
 CREATE PROCEDURE insertarSolicitudAlquilerA(@idAmenidad INT, @cedula INT, @fechaSolicitud DATE, @fechaInicio DATE, @FechaFin DATE)
 AS
@@ -723,6 +748,8 @@ END
 
 --cambiarPropiedad 23, 'cartagoooo', '2', 4, 200, 'Blanca', 2, 400, 15
 
+SELECT * FROM Propiedad
+
 CREATE PROCEDURE marcarMsjLeidos (@cedulaUsuario INT)
 AS
 BEGIN 
@@ -741,17 +768,19 @@ END
 
 -- cambiarSolicitudAlquiler (aceptar/ denegar)
 
-CREATE PROCEDURE cambiarSolicitudAlquilerP(@idPropiedad INT, @estadoSolicitud INT)
+CREATE PROCEDURE cambiarSolicitudAlquilerP(@idPropiedad INT, @estadoSolicitud VARCHAR(50))
 AS
 BEGIN
     UPDATE solicitudesAlquierPropiedad SET estadoSolicitud = @estadoSolicitud WHERE idPropiedad = @idPropiedad
 END
 
-CREATE PROCEDURE cambiarSolicitudAlquilerA(@idAmenidad INT, @estadoSolicitud INT)
+CREATE PROCEDURE cambiarSolicitudAlquilerA(@idAmenidad INT, @estadoSolicitud VARCHAR(50))
 AS
 BEGIN
     UPDATE solicitudesAlquierAmenidad SET estadoSolicitud = @estadoSolicitud WHERE idAmenidad = @idAmenidad
 END
+
+--EXEC insertarSolicitudAlquilerP 23,7, '2024/05/06', '2024/07/01', '2025/07/01'
 
 -- cambiarEstadoSolMante()
 
@@ -767,6 +796,19 @@ AS
 BEGIN
     UPDATE Propiedad SET estadoActual = 2 WHERE idPropiedad = @idPropiedad
 END
+
+--eliminar propiedad
+CREATE PROCEDURE eliminarPropiedad (@idPropiedad INT)
+AS
+BEGIN
+    DELETE FROM Propiedad WHERE idPropiedad = @idPropiedad
+END
+
+EXEC eliminarPropiedad 456
+
+SELECT * FROM solicitudesAlquierAmenidad
+SELECT * FROM Alquiler
+SELECT * FROM alquilerAmenidades
 
 --insertar gasto
 --insertar ingreso
