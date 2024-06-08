@@ -745,14 +745,47 @@ function definirFechaInicial(periodo) {
 	return periodo;
 }
 
-// MODULO PAGOS (Propietario)
-app.post('/visualizarPagoP', jsonParser, (req, res) => {
-
-})
 
 //MODULO COMUNICACION (Propietario, inquilino)
 app.post('/enviarMensaje', jsonParser, (req, res) => {
+	const datos = req.body;
+	//variables enviados por el body
+	let cedulaReceptor = datos.cedulaReceptor;
+	let cedula = datos.cedula;
+	let contenido = datos.contenido;
 
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerUsuario ${cedulaReceptor}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						enviarMensaje: false
+					});
+				}
+				else {
+					let fechaActual = new Date();
+					let fechaMensaje = getFecha(fechaActual);
+					let horaMensaje = getHora(fechaActual); 
+					let request2 = new mssql.Request();
+					let query2 = `EXEC agregarComunicacion ${cedula}, ${cedulaReceptor}, '${fechaMensaje}', '${horaMensaje}', '${contenido}'`;
+					request2.query(query2,
+						function (err2, records2) {
+							if (err2) {
+								res.send({
+									enviarMensaje: false
+								});
+							}
+							else {
+								res.send({
+									enviarMensaje: true
+								});
+							}	
+						});
+				}	
+			});
+	});
 })
 
 app.post('/visualizarMsjRecibido', jsonParser, (req, res) => {
