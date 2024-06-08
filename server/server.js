@@ -16,6 +16,23 @@ const config = {
 	trustServerCertificate: true
 };
 
+const getFecha = (fecha) => {
+	return `${fecha.getFullYear()}/${fecha.getMonth() + 1}/${fecha.getDate()}`;
+}
+
+const getHora = (fecha) => {
+	return `${fecha.getHours()}:${fecha.getMinutes()}:${fecha.getSeconds()}`;
+}
+
+const addMonths = (fecha, months) => {
+    var day = fecha.getDate();
+    fecha.setMonth(fecha.getMonth() + +months);
+    if (fecha.getDate() != day) {
+      fecha.setDate(0);
+    }
+    return `${fecha.getFullYear()}/${fecha.getMonth() + 1}/${fecha.getDate()}`;
+}
+
 //ingresarSistema
 app.post('/login', jsonParser, (req, res) => {
 	const datos = req.body;
@@ -305,11 +322,80 @@ app.post('/crearInquilinoAmenidad', jsonParser, (req, res) => {
 			function (err, records) {
 				if (err) {
 					res.send({
+						aceptarAlquiler: false
+					});
+				}
+				else {
+					let query2 = `EXEC cambiarSolicitudAlquilerA ${idAmenidad}, '${estadoSolicitud}'`
+					let request2 = new mssql.Request();
+					request2.query(query2,
+						function (err2, records) {
+							if (err2) {
+								res.send({
+									aceptarAlquiler: false
+								});
+							}
+							else {
+								res.send({
+									aceptarAlquiler: true
+								});
+							}	
+						});
+				}	
+			});
+	});
+})
+
+app.post('/denegarInquilinoAmenidad', jsonParser, (req, res) => {
+	//obtiene los datos de la tabla de solicitudes para aceptar, cambian las solicitudes 
+	const datos = req.body;
+	//variables enviados por el body
+	let idAmenidad = datos.idAmenidad; 
+	let estadoSolicitud = 'DENEGADA'; 
+
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC cambiarSolicitudAlquilerA ${idAmenidad}, '${estadoSolicitud}'`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
 						editarPropiedad: false
 					});
 				}
 				else {
-					let query2 = `cambiarSolicitudAlquilerA ${idAmenidad}, '${estadoSolicitud}'`
+					res.send({
+						denergarInquilino: true
+					});
+	
+				}	
+			});
+	});
+})
+
+
+
+app.post('/crearInquilinoPropiedad', jsonParser, (req, res) => {
+	//obtiene los datos de la tabla de solicitudes para aceptar y denegar, cambian las solicitudes 
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;
+	let fechaInicio = datos.fechaInicio; 
+	let fechaFin = datos.fechaFin ;
+	let idPropiedad = datos.idPropiedad; 
+	let estadoSolicitud = 'ACEPTADA'; 
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC insertarAlquilerProp ${cedula}, '${fechaInicio}', '${fechaFin}', ${idPropiedad}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						editarPropiedad: false
+					});
+				}
+				else {
+					let query2 = ` EXEC cambiarSolicitudAlquilerP ${idPropiedad}, '${estadoSolicitud}'`
 					let request2 = new mssql.Request();
 					request2.query(query2,
 						function (err2, records) {
@@ -327,24 +413,149 @@ app.post('/crearInquilinoAmenidad', jsonParser, (req, res) => {
 				}	
 			});
 	});
-})
-
-
-
-app.post('/crearInquilinoPropiedad', jsonParser, (req, res) => {
-	//obtiene los datos de la tabla de solicitudes para aceptar y denegar, cambian las solicitudes 
-	
 	//insertarAlquilerProp(@cedulaUsuario INT, @fechaInicio DATE, @fechaFin DATE, @idPropiedad INT)
 	//cambiarSolicitudAlquilerP(@idPropiedad INT, @estadoSolicitud INT)
 })
 
-app.post('/visualizarInquilino', jsonParser, (req, res) => {
-	//visualiza inquilinos activos 
+app.post('/denegarInquilinoPropiedad', jsonParser, (req, res) => {
+	//obtiene los datos de la tabla de solicitudes para aceptar, cambian las solicitudes 
+	const datos = req.body;
+	//variables enviados por el body
+	let idPropiedad = datos.idPropiedad; 
+	let estadoSolicitud = 'DENEGADA'; 
+
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC cambiarSolicitudAlquilerP ${idPropiedad}, '${estadoSolicitud}'`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						editarPropiedad: false
+					});
+				}
+				else {
+					res.send({
+						denergarInquilino: true
+					});
+	
+				}	
+			});
+	});
 })
 
-app.post('/editarInquilino', jsonParser, (req, res) => {
-	//editar un inquilino  seleccione el botón va pasar a tener la funcionalidad de interrumpir el alquiler.
+
+app.post('/visualizarInquilinosP', jsonParser, (req, res) => {
+	//visualiza inquilinos activos 
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerInquilinosPropietarioP ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				res.send(records);
+			});
+	});
+
 })
+
+app.post('/visualizarInquilinosA', jsonParser, (req, res) => {
+	//visualiza inquilinos activos 
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = ` EXEC obtenerInquilinosPropietarioA ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				res.send(records);
+			});
+	});
+
+})
+
+//Revisar
+app.post('/editarInquilinoA', jsonParser, (req, res) => {
+	//editar un inquilino  seleccione el botón va pasar a tener la funcionalidad de interrumpir el alquiler.
+	const datos = req.body;
+	//variables enviados por el body
+	let cedulaPropietario = datos.cedulaPropietario;
+	let cedulaInquilino = datos.cedulaInquilino;
+	let fechaActual = new Date();
+	let fechaMensaje = getFecha(fechaActual);
+	let horaMensaje = getHora(fechaActual); 
+	let newMonth = datos.newMonth;
+	let contenido = datos.contenido; 
+	let idAmenidad = datos.idAmenidad;  
+	let fechaDesalojo = addMonths(fechaActual, newMonth);
+
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = ` EXEC interrumpirAlquilerA ${cedulaPropietario}, ${cedulaInquilino}, '${fechaMensaje}', '${horaMensaje}', '${contenido}', ${idAmenidad}, '${fechaDesalojo}'`;
+		request.query(query,
+			function (err, records) {
+				console.log(err);
+				if (err) {
+					res.send({
+						interrumpirAlquiler: false
+					});
+				}
+				else {
+					res.send({
+						interrumpirAlquiler: true
+					});
+	
+				}	
+			});
+	});
+	 
+})
+
+app.post('/editarInquilinoP', jsonParser, (req, res) => {
+	//editar un inquilino  seleccione el botón va pasar a tener la funcionalidad de interrumpir el alquiler.
+	const datos = req.body;
+	//variables enviados por el body
+	let cedulaPropietario = datos.cedulaPropietario;
+	let cedulaInquilino = datos.cedulaInquilino;
+	let fechaActual = new Date();
+	let fechaMensaje = getFecha(fechaActual);
+	let horaMensaje = getHora(fechaActual); 
+	let newMonth = datos.newMonth;
+	let contenido = datos.contenido; 
+	let idPropiedad = datos.idPropiedad;  
+	let fechaDesalojo = addMonths(fechaActual, newMonth);
+
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = ` EXEC interrumpirAlquilerP ${cedulaPropietario}, ${cedulaInquilino}, '${fechaMensaje}', '${horaMensaje}', '${contenido}', ${idPropiedad}, '${fechaDesalojo}'`;
+		request.query(query,
+			function (err, records) {
+				console.log(err);
+				if (err) {
+					res.send({
+						interrumpirAlquiler: false
+					});
+				}
+				else {
+					res.send({
+						interrumpirAlquiler: true
+					});
+	
+				}	
+			});
+	});
+	
+})
+
 
 //Modulo Amenidades (Propietario)
 app.post('/crearAmenidad', jsonParser, (req, res) => {
