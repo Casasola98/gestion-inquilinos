@@ -789,10 +789,58 @@ app.post('/enviarMensaje', jsonParser, (req, res) => {
 })
 
 app.post('/visualizarMsjRecibido', jsonParser, (req, res) => {
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;;
 
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerMsjRecibidos ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						visualizarMsjRecibido: false
+					});
+				}
+				else {
+					let request2 = new mssql.Request();
+					let query2 = `EXEC marcarMsjLeidos ${cedula}`;
+					request2.query(query2,
+						function (err2, records2) {
+							if (err2) {
+								res.send({
+									enviarMensaje: false
+								});
+							}
+							else {
+								res.send(records);
+							}	
+						});
+				}	
+			});
+	});
 })
 app.post('/visualizarMsjEnviados', jsonParser, (req, res) => {
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;;
 
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerMsjEnviados ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						visualizarMsjRecibido: false
+					});
+				}
+				else {
+					res.send(records);
+				}	
+			});
+	});
 })
 
 //       ********** INQUILINO **********
