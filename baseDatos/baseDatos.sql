@@ -1,5 +1,4 @@
 -- Crear la base de datos
-USE master;
 CREATE DATABASE Proyecto1;
 USE Proyecto1;
 
@@ -11,9 +10,9 @@ CREATE TABLE EstadosPermitidos (
 
 -- Insertar valores permitidos en EstadosPermitidos
 INSERT INTO EstadosPermitidos (idEstado, estado) VALUES
-(1, 'disponible'),
-(2, 'ocupado'),
-(3, 'en mantenimiento');
+(1, 'Disponible'),
+(2, 'Ocupado'),
+(3, 'En mantenimiento');
 
 -- Tabla para los tipos de propiedad
 CREATE TABLE TiposPropiedad (
@@ -156,7 +155,6 @@ CREATE TABLE Amenidades (
     FOREIGN KEY (cedulaPropietario) REFERENCES Propietario(cedula) ON DELETE CASCADE
 );
 
-DROP TABLE Amenidades
 -- Tabla para la entidad Alquiler
 CREATE TABLE Alquiler ( 
     idAlquiler INT IDENTITY(1,1) PRIMARY KEY,
@@ -176,7 +174,7 @@ CREATE TABLE alquilerPropiedad (
 CREATE TABLE alquilerAmenidades (
     idAmenidad INT PRIMARY KEY,
     idAlquiler INT,
-    FOREIGN KEY (idAlquiler) REFERENCES Alquiler(idAlquiler) ON DELETE CASCADE,
+    FOREIGN KEY (idAlquiler) REFERENCES Alquiler(idAlquiler) ,
     FOREIGN KEY (idAmenidad) REFERENCES Amenidades(idAmenidad) ON DELETE CASCADE,
 ); 
 
@@ -380,7 +378,16 @@ SELECT * FROM Amenidades;
 
 -- EXISTEN 
 
--- existeUsuario / obtenerInquilino
+-- existeUsuario
+CREATE PROCEDURE obtenerUsuario(@cedula INT)
+AS
+BEGIN
+    (SELECT * FROM Usuario WHERE cedula= @cedula)
+END
+
+--EXEC obtenerUsuario 7;
+
+--obtenerInquilino
 CREATE PROCEDURE obtenerAdmin(@idUsuario int)
 AS
 BEGIN
@@ -415,6 +422,14 @@ CREATE PROCEDURE obtenerPropiedad (@idPropiedad int)
 AS
 BEGIN
     SELECT idPropiedad, idTipoPropiedad, tamanoMetros, descripcion, precioAlquiler, direccion, numeroHabitaciones, estadoActual FROM Propiedad WHERE idPropiedad = @idPropiedad
+END
+
+----existeAmenidad(idAmenidad)
+
+CREATE PROCEDURE obtenerAmenidad (@idAmenidad INT)
+AS
+BEGIN
+    SELECT * FROM Amenidades WHERE idAmenidad = @idAmenidad
 END
 
 --EXEC obtenerPropiedad 1;
@@ -456,7 +471,7 @@ BEGIN
     WHERE Propiedad.cedulaPropietario = @cedulaUsuario
 END
 
-Inquilinos amenidad 
+-- Inquilinos amenidad 
 CREATE PROCEDURE obtenerInquilinosPropietarioA (@cedulaUsuario int)
 AS
 BEGIN
@@ -467,7 +482,7 @@ BEGIN
         Usuario.apellido2, 
         Usuario.telefono, 
         Usuario.correo, 
-        Propiedad.idPropiedad, 
+        Amenidades.idAmenidad, 
         Alquiler.fechaInicio, 
         Alquiler.fechaFin 
     FROM Inquilino  
@@ -479,7 +494,7 @@ BEGIN
     ON Alquiler.idAlquiler = alquilerAmenidades.idAlquiler
     JOIN Amenidades 
     ON alquilerAmenidades.idAmenidad = Amenidades.idAmenidad
-    WHERE Amenidades. = @cedulaUsuario
+    WHERE Amenidades.cedulaPropietario = @cedulaUsuario
 END
 
 
@@ -493,6 +508,8 @@ AS
 BEGIN
     SELECT idSolicitud, Propiedad.idPropiedad, descripcionProblema, fechaSolicitud, estadoMantenimiento, prioridad, Proveedores.idProveedor, nombre, primerApellido, segundoApellido, especialidad, telefono FROM SolicitudMantenimiento JOIN Propiedad ON SolicitudMantenimiento.idPropiedad = Propiedad.idPropiedad JOIN PrioridadesPermitidas ON SolicitudMantenimiento.idPrioridad = PrioridadesPermitidas.idPrioridad JOIN Proveedores ON SolicitudMantenimiento.idProveedor = Proveedores.idProveedor JOIN EstadosMantenimientoPermitidos ON idEstadoMantenimiento = SolicitudMantenimiento.estado WHERE Propiedad.cedulaPropietario = @cedulaUsuario
 END
+
+SELECT * FROM SolicitudMantenimiento
 
 --EXEC obtenerSolicitudesManteProp 123456789;
 
@@ -553,20 +570,25 @@ END
 
 -- existeAlquiler
 
-CREATE PROCEDURE obtenerAlquilerUsuario (@idPropiedad int, @cedulaUsuario int)
+CREATE PROCEDURE obtenerAlquilerPUsuario (@idPropiedad int, @cedulaUsuario int)
 AS
 BEGIN
-    SELECT * FROM Alquiler WHERE idRecurso = @idPropiedad AND cedulaUsuario = @cedulaUsuario
+    SELECT * FROM Alquiler JOIN alquilerPropiedad ON Alquiler.idAlquiler = alquilerPropiedad.idAlquiler WHERE idPropiedad = @idPropiedad AND cedulaUsuario = @cedulaUsuario
 END
 
+CREATE PROCEDURE obtenerAlquilerAUsuario (@idAmenidad int, @cedulaUsuario int)
+AS
+BEGIN
+    SELECT * FROM Alquiler JOIN alquilerAmenidades ON Alquiler.idAlquiler = alquilerAmenidades.idAlquiler WHERE idAmenidad = @idAmenidad AND cedulaUsuario = @cedulaUsuario
+END
 -- EXEC obtenerAlquilerUsuario 1, 123; 
 
 -- propiedad/Amenidad Disponible
 
-CREATE PROCEDURE obtenerRecurso (@idRecurso int, @fechaInicio date, @fechaFin date)
+CREATE PROCEDURE obtenerAmenidadDisp (@idAmenidad int, @fechaInicio date, @fechaFin date)
 AS
 BEGIN
-    SELECT * FROM Alquiler WHERE (idRecurso = @idRecurso) AND ((@fechaInicio BETWEEN fechaInicio AND fechaFin) OR (@fechaFin BETWEEN fechaInicio AND fechaFin))
+    SELECT * FROM Alquiler JOIN alquilerAmenidades ON Alquiler.idAlquiler = alquilerAmenidades.idAlquiler WHERE (idAmenidad = @idAmenidad) AND ((@fechaInicio BETWEEN fechaInicio AND fechaFin) OR (@fechaFin BETWEEN fechaInicio AND fechaFin))
 END
 
 -- obtenerAdmin
@@ -576,6 +598,7 @@ AS
 BEGIN
     SELECT * FROM admin WHERE idUsuario = @idUsuario;
 END
+
 
 --EXEC obtenerAdmin 1123;
 
@@ -621,7 +644,6 @@ END
 -- EXEC insertarPropiedad  23, 'Cartago', 1, 4, 200, 'Blanca', 1, 200, 15
 -- EXEC obtenerPropiedadPropietario 23,15
 
-SELECT * FROM Propiedad
 --insertarAlquiler()
 
 CREATE PROCEDURE insertarAlquilerProp(@cedulaUsuario INT, @fechaInicio DATE, @fechaFin DATE, @idPropiedad INT)
@@ -641,9 +663,8 @@ BEGIN
     SET @idAlquiler = (SELECT TOP 1 (idAlquiler) AS nuevoAlquiler FROM Alquiler ORDER BY idAlquiler DESC )
     INSERT INTO alquilerAmenidades (idAmenidad, idAlquiler) VALUES (@idAmenidad, @idAlquiler)
 END
+-- EXEC insertarAlquilerAmen 7, '2024/01/01', '2025/01/01',2 
 
--- EXEC insertarAlquilerProp 7, '2024/01/01', '2025/01/01', 1 
--- EXEC insertarAlquilerProp 4, '2024/01/01', '2025/01/01', 23 
 
 --insertarPago
 
@@ -689,14 +710,15 @@ BEGIN
 END
 
 -- InsertarAmenidades
-CREATE PROCEDURE insertarAmenidades (@idAmenidad INT, @tipoAmenidad VARCHAR(12), @descripcion VARCHAR(100), @costoUso INT, @estado int)
+CREATE PROCEDURE insertarAmenidades (@idAmenidad INT, @tipoAmenidad VARCHAR(12), @descripcion VARCHAR(100), @costoUso INT, @estado VARCHAR(20), @estadoActual INT, @cedulaPropietario INT)
 AS
 BEGIN
-    INSERT INTO Amenidades(idAmenidad, tipoAmenidad, descripcion, costoUso, estado) 
-    VALUES (@idAmenidad, @tipoAmenidad, @descripcion, @costoUso, @estado)  
+    INSERT INTO Amenidades(idAmenidad, tipoAmenidad, descripcion, costoUso, estado, estadoActual, cedulaPropietario) 
+    VALUES (@idAmenidad, @tipoAmenidad, @descripcion, @costoUso, @estado, @estadoActual, @cedulaPropietario)  
 END
 
--- EXEC insertarAmenidades 2, 'cocina', 'dos hornos', 100, 1 
+
+-- EXEC insertarAmenidades 5, 'cocina', 'dos hornos', 100, "Bueno", 1,  15
 
 --agregarComunicacion(valores)
 
@@ -709,15 +731,26 @@ BEGIN
     VALUES (@cedulaUsuario, @cedulaReceptor, @fechaMensaje, @horaMensaje, @contenido, @estado)  
 END
 
-
 --obtenerPropiedades
-CREATE PROCEDURE obtenerPropiedad (@cedulaUsuario INT)
+CREATE PROCEDURE obtenerPropiedades (@cedulaUsuario INT)
 AS
 BEGIN
     SELECT idPropiedad, idTipoPropiedad, tamanoMetros, descripcion, precioAlquiler, direccion, numeroHabitaciones, estado 
     FROM Propiedad 
     JOIN EstadosPermitidos 
     ON Propiedad.estadoActual = EstadosPermitidos.idEstado 
+    WHERE cedulaPropietario = @cedulaUsuario
+END
+
+-- obtenerAmenidades
+
+CREATE PROCEDURE obtenerAmenidades (@cedulaUsuario INT)
+AS
+BEGIN
+    SELECT idAmenidad, tipoAmenidad, descripcion, costoUso, Amenidades.estado, estadoActual
+    FROM Amenidades 
+    JOIN EstadosPermitidos 
+    ON Amenidades.estadoActual = EstadosPermitidos.idEstado 
     WHERE cedulaPropietario = @cedulaUsuario
 END
 
@@ -746,9 +779,16 @@ BEGIN
     UPDATE Propiedad SET direccion = @direccion, idTipoPropiedad= @idTipoPropiedad, numeroHabitaciones = @numeroHabitaciones, tamanoMetros = @tamanoMetros, descripcion = @descripcion, estadoActual = @estadoActual, precioAlquiler = @precioAlquiler WHERE cedulaPropietario = @cedulaPropietario AND idPropiedad = @idPropiedad 
 END
 
---cambiarPropiedad 23, 'cartagoooo', '2', 4, 200, 'Blanca', 2, 400, 15
 
-SELECT * FROM Propiedad
+-- cambiarAmenidad
+
+CREATE PROCEDURE cambiarAmenidad (@idAmenidad INT, @tipoAmenidad VARCHAR(12), @descripcion VARCHAR(100), @costoUso INT, @estado VARCHAR(20), @estadoActual INT, @cedulaPropietario INT)
+AS
+BEGIN
+    UPDATE Amenidades SET idAmenidad = @idAmenidad, tipoAmenidad= @tipoAmenidad, descripcion = @descripcion, costoUso = @costoUso, estado = @estado, estadoActual = @estadoActual WHERE cedulaPropietario = @cedulaPropietario AND idAmenidad = @idAmenidad; 
+END
+
+--cambiarPropiedad 23, 'cartagoooo', '2', 4, 200, 'Blanca', 2, 400, 15
 
 CREATE PROCEDURE marcarMsjLeidos (@cedulaUsuario INT)
 AS
@@ -791,11 +831,14 @@ BEGIN
 END
 
 -- actualizarPropiedadAlquiler
+
 CREATE PROCEDURE actualizarPropiedadAlquiler (@idPropiedad INT)
 AS
 BEGIN
     UPDATE Propiedad SET estadoActual = 2 WHERE idPropiedad = @idPropiedad
 END
+
+
 
 --eliminar propiedad
 CREATE PROCEDURE eliminarPropiedad (@idPropiedad INT)
@@ -804,13 +847,50 @@ BEGIN
     DELETE FROM Propiedad WHERE idPropiedad = @idPropiedad
 END
 
-EXEC eliminarPropiedad 456
+SELECT * FROM Amenidades
+CREATE PROCEDURE eliminarAmenidad (@idAmenidad INT)
+AS
+BEGIN
+    DELETE FROM Amenidades WHERE idAmenidad = @idAmenidad
+END
 
-SELECT * FROM solicitudesAlquierAmenidad
-SELECT * FROM Alquiler
-SELECT * FROM alquilerAmenidades
+--interrumpir/eliminar alquiler 
+
+CREATE PROCEDURE interrumpirAlquilerP (@cedulaPropietario INT, @cedulaInquilino INT, @fechaMensaje DATE, @horaMensaje TIME, @contenido VARCHAR(100), @idPropiedad INT, @FechaDesalojo DATE )
+AS
+BEGIN
+    DECLARE @idAlquiler INT
+    SET @idAlquiler = (SELECT alquiler.idAlquiler
+        FROM Alquiler 
+        JOIN alquilerPropiedad 
+        ON Alquiler.idAlquiler = alquilerPropiedad.idAlquiler 
+        JOIN Propiedad ON alquilerPropiedad.idPropiedad = Propiedad.idPropiedad 
+        JOIN Propietario ON Propiedad.cedulaPropietario = Propietario.cedula 
+        WHERE  (alquilerPropiedad.idPropiedad = @idPropiedad) AND (Alquiler.cedulaUsuario = @cedulaInquilino))
+    UPDATE Alquiler SET fechaFin = @FechaDesalojo WHERE idAlquiler = @idAlquiler
+    EXEC agregarComunicacion @cedulaUsuario=@cedulaPropietario, @cedulaReceptor=@cedulaInquilino, @fechaMensaje=@fechaMensaje, @horaMensaje=@horaMensaje, @contenido=@contenido
+END
+
+
+CREATE PROCEDURE interrumpirAlquilerA (@cedulaPropietario INT, @cedulaInquilino INT, @fechaMensaje DATE, @horaMensaje TIME, @contenido VARCHAR(100), @idAmenidad INT, @FechaDesalojo DATE )
+AS
+BEGIN
+    DECLARE @idAlquiler INT
+    SET @idAlquiler = (SELECT alquiler.idAlquiler
+        FROM Alquiler 
+        JOIN alquilerAmenidades 
+        ON Alquiler.idAlquiler = alquilerAmenidades.idAlquiler 
+        JOIN Amenidades ON alquilerAmenidades.idAmenidad = Amenidades.idAmenidad 
+        JOIN Propietario ON Amenidades.cedulaPropietario = Propietario.cedula 
+        WHERE  (alquilerAmenidades.idAmenidad = @idAmenidad) AND (Alquiler.cedulaUsuario = @cedulaInquilino))
+    UPDATE Alquiler SET fechaFin = @FechaDesalojo WHERE idAlquiler = @idAlquiler
+    EXEC agregarComunicacion @cedulaUsuario=@cedulaPropietario, @cedulaReceptor=@cedulaInquilino, @fechaMensaje=@fechaMensaje, @horaMensaje=@horaMensaje, @contenido=@contenido
+END
+
 
 --insertar gasto
 --insertar ingreso
 --obtener gastosUsuario
 --obtener ingresosUsuario
+
+
