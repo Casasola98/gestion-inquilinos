@@ -232,7 +232,7 @@ app.post('/visualizarPropiedades', jsonParser, (req, res) => {
 	let cedula = datos.cedula;
 	mssql.connect(config, function (err) {
 		let request = new mssql.Request();
-		let query = `EXEC obtenerPropiedad ${cedula}`;
+		let query = `EXEC obtenerPropiedades ${cedula}`;
 		request.query(query,
 			function (err, records) {
 				if (err) {
@@ -373,8 +373,6 @@ app.post('/denegarInquilinoAmenidad', jsonParser, (req, res) => {
 	});
 })
 
-
-
 app.post('/crearInquilinoPropiedad', jsonParser, (req, res) => {
 	//obtiene los datos de la tabla de solicitudes para aceptar y denegar, cambian las solicitudes 
 	const datos = req.body;
@@ -483,7 +481,6 @@ app.post('/visualizarInquilinosA', jsonParser, (req, res) => {
 
 })
 
-//Revisar
 app.post('/editarInquilinoA', jsonParser, (req, res) => {
 	//editar un inquilino  seleccione el botón va pasar a tener la funcionalidad de interrumpir el alquiler.
 	const datos = req.body;
@@ -559,20 +556,124 @@ app.post('/editarInquilinoP', jsonParser, (req, res) => {
 
 //Modulo Amenidades (Propietario)
 app.post('/crearAmenidad', jsonParser, (req, res) => {
-	
+	const datos = req.body;
+	//variables enviados por el body
+	let idAmenidad = datos.idAmenidad;
+	let tipoAmenidad = datos.tipoAmenidad; 
+	let costoUso = datos.costoUso;  
+	let descripcion = datos.descripcion;  
+	let estadoActual = datos.estadoActual;
+	let estado = datos.estado;
+	let cedula = datos.cedula;
+
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerAmenidad ${idAmenidad}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				if (records.recordset.length == 0) {
+					let request2 = new mssql.Request();
+					let query2 = `EXEC insertarAmenidades ${idAmenidad}, '${tipoAmenidad}', '${descripcion}', ${costoUso}, '${estado}', ${estadoActual},  ${cedula}`;
+					request2.query(query2,
+						function (err2, records2) {
+							if (err2) {
+								res.send({
+									registrarPropiedad: false
+								});
+							}
+							else {
+								res.send({
+									registrarPropiedad: true
+								});
+							}							
+						});
+				}
+				else {
+					res.send({
+						registrarPropiedad: false
+					});
+				}
+			}
+		);
+	})
 })
 
 app.post('/visualizarAmenidad', jsonParser, (req, res) => {
-	
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerAmenidades ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				res.send(records);
+			});
+	});
 })
 
 app.post('/editarAmenidad', jsonParser, (req, res) => {
+	const datos = req.body;
+	//variables enviados por el body
+	let idAmenidad = datos.idAmenidad;
+	let tipoAmenidad = datos.tipoAmenidad ;
+	let costoUso = datos.costoUso; 
+	let estado = datos.estado; 
+	let descripcion = datos.descripcion;  
+	let estadoActual = datos.estadoActual;
+	let cedula = datos.cedula;
+
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC cambiarAmenidad ${idAmenidad}, '${tipoAmenidad}', '${descripcion}', ${costoUso}, '${estado}', ${estadoActual}, ${cedula}`;
+		//cambiarAmenidad (@idAmenidad INT, @tipoAmenidad VARCHAR(12), @descripcion VARCHAR(100), @costoUso INT, @estado VARCHAR(20), @estadoActual INT, @cedulaPropietario INT)
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						editarAmenidad: false
+					});
+				}
+				else {
+					res.send({
+						editarAmenidad: true
+					});
+				}	
+			});
+	});
 
 })
 
 app.post('/eliminarAmenidad', jsonParser, (req, res) => {
+	const datos = req.body;
+	//variables enviados por el body
+	let idAmenidad = datos.idAmenidad;
 
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC eliminarAmenidad ${idAmenidad}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						eliminarAmenidad: false
+					});
+				}
+				else {
+					res.send({
+						eliminarAmenidad: true
+					});
+				}	
+			});
+	});
 })
+
 
 //MODULO MANTENIMIENTO (Propietario)
 app.post('/visualizarMantenimientos', jsonParser, (req, res) => {
