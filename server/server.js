@@ -677,11 +677,62 @@ app.post('/eliminarAmenidad', jsonParser, (req, res) => {
 
 //MODULO MANTENIMIENTO (Propietario)
 app.post('/visualizarMantenimientos', jsonParser, (req, res) => {
+	
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerInquilinosPropietarioP ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				if (records.recordset.length > 0){
 
+					let request2 = new mssql.Request();
+					let query2 = `EXEC obtenerSolicitudesManteProp ${cedula}`;
+					request2.query(query2,
+					function (err2, records2) {
+						if (err2) {
+							console.log(err2)
+						}
+						res.send(records2);
+					});
+				}
+				else {
+					res.send({
+						eliminarAmenidad: false
+					});
+				}
+			});
+	});
 })
 
 app.post('/actualizarMantenimientos', jsonParser, (req, res) => {
+	const datos = req.body;
+	//variables enviados por el body
+	let idSolicitud = datos.idSolicitud;
+	let estado = datos.estado
 
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC cambiarEstadoSolMante ${idSolicitud}, ${estado}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						eliminarAmenidad: false
+					});
+				}
+				else {
+					res.send({
+						eliminarAmenidad: true
+					});
+				}	
+			});
+	});
 })
 
 // MODULO DE REPORTES (propietario)
@@ -695,7 +746,7 @@ function definirFechaInicial(periodo) {
 }
 
 // MODULO PAGOS (Propietario)
-app.post('/visualizarPagoAdmin', jsonParser, (req, res) => {
+app.post('/visualizarPagoP', jsonParser, (req, res) => {
 
 })
 
