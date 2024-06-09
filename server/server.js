@@ -55,7 +55,9 @@ app.post('/login', jsonParser, (req, res) => {
 	request.query(query,
 		function (err, records) {
 			if (err) {
-				console.log(err)
+				res.send({
+					existeUsuario: false
+				});
 			}
 			if (records.recordset.length > 0) {
 				res.send({
@@ -68,8 +70,7 @@ app.post('/login', jsonParser, (req, res) => {
 				});
 			}
 		}
-	);
-	});
+	)});
 })
 
 //registrarInquilinosPropietarios
@@ -96,7 +97,9 @@ app.post('/registrar', jsonParser, (req, res) => {
 		request.query(query,
 			function (err, records) {
 				if (err) {
-					console.log(err)
+					res.send({
+						registrarAdmin: false
+					});
 				}
 				if (records.recordset.length == 0) {
 					let query2 = '';
@@ -124,7 +127,7 @@ app.post('/registrar', jsonParser, (req, res) => {
 				}
 				else {
 					res.send({
-						insertarUsuario: false
+						registrarAdmin: false
 					});
 				}
 			}
@@ -145,7 +148,9 @@ app.post('/registrarAdmin', jsonParser, (req, res) => {
 		request.query(query,
 			function (err, records) {
 				if (err) {
-					console.log(err)
+					res.send({
+						registrarAdmin: false
+					});
 				}
 				if (records.recordset.length == 0) {
 					let request2 = new mssql.Request();
@@ -196,7 +201,9 @@ app.post('/crearPropiedad', jsonParser, (req, res) => {
 		request.query(query,
 			function (err, records) {
 				if (err) {
-					console.log(err)
+					res.send({
+						registrarPropiedad: false
+					});
 				}
 				if (records.recordset.length == 0) {
 					let request2 = new mssql.Request();
@@ -239,7 +246,8 @@ app.post('/visualizarPropiedades', jsonParser, (req, res) => {
 					console.log(err)
 				}
 				res.send(records);
-			});
+			}
+		);
 	});
 })
 
@@ -271,7 +279,8 @@ app.post('/editarPropiedad', jsonParser, (req, res) => {
 						editarPropiedad: true
 					});
 				}	
-			});
+			}
+		);
 	});
 })
 
@@ -288,15 +297,16 @@ app.post('/eliminarPropiedad', jsonParser, (req, res) => {
 			function (err, records) {
 				if (err) {
 					res.send({
-						editarPropiedad: false
+						eliminarPropiedad: false
 					});
 				}
 				else {
 					res.send({
-						editarPropiedad: true
+						eliminarPropiedad: true
 					});
 				}	
-			});
+			}
+		);
 	});
 
 })
@@ -340,9 +350,11 @@ app.post('/crearInquilinoAmenidad', jsonParser, (req, res) => {
 									aceptarAlquiler: true
 								});
 							}	
-						});
+						}
+					);
 				}	
-			});
+			}
+		);
 	});
 })
 
@@ -360,8 +372,9 @@ app.post('/denegarInquilinoAmenidad', jsonParser, (req, res) => {
 			function (err, records) {
 				if (err) {
 					res.send({
-						editarPropiedad: false
+						denergarInquilino: false
 					});
+	
 				}
 				else {
 					res.send({
@@ -369,7 +382,8 @@ app.post('/denegarInquilinoAmenidad', jsonParser, (req, res) => {
 					});
 	
 				}	
-			});
+			}
+		);
 	});
 })
 
@@ -407,9 +421,11 @@ app.post('/crearInquilinoPropiedad', jsonParser, (req, res) => {
 									editarPropiedad: true
 								});
 							}	
-						});
+						}
+					);
 				}	
-			});
+			}
+		);
 	});
 	//insertarAlquilerProp(@cedulaUsuario INT, @fechaInicio DATE, @fechaFin DATE, @idPropiedad INT)
 	//cambiarSolicitudAlquilerP(@idPropiedad INT, @estadoSolicitud INT)
@@ -429,7 +445,7 @@ app.post('/denegarInquilinoPropiedad', jsonParser, (req, res) => {
 			function (err, records) {
 				if (err) {
 					res.send({
-						editarPropiedad: false
+						denergarInquilino: false
 					});
 				}
 				else {
@@ -438,7 +454,8 @@ app.post('/denegarInquilinoPropiedad', jsonParser, (req, res) => {
 					});
 	
 				}	
-			});
+			}
+		);
 	});
 })
 
@@ -457,9 +474,9 @@ app.post('/visualizarInquilinosP', jsonParser, (req, res) => {
 					console.log(err)
 				}
 				res.send(records);
-			});
+			}
+		);
 	});
-
 })
 
 app.post('/visualizarInquilinosA', jsonParser, (req, res) => {
@@ -476,9 +493,9 @@ app.post('/visualizarInquilinosA', jsonParser, (req, res) => {
 					console.log(err)
 				}
 				res.send(records);
-			});
+			}
+		);
 	});
-
 })
 
 app.post('/editarInquilinoA', jsonParser, (req, res) => {
@@ -500,10 +517,10 @@ app.post('/editarInquilinoA', jsonParser, (req, res) => {
 		let query = ` EXEC interrumpirAlquilerA ${cedulaPropietario}, ${cedulaInquilino}, '${fechaMensaje}', '${horaMensaje}', '${contenido}', ${idAmenidad}, '${fechaDesalojo}'`;
 		request.query(query,
 			function (err, records) {
-				console.log(err);
+
 				if (err) {
 					res.send({
-						interrumpirAlquiler: false
+						interrumpirAlquiler: true
 					});
 				}
 				else {
@@ -512,7 +529,8 @@ app.post('/editarInquilinoA', jsonParser, (req, res) => {
 					});
 	
 				}	
-			});
+			}
+		);
 	});
 	 
 })
@@ -548,9 +566,9 @@ app.post('/editarInquilinoP', jsonParser, (req, res) => {
 					});
 	
 				}	
-			});
+			}
+		);
 	});
-	
 })
 
 
@@ -572,7 +590,9 @@ app.post('/crearAmenidad', jsonParser, (req, res) => {
 		request.query(query,
 			function (err, records) {
 				if (err) {
-					console.log(err)
+					res.send({
+						registrarPropiedad: false
+					});
 				}
 				if (records.recordset.length == 0) {
 					let request2 = new mssql.Request();
@@ -614,7 +634,8 @@ app.post('/visualizarAmenidad', jsonParser, (req, res) => {
 					console.log(err)
 				}
 				res.send(records);
-			});
+			}
+		);
 	});
 })
 
@@ -645,7 +666,8 @@ app.post('/editarAmenidad', jsonParser, (req, res) => {
 						editarAmenidad: true
 					});
 				}	
-			});
+			}
+		);
 	});
 
 })
@@ -661,16 +683,15 @@ app.post('/eliminarAmenidad', jsonParser, (req, res) => {
 		request.query(query,
 			function (err, records) {
 				if (err) {
-					res.send({
-						eliminarAmenidad: false
-					});
+					eliminarAmenidad: false
 				}
 				else {
 					res.send({
 						eliminarAmenidad: true
 					});
 				}	
-			});
+			}
+		);
 	});
 })
 
@@ -706,7 +727,8 @@ app.post('/visualizarMantenimientos', jsonParser, (req, res) => {
 						eliminarAmenidad: false
 					});
 				}
-			});
+			}
+		);
 	});
 })
 
@@ -731,7 +753,8 @@ app.post('/actualizarMantenimientos', jsonParser, (req, res) => {
 						eliminarAmenidad: true
 					});
 				}	
-			});
+			}
+		);
 	});
 })
 
@@ -784,7 +807,8 @@ app.post('/enviarMensaje', jsonParser, (req, res) => {
 							}	
 						});
 				}	
-			});
+			}
+		);
 	});
 })
 
@@ -799,9 +823,7 @@ app.post('/visualizarMsjRecibido', jsonParser, (req, res) => {
 		request.query(query,
 			function (err, records) {
 				if (err) {
-					res.send({
-						visualizarMsjRecibido: false
-					});
+					console.log(err)
 				}
 				else {
 					let request2 = new mssql.Request();
@@ -809,16 +831,15 @@ app.post('/visualizarMsjRecibido', jsonParser, (req, res) => {
 					request2.query(query2,
 						function (err2, records2) {
 							if (err2) {
-								res.send({
-									enviarMensaje: false
-								});
+								console.log(err)
 							}
 							else {
 								res.send(records);
 							}	
 						});
 				}	
-			});
+			}
+		);
 	});
 })
 app.post('/visualizarMsjEnviados', jsonParser, (req, res) => {
@@ -832,51 +853,398 @@ app.post('/visualizarMsjEnviados', jsonParser, (req, res) => {
 		request.query(query,
 			function (err, records) {
 				if (err) {
-					res.send({
-						visualizarMsjRecibido: false
-					});
+					console.log(err)
 				}
 				else {
 					res.send(records);
 				}	
-			});
+			}
+		);
 	});
 })
 
 //       ********** INQUILINO **********
 // MODULO PAGOS (Inquilino)
 app.post('/registrarPago', jsonParser, (req, res) => {
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;
+	let idPago = datos.idPago; 
+	let monto = datos.monto;
+	let tipoPago = datos.tipoPago;
+	let estadoPago = datos.estadoPago;
+	let metodoPago = datos.metodoPago;
+	let fechaActual = new Date();
+	let fechaPago = getFecha(fechaActual);
 
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerPago ${idPago}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						registrarPago: false
+					});
+				}
+				else {
+					let request2 = new mssql.Request();
+					let query2 = `EXEC insertarPago ${idPago}, ${cedula}, '${fechaPago}', ${monto}, ${tipoPago}, ${estadoPago}, '${metodoPago}'`;
+					
+					request2.query(query2,
+						function (err2, records2) {
+							if (err2) {
+								res.send({
+									registrarPago: false
+								});
+							}
+							else {
+								res.send({
+									registrarPago: true
+								});
+							}	
+						});
+				}	
+			}
+		);
+	});
 })
 
-app.post('/visualizarPago', jsonParser, (req, res) => {
+app.post('/visualizarPagoI', jsonParser, (req, res) => {
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;;
+
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerPagosI ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				else {
+					res.send(records);
+				}	
+			}
+		);
+	});
 
 })
 
 app.post('/editarPago', jsonParser, (req, res) => {
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;
+	let idPago = datos.idPago; 
+	let monto = datos.monto;
+	let tipoPago = datos.tipoPago;
+	let estadoPago = datos.estadoPago;
+	let metodoPago = datos.metodoPago;
 
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC cambiarPagos  ${idPago}, ${cedula}, ${monto}, ${tipoPago}, ${estadoPago}, '${metodoPago}'`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				else {
+					res.send({
+						editarPago: true
+					});
+				}	
+			}
+		);
+	});
 })
 
 app.post('/eliminarPago', jsonParser, (req, res) => {
+	const datos = req.body;
+	//variables enviados por el body
+	let idPago = datos.idPago; 
 
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC eliminarPagos ${idPago}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				else {
+					res.send({
+						eliminarPago: true
+					});
+				}	
+			}
+		);
+	});
 })
+
+
 //Modulo Alquiler (Inquilino)
-app.post('/solicitarAlquiler', jsonParser, (req, res) => {
+
+app.post('/obtenerAmenidadesDisponibles', jsonParser, (req, res) => {
+	//En este módulo “Crear” va a ser dos tablas donde salga todos los aquileres disponibles 
+	const datos = req.body;
+	//variables enviados por el body
+	let fechaInicio = datos.fechaInicio
+	let fechaFin = datos.fechaFin;
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerAmenidadDisp '${fechaInicio}', '${fechaFin}'`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				else {
+					res.send(records);
+				}	
+			}
+		);
+	});
+})
+
+app.post('/obtenerPropiedadesDisponibles', jsonParser, (req, res) => {
 	//En este módulo “Crear” va a ser dos tablas donde salga todos los aquileres disponibles y un boton de solicitar 
+	const datos = req.body;
+	//variables enviados por el body
+	let fechaInicio = datos.fechaInicio
+	let fechaFin = datos.fechaFin;
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerPropiedadesDisp '${fechaInicio}', '${fechaFin}'`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				else {
+					res.send(records);
+				}	
+			}
+		);
+	});
 })
 
+app.post('/solicitarAlquilerA', jsonParser, (req, res) => {
+	
+	//En este módulo “Crear” va a ser dos tablas donde salga todos los aquileres disponibles y un boton de solicitar 
+	const datos = req.body;
+	//variables enviados por el body
+	let idAmenidad = datos.idAmenidad
+	let cedula = datos.cedula;
+	let fechaActual = new Date();
+	let fechaSolicitud = getFecha(fechaActual);
+	let fechaInicio = datos.fechaInicio
+	let fechaFin = datos.fechaFin 
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC insertarSolicitudAlquilerA ${idAmenidad}, ${cedula}, '${fechaSolicitud}', '${fechaInicio}', '${fechaFin}'`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						enviarSolicitud : false
+					});
+				}
+				else {
+					res.send({
+						enviarSolicitud : true
+					});
+				}	
+			}
+		);
+	});
+})
+
+app.post('/solicitarAlquilerP', jsonParser, (req, res) => {
+	//En este módulo “Crear” va a ser dos tablas donde salga todos los aquileres disponibles y un boton de solicitar 
+	//insertarSolicitudAlquilerP(@idPropiedad INT, @cedula INT, @fechaSolicitud DATE, @fechaInicio DATE, @FechaFin DATE)
+	const datos = req.body;
+	//variables enviados por el body
+	let idPropiedad = datos.idPropiedad;
+	let cedula = datos.cedula;
+	let fechaActual = new Date();
+	let fechaSolicitud = getFecha(fechaActual);
+	let fechaInicio = datos.fechaInicio;
+	let fechaFin = datos.fechaFin;
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC insertarSolicitudAlquilerP ${idPropiedad}, ${cedula}, '${fechaSolicitud}', '${fechaInicio}', '${fechaFin}'`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						enviarSolicitud : false
+					});
+				}
+				else {
+					res.send({
+						enviarSolicitud : true
+					});
+				}	
+			}
+		);
+	});
+})
+
+
+//obtener alquiler inquilinos
 app.post('/editarAlquiler', jsonParser, (req, res) => {
-	//se cambian los detalles del alquiler que tenga el usuario 
+	//se cambian SOLO LA FECHA FINAL del alquiler que tenga el usuario 
+	const datos = req.body;
+	//variables enviados por el body
+	let fechaFin = datos.fechaFin;
+	let idAlquiler = datos.idAlquiler;
+
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC cambiarAlquiler '${fechaFin}', ${idAlquiler}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						editarAlquiler: false
+					});
+				}
+				else {
+					res.send({
+						editarAlquiler: true
+					});
+				}	
+			}
+		);
+	});
 })
 
-app.post('/interrumpirAlquiler', jsonParser, (req, res) => {
-	//se va a interrumpir los alquileres en uso o cancelar las solicitudes aún pendientes
+app.post('/visualizarAlquilerIP', jsonParser, (req, res) => {
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;
+
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerAlquileresInquilinosP ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				else {
+					res.send(records);
+				}	
+			}
+		);
+	});
 })
+
+app.post('/visualizarAlquilerIA', jsonParser, (req, res) => {
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;
+
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerAlquileresInquilinosA ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				else {
+					res.send(records);
+				}	
+			}
+		);
+	});
+
+})
+
+// app.post('/interrumpirSolicitudes', jsonParser, (req, res) => {
+// 	//se va a interrumpir los alquileres en uso o cancelar las solicitudes aún pendientes
+// })
 
 // MODULO MANTENIMIENTO(Inquilino)
 app.post('/registrarMantenimiento', jsonParser, (req, res) => {
-	
+	const datos = req.body;
+	//variables enviados por el body
+	let idSolicitud = datos.idSolicitud;
+	let idPropiedad = datos.idPropiedad;
+	let cedula = datos.cedula;
+
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerSolicitudesMantenimiento ${idSolicitud}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						editarAlquiler: false
+					});
+				}
+				else if(records.recordset.length == 0){
+					let request2 = new mssql.Request();
+					let query2 = `EXEC obtenerAlquilerPUsuario ${idPropiedad}, ${cedula}`;
+					request2.query(query2,
+						function (err2, records2) {
+							if (err2) {
+								res.send({
+									registrarMantenimiento: false
+								});
+							}
+							else if(records.recordset.length > 0){
+								let fechaActual = new Date();
+								let fechaSolicitud = getFecha(fechaActual);
+								let estado = 1;
+								let descripcionProblema = datos.descripcionProblema;
+								let idProveedor = datos.idProveedor;
+								let idPrioridad = datos.idPrioridad;
+								let costoMantenimiento = datos.costoMantenimiento
+								let request3 = new mssql.Request();
+								let query3 = `EXEC insertarMantenimiento ${idSolicitud}, ${idPropiedad}, '${descripcionProblema}', ${idProveedor}, '${fechaSolicitud}', ${estado}, ${idPrioridad}, ${costoMantenimiento}`;
+								request3.query(query3,
+									function (err3, records3) {
+										if (err3) {
+											res.send({
+												registrarMantenimiento: false
+											});
+										}
+										else {
+											res.send({
+												registrarMantenimiento: true
+											});
+										}	
+									}
+								);	
+							}	
+						}
+					);	
+				}	
+			}
+		);
+	});
 })
+
+
+// def registrarMantenimiento(idSolicitud,idPropiedad,descripcionProblema,idProveedor,idPrioridad):
+//     if(existeSolicitud(idSolicitud) == False):
+//         if(existeAlquiler(idPropiedad)):
+//             try: 
+//                 fechaSolicitud = datetime.now()
+//                 estado = 1
+//                 mantenimiento = (idSolicitud, idPropiedad, descripcionProblema, idProveedor, fechaSolicitud, estado, idPrioridad)
+//                 return insertarMantenimiento(mantenimiento)
+//             except: 
+//                 return False
+//         else: 
+//             return False
+//     else: 
+//         return False
+
 
 //       ********** ADMINITRADOR **********
 // MODULO PROPIEDAD (Administrador)
