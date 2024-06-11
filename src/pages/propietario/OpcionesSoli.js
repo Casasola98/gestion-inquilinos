@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import '../../css/Opciones.css';
 
-function OpcionesInq(props) {
+function OpcionesSoli(props) {
   const { isLogin, setIsLogin } = props;
 
   // Carga el tipo de usuario que en el login se guardo en el localStorage dentro de la variable tipoUsuario
@@ -18,7 +18,7 @@ function OpcionesInq(props) {
 
   return (
     <div className="opcionesP">
-      <h1 className="title">Opciones de Inquilino</h1>
+      <h1 className="title">Solicitudes arrendamiento</h1>
       <h2>
         {tipoUsuario === 'propietario' ? ' propietario, ' 
         : tipoUsuario === 'admin' ? ' administrador, ' 
@@ -28,12 +28,12 @@ function OpcionesInq(props) {
       {tipoUsuario === 'propietario' && (
         <div className="menu">
           <div className="menu-row">
-            <Link className="option-link" to="/opcionesSol">
-              Solicitudes arrendamiento 
-            </Link>
-            <Link className="option-link" to="/visualizarInq">
-              Visualizar inquilinos
-            </Link>
+            <a className="option-link" href="/visualizarSolicitudesP">
+              Solicitudes propiedades 
+            </a>
+            <a className="option-link" href="/visualizarSolicitudesA">
+              Solicitudes amenindades
+            </a>
           </div>
         </div>
       )}
@@ -41,4 +41,4 @@ function OpcionesInq(props) {
   );
 }
 
-export default OpcionesInq;
+export default OpcionesSoli;

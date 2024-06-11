@@ -19,7 +19,8 @@ function RegistrarP(props) {
       { label: "Precio", type: "number" },
       { label: "Dirección", type: "text" },
       { label: "Número de Habitaciones", type: "number" },
-      { label: "Estado", type: "number", extraLabel: "1: Disponible 2:Ocupado 3:En mantenimiento", pattern: "^[1-3]$" },
+      { label: "Estado actual", type: "number", extraLabel: "1: Disponible 2:Ocupado 3:En mantenimiento", pattern: "^[1-3]$" },
+      { label: "Cédula:", type: "number" },
     ];
 
     const handleValidation = (event, pattern) => {
@@ -33,7 +34,7 @@ function RegistrarP(props) {
 
     return (
       <div className="propiedades">
-        <h1 className="title">Registrar Propiedad</h1>
+        <h1 className="title">Crear Propiedad</h1>
         <div className="register-section">
           <div className="form-container">
             {fields.map((field, index) => (

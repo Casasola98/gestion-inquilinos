@@ -27,28 +27,28 @@ function Login(props) {
 
   const iniciarSesion = () => {
     if (cedula == '') {
-      setCedulaError("Error en la cedula");
+      setCedulaError("Error ingrese su cédula");
       return;
     } 
     else {
       setCedulaError('');
     } 
     
-
-    axios.post('http://localhost:8080/login', {
-      cedula: cedula,
-      rol: tipoUsuario,
+    //Aca se conecta con la funcion del backend
+    // axios.post('http://localhost:8080/login', {
+    //   cedula: cedula,
+    //   rol: tipoUsuario,
       
-    }).then((respuesta) => {     
-      if (respuesta.data.existeUsuario) {
+    // }).then((respuesta) => {     
+    //   if (respuesta.data.existeUsuario) {
         localStorage.setItem('user', cedula);
         localStorage.setItem('tipoUsuario', tipoUsuario);
         setIsLogin(localStorage.getItem('user'));
-      }
-    })
-
+    //   }
+    // })
+  
   };
-
+  
   return (
     <div className="login">
       <h1 className="title">

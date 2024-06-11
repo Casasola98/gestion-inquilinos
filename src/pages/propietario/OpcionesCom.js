@@ -19,6 +19,7 @@ function OpcionesCom(props) {
   return (
     <div className="OpcionesCom">
       <h1 className="title">COMUNICACIÓN</h1>
+      <h1 className="title">Comunicación</h1>
       <h2>
 
         {tipoUsuario === 'propietario' ? ' propietario, ' 

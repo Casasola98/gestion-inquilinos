@@ -34,6 +34,9 @@ function OpcionesComInq(props) {
             <a className="option-link" href="/solicitarAme">
               Amenidades
             </a>
+            <a className="option-link" href="/visualizarAlqInq">
+              Visualizar alquileres
+            </a>
           </div>
         </div>
       )}

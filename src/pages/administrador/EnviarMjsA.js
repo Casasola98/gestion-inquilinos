@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import '../../css/Propiedades.css';
 
-function PropiedadesP(props) {
-  const { isLogin, setIsLogin } = props;
+function Enviar(props) {
+  const { isLogin } = props;
 
-  // Si nadie ha iniciado sesion lo envia a la ventana de login
+  // Si nadie ha iniciado sesión, lo envía a la ventana de login
   if (!isLogin) {
     window.location.href = '/login';
   }
@@ -12,19 +12,17 @@ function PropiedadesP(props) {
   if (isLogin) {
     // Lista de etiquetas para los campos de texto y tipos
     const fields = [
-      { label: "ID de amenidad:", type: "number" },
-      { label: "Descripción", type: "text" },
-      { label: "Costo de uso:", type: "number" },
-      { label: "Estado", type: "number", extraLabel: "1: Disponible 2:Ocupado 3:Dañado" },
-      { label: "Tipo", type: "text" },
-      { label: "Estado actual", type: "number", extraLabel: "1: no lo encontre" }
-                                                    //preguntar cuales son los estados actuales
+      { label: "ID del mensaje:", type: "number" },
+      { label: "Cédula del receptor:", type: "number" },
+      { label: "Contenido:", type: "text" },
+      { label: "Cédula del emisor:", type: "text" },
+
     ];
 
     return (
-      <div className="propiedades">
-        <h1 className="title">Amenidades</h1>
+      <div className="comunicaciones">
         <div className="register-section">
+          <h2 className="title">Enviar mensaje</h2>
           <div className="form-container">
             {fields.map((field, index) => (
               <div className="form-group" key={index}>
@@ -47,7 +45,7 @@ function PropiedadesP(props) {
             ))}
           </div>
           <button className="option-link" type="button">
-            Registrar
+            Enviar
           </button>
         </div>
       </div>
@@ -59,4 +57,4 @@ function PropiedadesP(props) {
   );
 }
 
-export default PropiedadesP;
+export default Enviar;

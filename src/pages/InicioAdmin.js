@@ -26,61 +26,14 @@ function Home(props) {
         {tipoUsuario === 'admin' && (
           <div className="menu">
             <div className="menu-row">
-              <a className="option-link" href="/crearPropiedadAdmin">
-                Registrar propiedades
+              <a className="option-link" href="/inicioAdminP">
+                Propietarios
               </a>
-              <a className="option-link" href="/visualizarPropiedadA">
-                Visualizar propiedades
-              </a>
+
             </div>
-            <div className="menu-row">
-              <a className="option-link" href="/crearAmeninidad">
-                Registrar amenidad
+              <a className="option-link" href="/inicioAdminInq">
+                Inquilinos
               </a>
-              <a className="option-link" href="/visualizarAmenidad">
-                Visualizar amenidad
-              </a>
-            </div>
-            <div className="menu-row">
-              <a className="option-link" href="/visualizarSoliP">
-                Solicitudes propiedades
-              </a>
-              <a className="option-link" href="/visualizarSoliA">
-              Solicitudes amenidades
-              </a>
-            </div>
-            <div className="menu-row">
-              <a className="option-link" href="/enviarMjsA">
-                Enviar mensaje
-              </a>
-              <a className="option-link" href="/enviadosA">
-                Mensajes enviados
-              </a>
-            </div>
-            <div className="menu-row">
-              <a className="option-link" href="/solicitudesManteA">
-                Solicitudes mantenimiento
-              </a>
-              <a className="option-link" href="/enviadosA">
-                Mensajes enviados
-              </a>
-            </div>
-            <div className="menu-row">
-              <a className="option-link" href="/registrarPagoA">
-                Registrar Pago
-              </a>
-              <a className="option-link" href="/registrarSoliManteA">
-                Registrar mantenimiento
-              </a>
-            </div>
-            <div className="menu-row">
-              <a className="option-link" href="/alquilarP">
-                Alquilar propiedad
-              </a>
-              <a className="option-link" href="/alquilarA">
-                Alquiar amenidad
-              </a>
-              </div>
           </div>
         )}
         {tipoUsuario === 'propietario' && (

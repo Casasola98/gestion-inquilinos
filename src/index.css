@@ -56,6 +56,11 @@ span {
   text-align: center;
 }
 
+.table-contenedor {
+  width: 100%;
+  overflow-x: scroll;
+}
+
 .table {
   border-collapse: collapse;
 }

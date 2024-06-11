@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import '../../css/Propiedades.css';
+import '../../css/Admin.css';
 
-function RegistrarP(props) {
+function VisualizarP(props) {
   const { isLogin, setIsLogin } = props;
   const [editMode, setEditMode] = useState(false);
   const [editedRow, setEditedRow] = useState(null);
@@ -72,4 +72,4 @@ function RegistrarP(props) {
   );
 }
 
-export default RegistrarP;
+export default VisualizarP;

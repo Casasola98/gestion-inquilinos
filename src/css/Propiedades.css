@@ -49,7 +49,7 @@
 .inputBox {
   margin-top: 2px;
   padding: 6px;
-  width: 150%; /* Adjust the width here */
+  width: 100%; /* Set the width to 100% */
   max-width: 300px; /* Optional: Set a maximum width */
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -69,6 +69,44 @@
 }
 
 .option-link:hover {
+  background-color: #0056b3;  
+}
+
+.eviction-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+}
+
+.eviction-form label {
+  margin-bottom: 10px;
+}
+
+.eviction-form input,
+.eviction-form textarea {
+  width: 100%; /* Ensure full width for input and textarea */
+  max-width: 300px; /* Optional: Set a maximum width */
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 2px;
+  
+}
+
+.eviction-form button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.eviction-form button:hover {
   background-color: #0056b3;  
 }
 

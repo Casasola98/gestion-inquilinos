@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import '../../css/Propiedades.css';
 
-function VisualizarSolicitud(props) {
+function VisualizarSolicitudA(props) {
   const { isLogin, setIsLogin } = props;
   const [properties, setProperties] = useState([
     { id: 1, cedula: "123456789", estadoSolicitud: "Pendiente", fechaSolicitud: "2023-01-01", fechaInicio: "2023-02-01", fechaFin: "2024-01-31" },
@@ -22,7 +22,7 @@ function VisualizarSolicitud(props) {
 
   return (
     <div className="propiedades">
-      <h1 className="title">Solicitudes Propiedades</h1>
+      <h1 className="title">Solicitudes amenidades</h1>
       <table className="table">
         <thead>
           <tr>
@@ -59,4 +59,4 @@ function VisualizarSolicitud(props) {
   );
 }
 
-export default VisualizarSolicitud;
+export default VisualizarSolicitudA;
