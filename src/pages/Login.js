@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useHref } from "react-router-dom";
+import axios from 'axios';
 
 import logo from '../img/logo.svg';
 import '../css/Login.css';
@@ -10,15 +11,18 @@ function Login(props) {
   const { isLogin, setIsLogin } = props;
 
   const [cedula, setCedula] = useState('');
-  const [password, setPassword] = useState('');
   const [tipoUsuario, setTipoUsuario] = useState('admin');
 
   const [cedulaError, setCedulaError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
 
   // Si hay una sesion iniciada, lo envia a la ventana de home.
   if (isLogin) {
     window.location.href = '/';
+  }
+
+  const registrar = () => {
+    window.location.href = '/registrar';
+
   }
 
   const iniciarSesion = () => {
@@ -30,16 +34,19 @@ function Login(props) {
       setCedulaError('');
     } 
     
-    if (password == '') {
-      setPasswordError("Error en la contraseña");
-      return;
-    }
-    else {
-      setPasswordError('');
-    } 
-    localStorage.setItem('user', cedula);
-    localStorage.setItem('tipoUsuario', tipoUsuario);
-    setIsLogin(localStorage.getItem('user'));
+
+    axios.post('http://localhost:8080/login', {
+      cedula: cedula,
+      rol: tipoUsuario,
+      
+    }).then((respuesta) => {     
+      if (respuesta.data.existeUsuario) {
+        localStorage.setItem('user', cedula);
+        localStorage.setItem('tipoUsuario', tipoUsuario);
+        setIsLogin(localStorage.getItem('user'));
+      }
+    })
+
   };
 
   return (
@@ -60,21 +67,9 @@ function Login(props) {
         </div>
         <br />
         <div className="inputContainer">
-          <input
-            type="password"
-            value={password}
-            placeholder="Ingrese su contrasena"
-            onChange={(ev) => setPassword(ev.target.value)}
-            className="inputBox"
-          />
-          <label className="errorLabel">{passwordError}</label>
-        </div>
-        <br />
-        <div className="inputContainer">
           <select
             value={tipoUsuario}
             onChange={(ev) => setTipoUsuario(ev.target.value)}
-            defaultValue="admin"
             className="inputBox"
           >
             <option value="admin">Administrador</option>
@@ -86,6 +81,10 @@ function Login(props) {
         <div className="inputContainer">
           <button className="option-link" type="button" onClick={iniciarSesion}>
             Ingresar
+          </button>
+          <br />
+          <button className="option-link" type="button" onClick={registrar}>
+            Registrar
           </button>
         </div>
       </div>

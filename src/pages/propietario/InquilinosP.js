@@ -12,32 +12,31 @@ function PropiedadesP(props) {
   if (isLogin) {
     // Lista de etiquetas para los campos de texto y tipos
     const fields = [
+      { label: "Cédula del inquilino", type: "number" },
+      { label: "Nombre", type: "text" },
+      { label: "Apellido 1", type: "text" },
+      { label: "Apellido 2", type: "text" },
+      { label: "Télefono", type: "number" },
+      { label: "Correo", type: "text" },
       { label: "ID Propiedad", type: "number" },
-      { label: "Tipo de Propiedad", type: "text" },
-      { label: "Tamaño", type: "text" },
-      { label: "Descripción", type: "text" },
-      { label: "Precio", type: "number" },
-      { label: "Dirección", type: "text" },
-      { label: "Número de Habitaciones", type: "number" },
-      { label: "Estado", type: "number", extraLabel: "1: Disponible 2:Ocupado 3:En mantenimiento" },
-      { label: "Gastos Adicionales", type: "number" }
+      { label: "Fecha Inicio", type: "number" },
+      { label: "Fecha Fin", type: "number" }
     ];
 
     return (
       <div className="propiedades">
-        <h1 className="title">Visualizar propiedades</h1>
+        <h1 className="title">Visualizar inquilinos</h1>
         <table className="table">
           <thead>
             <tr>
+              <th>Cédula del inquilino:</th>
+              <th>Nombre</th>
+              <th>Apellido 1</th>
+              <th>Apellido 2</th>
+              <th>Télefono</th>
+              <th>Correo</th>
               <th>ID Propiedad</th>
-              <th>Tipo</th>
-              <th>Tamaño</th>
-              <th>Descripción</th>
-              <th>Precio</th>
-              <th>Dirección</th>
-              <th>Num Habitaciones</th>
-              <th>Estado</th>
-              <th>Gastos adicionales</th>
+              <th>Fecha Inicio</th>
             </tr>
           </thead>
           <tbody>
@@ -56,7 +55,7 @@ function PropiedadesP(props) {
           </tbody>
         </table>
         <div className="register-section">
-          <h2 className="title">Registrar</h2>
+          <h2 className="title">Registrar inquilino</h2>
           <div className="form-container">
             {fields.map((field, index) => (
               <div className="form-group" key={index}>
