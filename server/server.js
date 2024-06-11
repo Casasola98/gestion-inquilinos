@@ -25,12 +25,12 @@ const getHora = (fecha) => {
 }
 
 const addMonths = (fecha, months) => {
-    var day = fecha.getDate();
-    fecha.setMonth(fecha.getMonth() + +months);
-    if (fecha.getDate() != day) {
-      fecha.setDate(0);
-    }
-    return `${fecha.getFullYear()}/${fecha.getMonth() + 1}/${fecha.getDate()}`;
+	var day = fecha.getDate();
+	fecha.setMonth(fecha.getMonth() + +months);
+	if (fecha.getDate() != day) {
+		fecha.setDate(0);
+	}
+	return `${fecha.getFullYear()}/${fecha.getMonth() + 1}/${fecha.getDate()}`;
 }
 
 //ingresarSistema
@@ -41,36 +41,37 @@ app.post('/login', jsonParser, (req, res) => {
 	let rol = datos.rol;
 	//------------------------------
 	mssql.connect(config, function (err) {
-	let request = new mssql.Request();
-	let query = '';
-	if (rol == 'admin') {
-		query = `EXEC obtenerAdmin ${cedula}`;
-	} 
-	else if (rol == 'propietario') {
-			query = `EXEC obtenerPropietario ${cedula}`;
-	} 
-	else {
-			query = `EXEC obtenerInquilino ${cedula}`;
-	}
-	request.query(query,
-		function (err, records) {
-			if (err) {
-				res.send({
-					existeUsuario: false
-				});
-			}
-			if (records.recordset.length > 0) {
-				res.send({
-					existeUsuario: true
-				});
-			}
-			else {
-				res.send({
-					existeUsuario: false
-				});
-			}
+		let request = new mssql.Request();
+		let query = '';
+		if (rol == 'admin') {
+			query = `EXEC obtenerAdmin ${cedula}`;
 		}
-	)});
+		else if (rol == 'propietario') {
+			query = `EXEC obtenerPropietario ${cedula}`;
+		}
+		else {
+			query = `EXEC obtenerInquilino ${cedula}`;
+		}
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						existeUsuario: false
+					});
+				}
+				if (records.recordset.length > 0) {
+					res.send({
+						existeUsuario: true
+					});
+				}
+				else {
+					res.send({
+						existeUsuario: false
+					});
+				}
+			}
+		)
+	});
 })
 
 //registrarInquilinosPropietarios
@@ -78,7 +79,7 @@ app.post('/login', jsonParser, (req, res) => {
 app.post('/registrar', jsonParser, (req, res) => {
 	const datos = req.body;
 	let cedula = datos.cedula;
-	let nombre = datos.nombre; 
+	let nombre = datos.nombre;
 	let apellido1 = datos.apellido1;
 	let apellido2 = datos.apellido2;
 	let telefono = datos.telefono;
@@ -121,9 +122,9 @@ app.post('/registrar', jsonParser, (req, res) => {
 								res.send({
 									registrarAdmin: true
 								});
-							}							
+							}
 						});
-					
+
 				}
 				else {
 					res.send({
@@ -166,7 +167,7 @@ app.post('/registrarAdmin', jsonParser, (req, res) => {
 								res.send({
 									registrarAdmin: true
 								});
-							}							
+							}
 						});
 				}
 				else {
@@ -186,13 +187,13 @@ app.post('/crearPropiedad', jsonParser, (req, res) => {
 	const datos = req.body;
 	//variables enviados por el body
 	let idPropiedad = datos.idPropiedad;
-	let direccion = datos.direccion; 
-	let idTipoPropiedad = datos.idTipoPropiedad ;
-	let numeroHabitaciones = datos.numeroHabitaciones; 
-	let tamanoMetros = datos.tamanoMetros; 
-	let descripcion = datos.descripcion;  
+	let direccion = datos.direccion;
+	let idTipoPropiedad = datos.idTipoPropiedad;
+	let numeroHabitaciones = datos.numeroHabitaciones;
+	let tamanoMetros = datos.tamanoMetros;
+	let descripcion = datos.descripcion;
 	let estadoActual = datos.estadoActual;
-	let precioAlquiler = datos.precioAlquiler; 
+	let precioAlquiler = datos.precioAlquiler;
 	let cedula = datos.cedula;
 
 	mssql.connect(config, function (err) {
@@ -219,7 +220,7 @@ app.post('/crearPropiedad', jsonParser, (req, res) => {
 								res.send({
 									registrarPropiedad: true
 								});
-							}							
+							}
 						});
 				}
 				else {
@@ -230,7 +231,7 @@ app.post('/crearPropiedad', jsonParser, (req, res) => {
 			}
 		);
 	});
-	
+
 })
 
 app.post('/visualizarPropiedades', jsonParser, (req, res) => {
@@ -255,13 +256,13 @@ app.post('/editarPropiedad', jsonParser, (req, res) => {
 	const datos = req.body;
 	//variables enviados por el body
 	let idPropiedad = datos.idPropiedad;
-	let direccion = datos.direccion; 
-	let idTipoPropiedad = datos.idTipoPropiedad ;
-	let numeroHabitaciones = datos.numeroHabitaciones; 
-	let tamanoMetros = datos.tamanoMetros; 
-	let descripcion = datos.descripcion;  
+	let direccion = datos.direccion;
+	let idTipoPropiedad = datos.idTipoPropiedad;
+	let numeroHabitaciones = datos.numeroHabitaciones;
+	let tamanoMetros = datos.tamanoMetros;
+	let descripcion = datos.descripcion;
 	let estadoActual = datos.estadoActual;
-	let precioAlquiler = datos.precioAlquiler; 
+	let precioAlquiler = datos.precioAlquiler;
 	let cedula = datos.cedula;
 
 	mssql.connect(config, function (err) {
@@ -278,7 +279,7 @@ app.post('/editarPropiedad', jsonParser, (req, res) => {
 					res.send({
 						editarPropiedad: true
 					});
-				}	
+				}
 			}
 		);
 	});
@@ -304,7 +305,7 @@ app.post('/eliminarPropiedad', jsonParser, (req, res) => {
 					res.send({
 						eliminarPropiedad: true
 					});
-				}	
+				}
 			}
 		);
 	});
@@ -315,15 +316,52 @@ app.post('/eliminarPropiedad', jsonParser, (req, res) => {
 
 //Cuando se hace click en aceptar la solicitud
 
+app.post('/visualizarSolicitudesP', jsonParser, (req, res) => {
+	//visualiza inquilinos activos 
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerSolicitudesPropietarioP ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				res.send(records);
+			}
+		);
+	});
+})
+
+app.post('/visualizarSolicitudesA', jsonParser, (req, res) => {
+	//visualiza inquilinos activos 
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerSolicitudesPropietarioA ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				res.send(records);
+			}
+		);
+	});
+})
 app.post('/crearInquilinoAmenidad', jsonParser, (req, res) => {
 	//obtiene los datos de la tabla de solicitudes para aceptar, cambian las solicitudes 
 	const datos = req.body;
 	//variables enviados por el body
 	let cedula = datos.cedula;
-	let fechaInicio = datos.fechaInicio; 
-	let fechaFin = datos.fechaFin ;
-	let idAmenidad = datos.idAmenidad; 
-	let estadoSolicitud = 'ACEPTADA'; 
+	let fechaInicio = datos.fechaInicio;
+	let fechaFin = datos.fechaFin;
+	let idAmenidad = datos.idAmenidad;
+	let estadoSolicitud = 'ACEPTADA';
 
 	mssql.connect(config, function (err) {
 		let request = new mssql.Request();
@@ -349,10 +387,10 @@ app.post('/crearInquilinoAmenidad', jsonParser, (req, res) => {
 								res.send({
 									aceptarAlquiler: true
 								});
-							}	
+							}
 						}
 					);
-				}	
+				}
 			}
 		);
 	});
@@ -362,8 +400,8 @@ app.post('/denegarInquilinoAmenidad', jsonParser, (req, res) => {
 	//obtiene los datos de la tabla de solicitudes para aceptar, cambian las solicitudes 
 	const datos = req.body;
 	//variables enviados por el body
-	let idAmenidad = datos.idAmenidad; 
-	let estadoSolicitud = 'DENEGADA'; 
+	let idAmenidad = datos.idAmenidad;
+	let estadoSolicitud = 'DENEGADA';
 
 	mssql.connect(config, function (err) {
 		let request = new mssql.Request();
@@ -374,14 +412,14 @@ app.post('/denegarInquilinoAmenidad', jsonParser, (req, res) => {
 					res.send({
 						denergarInquilino: false
 					});
-	
+
 				}
 				else {
 					res.send({
 						denergarInquilino: true
 					});
-	
-				}	
+
+				}
 			}
 		);
 	});
@@ -392,10 +430,10 @@ app.post('/crearInquilinoPropiedad', jsonParser, (req, res) => {
 	const datos = req.body;
 	//variables enviados por el body
 	let cedula = datos.cedula;
-	let fechaInicio = datos.fechaInicio; 
-	let fechaFin = datos.fechaFin ;
-	let idPropiedad = datos.idPropiedad; 
-	let estadoSolicitud = 'ACEPTADA'; 
+	let fechaInicio = datos.fechaInicio;
+	let fechaFin = datos.fechaFin;
+	let idPropiedad = datos.idPropiedad;
+	let estadoSolicitud = 'ACEPTADA';
 	mssql.connect(config, function (err) {
 		let request = new mssql.Request();
 		let query = `EXEC insertarAlquilerProp ${cedula}, '${fechaInicio}', '${fechaFin}', ${idPropiedad}`;
@@ -420,10 +458,10 @@ app.post('/crearInquilinoPropiedad', jsonParser, (req, res) => {
 								res.send({
 									editarPropiedad: true
 								});
-							}	
+							}
 						}
 					);
-				}	
+				}
 			}
 		);
 	});
@@ -435,8 +473,8 @@ app.post('/denegarInquilinoPropiedad', jsonParser, (req, res) => {
 	//obtiene los datos de la tabla de solicitudes para aceptar, cambian las solicitudes 
 	const datos = req.body;
 	//variables enviados por el body
-	let idPropiedad = datos.idPropiedad; 
-	let estadoSolicitud = 'DENEGADA'; 
+	let idPropiedad = datos.idPropiedad;
+	let estadoSolicitud = 'DENEGADA';
 
 	mssql.connect(config, function (err) {
 		let request = new mssql.Request();
@@ -452,8 +490,8 @@ app.post('/denegarInquilinoPropiedad', jsonParser, (req, res) => {
 					res.send({
 						denergarInquilino: true
 					});
-	
-				}	
+
+				}
 			}
 		);
 	});
@@ -506,10 +544,10 @@ app.post('/editarInquilinoA', jsonParser, (req, res) => {
 	let cedulaInquilino = datos.cedulaInquilino;
 	let fechaActual = new Date();
 	let fechaMensaje = getFecha(fechaActual);
-	let horaMensaje = getHora(fechaActual); 
+	let horaMensaje = getHora(fechaActual);
 	let newMonth = datos.newMonth;
-	let contenido = datos.contenido; 
-	let idAmenidad = datos.idAmenidad;  
+	let contenido = datos.contenido;
+	let idAmenidad = datos.idAmenidad;
 	let fechaDesalojo = addMonths(fechaActual, newMonth);
 
 	mssql.connect(config, function (err) {
@@ -527,12 +565,12 @@ app.post('/editarInquilinoA', jsonParser, (req, res) => {
 					res.send({
 						interrumpirAlquiler: true
 					});
-	
-				}	
+
+				}
 			}
 		);
 	});
-	 
+
 })
 
 app.post('/editarInquilinoP', jsonParser, (req, res) => {
@@ -543,10 +581,10 @@ app.post('/editarInquilinoP', jsonParser, (req, res) => {
 	let cedulaInquilino = datos.cedulaInquilino;
 	let fechaActual = new Date();
 	let fechaMensaje = getFecha(fechaActual);
-	let horaMensaje = getHora(fechaActual); 
+	let horaMensaje = getHora(fechaActual);
 	let newMonth = datos.newMonth;
-	let contenido = datos.contenido; 
-	let idPropiedad = datos.idPropiedad;  
+	let contenido = datos.contenido;
+	let idPropiedad = datos.idPropiedad;
 	let fechaDesalojo = addMonths(fechaActual, newMonth);
 
 	mssql.connect(config, function (err) {
@@ -564,8 +602,8 @@ app.post('/editarInquilinoP', jsonParser, (req, res) => {
 					res.send({
 						interrumpirAlquiler: true
 					});
-	
-				}	
+
+				}
 			}
 		);
 	});
@@ -577,9 +615,9 @@ app.post('/crearAmenidad', jsonParser, (req, res) => {
 	const datos = req.body;
 	//variables enviados por el body
 	let idAmenidad = datos.idAmenidad;
-	let tipoAmenidad = datos.tipoAmenidad; 
-	let costoUso = datos.costoUso;  
-	let descripcion = datos.descripcion;  
+	let tipoAmenidad = datos.tipoAmenidad;
+	let costoUso = datos.costoUso;
+	let descripcion = datos.descripcion;
 	let estadoActual = datos.estadoActual;
 	let estado = datos.estado;
 	let cedula = datos.cedula;
@@ -608,7 +646,7 @@ app.post('/crearAmenidad', jsonParser, (req, res) => {
 								res.send({
 									registrarPropiedad: true
 								});
-							}							
+							}
 						});
 				}
 				else {
@@ -643,10 +681,10 @@ app.post('/editarAmenidad', jsonParser, (req, res) => {
 	const datos = req.body;
 	//variables enviados por el body
 	let idAmenidad = datos.idAmenidad;
-	let tipoAmenidad = datos.tipoAmenidad ;
-	let costoUso = datos.costoUso; 
-	let estado = datos.estado; 
-	let descripcion = datos.descripcion;  
+	let tipoAmenidad = datos.tipoAmenidad;
+	let costoUso = datos.costoUso;
+	let estado = datos.estado;
+	let descripcion = datos.descripcion;
 	let estadoActual = datos.estadoActual;
 	let cedula = datos.cedula;
 
@@ -665,7 +703,7 @@ app.post('/editarAmenidad', jsonParser, (req, res) => {
 					res.send({
 						editarAmenidad: true
 					});
-				}	
+				}
 			}
 		);
 	});
@@ -689,7 +727,7 @@ app.post('/eliminarAmenidad', jsonParser, (req, res) => {
 					res.send({
 						eliminarAmenidad: true
 					});
-				}	
+				}
 			}
 		);
 	});
@@ -698,7 +736,7 @@ app.post('/eliminarAmenidad', jsonParser, (req, res) => {
 
 //MODULO MANTENIMIENTO (Propietario)
 app.post('/visualizarMantenimientos', jsonParser, (req, res) => {
-	
+
 	const datos = req.body;
 	//variables enviados por el body
 	let cedula = datos.cedula;
@@ -710,17 +748,17 @@ app.post('/visualizarMantenimientos', jsonParser, (req, res) => {
 				if (err) {
 					console.log(err)
 				}
-				if (records.recordset.length > 0){
+				if (records.recordset.length > 0) {
 
 					let request2 = new mssql.Request();
 					let query2 = `EXEC obtenerSolicitudesManteProp ${cedula}`;
 					request2.query(query2,
-					function (err2, records2) {
-						if (err2) {
-							console.log(err2)
-						}
-						res.send(records2);
-					});
+						function (err2, records2) {
+							if (err2) {
+								console.log(err2)
+							}
+							res.send(records2);
+						});
 				}
 				else {
 					res.send({
@@ -752,7 +790,7 @@ app.post('/actualizarMantenimientos', jsonParser, (req, res) => {
 					res.send({
 						eliminarAmenidad: true
 					});
-				}	
+				}
 			}
 		);
 	});
@@ -790,7 +828,7 @@ app.post('/enviarMensaje', jsonParser, (req, res) => {
 				else {
 					let fechaActual = new Date();
 					let fechaMensaje = getFecha(fechaActual);
-					let horaMensaje = getHora(fechaActual); 
+					let horaMensaje = getHora(fechaActual);
 					let request2 = new mssql.Request();
 					let query2 = `EXEC agregarComunicacion ${cedula}, ${cedulaReceptor}, '${fechaMensaje}', '${horaMensaje}', '${contenido}'`;
 					request2.query(query2,
@@ -804,9 +842,9 @@ app.post('/enviarMensaje', jsonParser, (req, res) => {
 								res.send({
 									enviarMensaje: true
 								});
-							}	
+							}
 						});
-				}	
+				}
 			}
 		);
 	});
@@ -835,9 +873,9 @@ app.post('/visualizarMsjRecibido', jsonParser, (req, res) => {
 							}
 							else {
 								res.send(records);
-							}	
+							}
 						});
-				}	
+				}
 			}
 		);
 	});
@@ -857,7 +895,7 @@ app.post('/visualizarMsjEnviados', jsonParser, (req, res) => {
 				}
 				else {
 					res.send(records);
-				}	
+				}
 			}
 		);
 	});
@@ -869,7 +907,7 @@ app.post('/registrarPago', jsonParser, (req, res) => {
 	const datos = req.body;
 	//variables enviados por el body
 	let cedula = datos.cedula;
-	let idPago = datos.idPago; 
+	let idPago = datos.idPago;
 	let monto = datos.monto;
 	let tipoPago = datos.tipoPago;
 	let estadoPago = datos.estadoPago;
@@ -890,7 +928,7 @@ app.post('/registrarPago', jsonParser, (req, res) => {
 				else {
 					let request2 = new mssql.Request();
 					let query2 = `EXEC insertarPago ${idPago}, ${cedula}, '${fechaPago}', ${monto}, ${tipoPago}, ${estadoPago}, '${metodoPago}'`;
-					
+
 					request2.query(query2,
 						function (err2, records2) {
 							if (err2) {
@@ -902,9 +940,9 @@ app.post('/registrarPago', jsonParser, (req, res) => {
 								res.send({
 									registrarPago: true
 								});
-							}	
+							}
 						});
-				}	
+				}
 			}
 		);
 	});
@@ -925,7 +963,7 @@ app.post('/visualizarPagoI', jsonParser, (req, res) => {
 				}
 				else {
 					res.send(records);
-				}	
+				}
 			}
 		);
 	});
@@ -936,7 +974,7 @@ app.post('/editarPago', jsonParser, (req, res) => {
 	const datos = req.body;
 	//variables enviados por el body
 	let cedula = datos.cedula;
-	let idPago = datos.idPago; 
+	let idPago = datos.idPago;
 	let monto = datos.monto;
 	let tipoPago = datos.tipoPago;
 	let estadoPago = datos.estadoPago;
@@ -954,7 +992,7 @@ app.post('/editarPago', jsonParser, (req, res) => {
 					res.send({
 						editarPago: true
 					});
-				}	
+				}
 			}
 		);
 	});
@@ -963,7 +1001,7 @@ app.post('/editarPago', jsonParser, (req, res) => {
 app.post('/eliminarPago', jsonParser, (req, res) => {
 	const datos = req.body;
 	//variables enviados por el body
-	let idPago = datos.idPago; 
+	let idPago = datos.idPago;
 
 	mssql.connect(config, function (err) {
 		let request = new mssql.Request();
@@ -977,7 +1015,7 @@ app.post('/eliminarPago', jsonParser, (req, res) => {
 					res.send({
 						eliminarPago: true
 					});
-				}	
+				}
 			}
 		);
 	});
@@ -1002,7 +1040,7 @@ app.post('/obtenerAmenidadesDisponibles', jsonParser, (req, res) => {
 				}
 				else {
 					res.send(records);
-				}	
+				}
 			}
 		);
 	});
@@ -1024,14 +1062,15 @@ app.post('/obtenerPropiedadesDisponibles', jsonParser, (req, res) => {
 				}
 				else {
 					res.send(records);
-				}	
+				}
 			}
 		);
 	});
 })
 
+
 app.post('/solicitarAlquilerA', jsonParser, (req, res) => {
-	
+
 	//En este módulo “Crear” va a ser dos tablas donde salga todos los aquileres disponibles y un boton de solicitar 
 	const datos = req.body;
 	//variables enviados por el body
@@ -1040,7 +1079,7 @@ app.post('/solicitarAlquilerA', jsonParser, (req, res) => {
 	let fechaActual = new Date();
 	let fechaSolicitud = getFecha(fechaActual);
 	let fechaInicio = datos.fechaInicio
-	let fechaFin = datos.fechaFin 
+	let fechaFin = datos.fechaFin
 	mssql.connect(config, function (err) {
 		let request = new mssql.Request();
 		let query = `EXEC insertarSolicitudAlquilerA ${idAmenidad}, ${cedula}, '${fechaSolicitud}', '${fechaInicio}', '${fechaFin}'`;
@@ -1048,14 +1087,14 @@ app.post('/solicitarAlquilerA', jsonParser, (req, res) => {
 			function (err, records) {
 				if (err) {
 					res.send({
-						enviarSolicitud : false
+						enviarSolicitud: false
 					});
 				}
 				else {
 					res.send({
-						enviarSolicitud : true
+						enviarSolicitud: true
 					});
-				}	
+				}
 			}
 		);
 	});
@@ -1079,14 +1118,14 @@ app.post('/solicitarAlquilerP', jsonParser, (req, res) => {
 			function (err, records) {
 				if (err) {
 					res.send({
-						enviarSolicitud : false
+						enviarSolicitud: false
 					});
 				}
 				else {
 					res.send({
-						enviarSolicitud : true
+						enviarSolicitud: true
 					});
-				}	
+				}
 			}
 		);
 	});
@@ -1115,7 +1154,7 @@ app.post('/editarAlquiler', jsonParser, (req, res) => {
 					res.send({
 						editarAlquiler: true
 					});
-				}	
+				}
 			}
 		);
 	});
@@ -1136,7 +1175,7 @@ app.post('/visualizarAlquilerIP', jsonParser, (req, res) => {
 				}
 				else {
 					res.send(records);
-				}	
+				}
 			}
 		);
 	});
@@ -1157,7 +1196,7 @@ app.post('/visualizarAlquilerIA', jsonParser, (req, res) => {
 				}
 				else {
 					res.send(records);
-				}	
+				}
 			}
 		);
 	});
@@ -1186,7 +1225,7 @@ app.post('/registrarMantenimiento', jsonParser, (req, res) => {
 						editarAlquiler: false
 					});
 				}
-				else if(records.recordset.length == 0){
+				else if (records.recordset.length == 0) {
 					let request2 = new mssql.Request();
 					let query2 = `EXEC obtenerAlquilerPUsuario ${idPropiedad}, ${cedula}`;
 					request2.query(query2,
@@ -1196,7 +1235,7 @@ app.post('/registrarMantenimiento', jsonParser, (req, res) => {
 									registrarMantenimiento: false
 								});
 							}
-							else if(records.recordset.length > 0){
+							else if (records.recordset.length > 0) {
 								let fechaActual = new Date();
 								let fechaSolicitud = getFecha(fechaActual);
 								let estado = 1;
@@ -1217,95 +1256,242 @@ app.post('/registrarMantenimiento', jsonParser, (req, res) => {
 											res.send({
 												registrarMantenimiento: true
 											});
-										}	
+										}
 									}
-								);	
-							}	
+								);
+							}
 						}
-					);	
-				}	
+					);
+				}
 			}
 		);
 	});
 })
 
-
-// def registrarMantenimiento(idSolicitud,idPropiedad,descripcionProblema,idProveedor,idPrioridad):
-//     if(existeSolicitud(idSolicitud) == False):
-//         if(existeAlquiler(idPropiedad)):
-//             try: 
-//                 fechaSolicitud = datetime.now()
-//                 estado = 1
-//                 mantenimiento = (idSolicitud, idPropiedad, descripcionProblema, idProveedor, fechaSolicitud, estado, idPrioridad)
-//                 return insertarMantenimiento(mantenimiento)
-//             except: 
-//                 return False
-//         else: 
-//             return False
-//     else: 
-//         return False
-
-
 //       ********** ADMINITRADOR **********
 // MODULO PROPIEDAD (Administrador)
 app.post('/crearPropiedadAdmin', jsonParser, (req, res) => {
-	
+	const datos = req.body;
+	//variables enviados por el body
+	let idPropiedad = datos.idPropiedad;
+	let direccion = datos.direccion;
+	let idTipoPropiedad = datos.idTipoPropiedad;
+	let numeroHabitaciones = datos.numeroHabitaciones;
+	let tamanoMetros = datos.tamanoMetros;
+	let descripcion = datos.descripcion;
+	let estadoActual = datos.estadoActual;
+	let precioAlquiler = datos.precioAlquiler;
+	let cedula = datos.cedula;
+
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerPropietario ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						crearPropiedadAdmin: false
+					});
+				}
+				else if (records.recordset.length > 0) {
+					let request2 = new mssql.Request();
+					let query2 = `EXEC obtenerPropiedad ${idPropiedad}`;
+					request2.query(query2,
+						function (err2, records2) {
+							if (err2) {
+								res.send({
+									registrarPropiedad: false
+								});
+							}
+							if (records2.recordset.length == 0) {
+								let request3 = new mssql.Request();
+								let query3 = `EXEC insertarPropiedad ${idPropiedad}, "${direccion}", ${idTipoPropiedad}, ${numeroHabitaciones}, ${tamanoMetros}, "${descripcion}", ${estadoActual}, ${precioAlquiler}, ${cedula}`;
+								request3.query(query3,
+									function (err3, records3) {
+										if (err3) {
+											res.send({
+												registrarPropiedad: false
+											});
+										}
+										else {
+											res.send({
+												registrarPropiedad: true
+											});
+										}
+									});
+							}
+							else {
+								res.send({
+									registrarPropiedad: false
+								});
+							}
+						}
+					);
+				}
+			}
+		);
+	});
 })
 
 app.post('/visualizarPropiedadesAdmin', jsonParser, (req, res) => {
-	
+	const datos = req.body;
+	//variables enviados por el body
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC visualizarPropiedadesAdmin`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				res.send(records);
+			}
+		);
+	});
 })
 
-app.post('/editarPropiedadAdmin', jsonParser, (req, res) => {
-
-})
-
-app.post('/eliminarPropiedadAdmin', jsonParser, (req, res) => {
-
-})
+//editarPropiedadAdmin usa /editarPropiedad
+//eliminarPropiedadAdmin /eliminarPropiedad
 
 // MODULO INQUILINOS (Administrador)
-app.post('/crearInquilinoAdmin', jsonParser, (req, res) => {
-	//obtiene los datos de la tabla de solicitudes para aceptar y denegar, cambian las solicitudes 
-})
 
-app.post('/visualizarInquilinoAdmin', jsonParser, (req, res) => {
+app.post('/visualizarAdminSolicitudesP', jsonParser, (req, res) => {
 	//visualiza inquilinos activos 
+	const datos = req.body;
+	//variables enviados por el body
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerSolicitudesAdminP`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				res.send(records);
+			}
+		);
+	});
 })
 
-app.post('/editarInquilinoAdmin', jsonParser, (req, res) => {
-	//editar un inquilino  seleccione el botón va pasar a tener la funcionalidad de interrumpir el alquiler.
+app.post('/visualizarAdminSolicitudesA', jsonParser, (req, res) => {
+	//visualiza inquilinos activos 
+	const datos = req.body;
+	//variables enviados por el body
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerSolicitudesAdminA`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				res.send(records);
+			}
+		);
+	});
 })
 
-//Modulo Amenidades (Administrador)
-app.post('/crearAmenidadAdmin', jsonParser, (req, res) => {
-	
-})
+///crearInquilino, editar y eliminar Amenidad y Propiedad es igual, lo que cambia son los datos que se envian 
 
-app.post('/visualizarAmenidadAdmin', jsonParser, (req, res) => {
-	
-})
-
-app.post('/editarAmenidadAdmin', jsonParser, (req, res) => {
-
-})
-
-app.post('/eliminarAmenidadAdmin', jsonParser, (req, res) => {
-
-})
 
 //MODULO MANTENIMIENTO (Administrador)
 app.post('/visualizarMantenimientosAdmin', jsonParser, (req, res) => {
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerSolicitudesManteAdmin`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				else {
+					res.send(records);
+				}
+			}
+		);
+	}
+	);
+});
 
-})
-
-app.post('/actualizarMantenimientosAdmin', jsonParser, (req, res) => {
-
-})
+//actualizarMantenimientosAdmin utiliza el mismo
 
 app.post('/registrarMantenimientoAdmin', jsonParser, (req, res) => {
-	
-})
+
+	const datos = req.body;
+	//variables enviados por el body
+	let idSolicitud = datos.idSolicitud;
+	let idPropiedad = datos.idPropiedad;
+	let cedula = datos.cedula;
+	let fechaActual = new Date();
+	let fechaSolicitud = getFecha(fechaActual);
+	let estado = 1;
+	let descripcionProblema = datos.descripcionProblema;
+	let idProveedor = datos.idProveedor;
+	let idPrioridad = datos.idPrioridad;
+	let costoMantenimiento = datos.costoMantenimiento;
+
+	mssql.connect(config, function (err) {
+
+		let request = new mssql.Request();
+		let query = `EXEC obtenerInquilino ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					res.send({
+						registrarMantenimiento: false
+					});
+				}
+				else if (records.recordset.length > 0) {
+					let request2 = new mssql.Request();
+					let query2 = `EXEC obtenerSolicitudesMantenimiento ${idSolicitud}`;
+					request2.query(query2,
+						function (err2, records2) {
+							if (err2) {
+								res.send({
+									registrarMantenimiento: false
+								});
+							}
+							else if (records2.recordset.length == 0) {
+								let request3 = new mssql.Request();
+								let query3 = `EXEC obtenerAlquilerPUsuario ${idPropiedad}, ${cedula}`;
+								request3.query(query3,
+									function (err3, records3) {
+										if (err3) {
+											res.send({
+												registrarMantenimiento: false
+											});
+
+										}
+										else if (records3.recordset.length > 0) {
+											let request4 = new mssql.Request();
+											let query4 = `EXEC insertarMantenimiento ${idSolicitud}, ${idPropiedad}, '${descripcionProblema}', ${idProveedor}, '${fechaSolicitud}', ${estado}, ${idPrioridad}, ${costoMantenimiento}`;
+											request4.query(query4,
+												function (err4, records4) {
+													if (err4) {
+														res.send({
+															registrarMantenimiento: false
+														});
+													}
+													else {
+														res.send({
+															registrarMantenimiento: true
+														});
+													}
+												}
+											);
+										}
+									}
+								);
+							}
+						}
+					);
+				}
+			}
+		);
+	})
+});
+
+
 
 //MODULO REPORTE
 app.post('/reportesAdmin', jsonParser, (req, res) => {
@@ -1314,114 +1500,274 @@ app.post('/reportesAdmin', jsonParser, (req, res) => {
 
 //MODULO COMUNICACION (Administrador)
 app.post('/enviarMensajeAdmin', jsonParser, (req, res) => {
-
-})
-
-app.post('/visualizarMsjRecibidoAdmin', jsonParser, (req, res) => {
-
-})
-app.post('/visualizarMsjEnviadosAdmin', jsonParser, (req, res) => {
-
-})
-
-// MODULO PAGOS (Admin)
-app.post('/registrarPagoAdmin', jsonParser, (req, res) => {
-
-})
-
-app.post('/visualizarPagoAdmin', jsonParser, (req, res) => {
-
-})
-
-app.post('/editarPagoAdmin', jsonParser, (req, res) => {
-
-})
-
-app.post('/eliminarPagoAdmin', jsonParser, (req, res) => {
-
-})
-
-//Modulo Alquiler (Admin)
-app.post('/solicitarAlquilerAdmin', jsonParser, (req, res) => {
-	//En este módulo “Crear” va a ser dos tablas donde salga todos los aquileres disponibles y un boton de solicitar 
-})
-
-app.post('/editarAlquilerAdmin', jsonParser, (req, res) => {
-	//se cambian los detalles del alquiler que tenga el usuario 
-})
-
-app.post('/interrumpirAlquilerAdmin', jsonParser, (req, res) => {
-	//se va a interrumpir los alquileres en uso o cancelar las solicitudes aún pendientes
-})
-
-// Los ejemplos
-app.get('/autores', (req, res) => {
-	// Connect to your database
-	mssql.connect(config, function (err) {
-		// Create Request object to perform
-		// query operation
-		let request = new mssql.Request();
-
-		// Query to the database and get the records
-		request.query('SELECT * FROM Author',
-			function (err, records) {
-
-				if (err) console.log(err)
-
-				// Send records as a response
-				// to browser
-				res.send(records);
-
-			});
-	});
-})
-
-//GETS para los SELECT que no dependen de ningun dato del usuario para realizarse.
-app.get('/libros', (req, res) => {
-	mssql.connect(config, function (err) {
-		let request = new mssql.Request();
-		request.query('SELECT ID_Libro, Titulo, Genero.Descripcio AS Genero, Descripcion, Author.Nombre AS Autor FROM Libro JOIN Author ON Author.ID_Autor = LibrO.Author JOIN Genero ON Genero.ID_Genero = Libro.Genero',
-			function (err, records) {
-				if (err) {
-					console.log(err)
-				}
-				res.send(records);
-			});
-	});
-})
-
-//Usar post para los CREATE, UPDATE, DELETE y los SELECT que requieren info del FE para saber que obtener
-//O sea, post para todo lo que ocupa info del FE
-app.post('/libro', jsonParser, (req, res) => {
 	const datos = req.body;
-	//variables enviados por el body
-	let ID_Author = datos.ID_Author;
-	//------------------------------
+	let cedulaReceptor = datos.cedulaReceptor;
+	let cedulaEmisor = datos.cedulaEmisor;
+	let contenido = datos.contenido;
+
 	mssql.connect(config, function (err) {
 		let request = new mssql.Request();
-		let query = `SELECT ID_Libro, Titulo, Genero.Descripcio AS Genero, Descripcion, Author.Nombre AS Autor FROM Libro JOIN Author ON Author.ID_Autor = Libro.Author JOIN Genero ON Genero.ID_Genero = Libro.Genero WHERE Libro.Author = ${ID_Author}`;
+		let query = `EXEC obtenerUsuario ${cedulaEmisor}`;
+		request.query(query,
+			function (err, records) {
+			
+				if (err) {
+					res.send({
+						enviarMensaje: false
+					});
+				}
+				else if (records.recordset.length > 0) {
+					let request2 = new mssql.Request();
+					let query2 = `EXEC obtenerUsuario ${cedulaReceptor}`;
+					request2.query(query2,
+						function (err2, records2) {
+							if (err2) {
+								res.send({
+									enviarMensaje: false
+								});
+							}
+							else if (records2.recordset.length > 0){
+								let fechaActual = new Date();
+								let fechaMensaje = getFecha(fechaActual);
+								let horaMensaje = getHora(fechaActual);
+								let request3 = new mssql.Request();
+								let query3 = `EXEC agregarComunicacion ${cedulaEmisor}, ${cedulaReceptor}, '${fechaMensaje}', '${horaMensaje}', '${contenido}'`;
+								request3.query(query3,
+									function (err3, records3) {
+										if (err3) {
+											res.send({
+												enviarMensaje: false
+											});
+										}
+										else {
+											res.send({
+												enviarMensaje: true
+											});
+										}
+									}
+								);
+							}
+						}
+					);
+				}
+			}
+		);
+	})		
+});
+
+		
+
+
+app.post('/visualizarMsjAdmin', jsonParser, (req, res) => {
+	const datos = req.body;
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerUsuario ${cedulaEmisor}`;
 		request.query(query,
 			function (err, records) {
 				if (err) {
 					console.log(err)
 				}
-				if (records.recordset.length > 0) {
-					res.send({
-						existeUsuario: true
-					});
-				}
 				else {
-					res.send({
-						existeUsuario: false
-					});
+					res.send(records);
 				}
-				// res.send(records.recordset);
 			}
 		);
 	});
 })
 
-//Hace que en Backend se encuentre escuchando solicitudes en el puesto 8080 de la compu
-app.listen(8080, () => {
-	console.log('server listening on port 8080')
+
+// MODULO PAGOS (Admin)
+app.post('/registrarPagoAdmin', jsonParser, (req, res) => {
+
+	const datos = req.body;
+	//variables enviados por el body
+	let cedula = datos.cedula;
+	let idPago = datos.idPago;
+	let monto = datos.monto;
+	let tipoPago = datos.tipoPago;
+	let estadoPago = datos.estadoPago;
+	let metodoPago = datos.metodoPago;
+	let fechaActual = new Date();
+	let fechaPago = getFecha(fechaActual);
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerUsuario ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				else if (records.recordset.length > 0){
+					let request2 = new mssql.Request();
+					let query2 = `EXEC obtenerPago ${idPago}`;
+					request2.query(query2,
+						function (err2, records2) {
+							if (err2) {
+								console.log(err)
+								res.send({
+									registrarPago: false
+								});
+							}
+							else {
+								let request3 = new mssql.Request();
+								let query3 = `EXEC insertarPago ${idPago}, ${cedula}, '${fechaPago}', ${monto}, ${tipoPago}, ${estadoPago}, '${metodoPago}'`;
+
+								request3.query(query3,
+									function (err3, records3) {
+										if (err3) {
+											res.send({
+												registrarPago: false
+											});
+										}
+										else {
+											res.send({
+												registrarPago: true
+											});
+										}
+									}
+								);
+							}
+						}
+					);
+				}
+			}
+		);
+	});
 })
+
+
+app.post('/visualizarPagoAdmin', jsonParser, (req, res) => {
+	const datos = req.body;
+	//variables enviados por el body
+	mssql.connect(config, function (err) {
+		let request = new mssql.Request();
+		let query = `EXEC obtenerPagosAdmin`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+				}
+				else {
+					res.send(records);
+				}
+			}
+		);
+	});
+})
+
+
+///editarPagoAdmin ------> Usa el mismo 
+///eliminarPagoAdmin ------> Usa el mismo 
+
+//Modulo Alquiler (Admin)
+
+//obtenerAmenidadesDisponibles ------> Usa el mismo 
+app.post('/solicitarAlquilerAmenidadAdmin', jsonParser, (req, res) => {
+	//En este módulo “Crear” va a ser dos tablas donde salga todos los aquileres disponibles y un boton de solicitar 
+	const datos = req.body;
+	//variables enviados por el body
+	let idAmenidad = datos.idAmenidad
+	let cedula = datos.cedula;
+	let fechaActual = new Date();
+	let fechaSolicitud = getFecha(fechaActual);
+	let fechaInicio = datos.fechaInicio
+	let fechaFin = datos.fechaFin
+	mssql.connect(config, function (err) {
+
+		let request = new mssql.Request();
+		let query = `EXEC obtenerUsuario ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+					res.send({
+						enviarSolicitud: false
+					});
+				}
+				else if(records.recordset.length > 0){
+
+					let request2 = new mssql.Request();
+					let query2 = `EXEC insertarSolicitudAlquilerA ${idAmenidad}, ${cedula}, '${fechaSolicitud}', '${fechaInicio}', '${fechaFin}'`;
+					request2.query(query2,
+						function (err2, records2) {
+							if (err2) {
+								console.log(err2)
+								res.send({
+									enviarSolicitud: false
+								});
+							}
+							else {
+								res.send({
+									enviarSolicitud: true
+								});
+							}
+						}
+					);
+				}
+			}
+		);
+	});
+})
+
+//obtenerAmenidadesDisponibles ------> Usa el mismo 
+app.post('/solicitarAlquilerPropiedadAdmin', jsonParser, (req, res) => {
+	//En este módulo “Crear” va a ser dos tablas donde salga todos los aquileres disponibles y un boton de solicitar 
+	const datos = req.body;
+	//variables enviados por el body
+	let idPropiedad = datos.idPropiedad;
+	let cedula = datos.cedula;
+	let fechaActual = new Date();
+	let fechaSolicitud = getFecha(fechaActual);
+	let fechaInicio = datos.fechaInicio;
+	let fechaFin = datos.fechaFin;
+	mssql.connect(config, function (err) {
+
+		let request = new mssql.Request();
+		let query = `EXEC obtenerUsuario ${cedula}`;
+		request.query(query,
+			function (err, records) {
+				if (err) {
+					console.log(err)
+					res.send({
+						enviarSolicitud: false
+					});
+				}
+				else if(records.recordset.length > 0){
+
+					let request2 = new mssql.Request();
+					let query2 = `EXEC insertarSolicitudAlquilerP ${idPropiedad}, ${cedula}, '${fechaSolicitud}', '${fechaInicio}', '${fechaFin}'`;
+					request2.query(query2,
+						function (err2, records2) {
+							if (err2) {
+								console.log(err2)
+								res.send({
+									enviarSolicitud: false
+								});
+							}
+							else {
+								res.send({
+									enviarSolicitud: true
+								});
+							}
+						}
+					);
+				}
+			}
+		);
+	});
+})
+
+///editarAlquilerAdmin usa el mismo
+
+
+
+// app.post('/interrumpirAlquilerAdmin', jsonParser, (req, res) => {
+// 	//se va a interrumpir los alquileres en uso o cancelar las solicitudes aún pendientes
+// })
+
+
+	//Hace que en Backend se encuentre escuchando solicitudes en el puesto 8080 de la compu
+	app.listen(8080, () => {
+		console.log('server listening on port 8080')
+	})
