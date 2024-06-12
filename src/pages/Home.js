@@ -61,9 +61,6 @@ function Home(props) {
               <a className="option-link" href="/solicitudesManteA">
                 Solicitudes mantenimiento
               </a>
-              <a className="option-link" href="/enviadosA">
-                Mensajes enviados
-              </a>
             </div>
             <div className="menu-row">
               <a className="option-link" href="/registrarPagoA">

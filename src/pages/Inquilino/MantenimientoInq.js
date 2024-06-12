@@ -1,15 +1,59 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import '../../css/Propiedades.css';
 
 function PropiedadesP(props) {
   const { isLogin, setIsLogin } = props;
+  const [formData, setFormData] = useState({ 
+     idSolicitud: "",
+     idpropiedad: "",
+     descripcionProblema: "",
+     comentarios: "",
+     prioridad: "",
+     proveedor: "",
+  });
 
-  // Si nadie ha iniciado sesion lo envia a la ventana de login
-  if (!isLogin) {
-    window.location.href = '/login';
-  }
+ // Si nadie ha iniciado sesión lo envía a la ventana de login
+  useEffect(() => {
+    if (!isLogin) {
+      window.location.href = '/login';
+    }
+  }, [isLogin]);
 
-  if (isLogin) {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+  // Manejar el clic en el botón "Registrar"
+  const handleRegister = () => {
+    const { idSolicitud, idpropiedad, descripcionProblema, comentarios, prioridad, proveedor} = formData;
+    axios.post('http://localhost:8080/registrarMantenimiento', {
+      idSolicitud: idSolicitud,
+      idpropiedad: idpropiedad,
+      descripcionProblema: descripcionProblema,
+      comentarios: comentarios,
+      prioridad: prioridad,
+      proveedor: proveedor,
+    })
+    .then((response) => {
+      if (response.data.registrarPropiedad) {
+        alert("Registro exitoso");
+
+      } else {
+       
+        alert("Error al registrar la solicitud");
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      //alert("Error al conectar con el servidor");
+    });
+  };
+
     // Lista de etiquetas para los campos de texto y tipos
     const fields = [
       { label: "ID solicitud:", type: "number" },
@@ -54,9 +98,5 @@ function PropiedadesP(props) {
     );
   }
 
-  return (
-    <div className="home"></div>
-  );
-}
 
 export default PropiedadesP;
