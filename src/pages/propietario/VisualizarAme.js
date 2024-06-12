@@ -6,80 +6,108 @@ function VisualizarAme(props) {
   const { isLogin, setIsLogin } = props;
   const [editMode, setEditMode] = useState(false);
   const [editedRow, setEditedRow] = useState(null);
-  const [amenidades, setAmenidades] = useState([]);
+  const [amenidades, setProperties] = useState([]);
+
+  const [editProperty, setEditProperties] = useState({
+    cedula: (localStorage.getItem('user')),
+    idAmenidad: "",
+    tipoAmenidad: "",
+    costoUso: "",
+    estado: "",
+    descripcion: "",
+    estadoActual: "",
+  });
+
+  if (!isLogin) {
+    window.location.href = '/login';
+  }
 
   useEffect(() => {
-    if (isLogin) {
-      axios.post('http://localhost:8080/visualizarAmenidad', {
-        cedula: 'cedulaPropietario' 
-      })
-      .then(response => {
-        setAmenidades(response.data);
-      })
-      .catch(error => {
-        console.error("Error:", error);
-      });
+    if (isLogin) {  // Realizar la consulta al backend para obtener las propiedades del propietario
+      axios.post('http://localhost:8080/visualizarAmenidad', { cedula: localStorage.getItem('user') })
+        .then((response) => {
+          setProperties(response.data.recordset);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     }
-  }, [isLogin]);
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditProperties((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
 
   const toggleEditMode = () => {
     setEditMode(!editMode);
   };
 
-  const handleEdit = (rowIndex) => {
+  const handleEdit = (rowIndex, property) => {
+    console.log(property)
+    setEditProperties({
+      cedula: localStorage.getItem('user'),
+      idAmenidad: property.idAmenidad,
+      tipoAmenidad: property.tipoAmenidad,
+      costoUso: property.costoUso,
+      estado: property.estado,
+      descripcion: property.descripcion,
+      estadoActual: property.estadoActual
+    });
     setEditedRow(rowIndex);
     toggleEditMode();
   };
 
-  const handleSave = (index) => {
-    const updatedAmenidad = amenidades[index];
-    axios.post('http://localhost:8080/editarAmenidad', {
-      idAmenidad: updatedAmenidad.id,
-      tipoAmenidad: updatedAmenidad.tipo,
-      costoUso: updatedAmenidad.costo,
-      estado: updatedAmenidad.estado,
-      descripcion: updatedAmenidad.descripción,
-      estadoActual: updatedAmenidad.estadoActual,
-      cedula: 'cedulaPropietario' // Reemplaza esto con la variable que contiene la cédula del propietario
-    })
-    .then(response => {
-      if (response.data.editarAmenidad) {
-        alert("Amenidad editada exitosamente");
-        setEditedRow(null);
-        toggleEditMode();
-      } else {
-        alert("Error al editar la amenidad");
-      }
-    })
-    .catch(error => {
-      console.error("Error:", error);
-      alert("Error al conectar con el servidor");
-    });
+  const handleSave = () => {
+    console.log(editProperty)
+    axios.post('http://localhost:8080/editarAmenidad', editProperty)
+      .then((response) => {
+        if (response.data.editarPropiedad) {
+          // Actualizar la propiedad en el estado local
+          setEditedRow(null);
+          toggleEditMode();
+          axios.post('http://localhost:8080/visualizarAmenidad', { cedula: localStorage.getItem('user') })
+            .then((response) => {
+              setProperties(response.data.recordset);
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        } else {
+          alert("Error al editar la propiedad");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
-  const handleDelete = (index) => {
-    const idAmenidad = amenidades[index].id;
-    axios.post('http://localhost:8080/eliminarAmenidad', { idAmenidad })
-    .then(response => {
-      if (response.data.eliminarAmenidad) {
-        alert("Amenidad eliminada exitosamente");
-        setAmenidades(amenidades.filter((_, i) => i !== index));
-      } else {
-        alert("Error al eliminar la amenidad");
-      }
-    })
-    .catch(error => {
-      console.error("Error:", error);
-      alert("Error al conectar con el servidor");
-    });
+  const handleDelete = (idPropiedad) => {
+    axios.post('http://localhost:8080/eliminarAmenidad', { idPropiedad: idPropiedad })
+      .then((response) => {
+        if (response.data.eliminarPropiedad) {
+          // Eliminar la propiedad del estado local
+          axios.post('http://localhost:8080/visualizarAmenidad', { cedula: localStorage.getItem('user') })
+            .then((response) => {
+              setProperties(response.data.recordset);
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        } else {
+          alert("Error al eliminar la propiedad");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
-  const handleChange = (e, index, field) => {
-    const newAmenidades = [...amenidades];
-    newAmenidades[index][field] = e.target.value;
-    setAmenidades(newAmenidades);
-  };
 
+if (isLogin) {
   return (
     <div className="propiedades">
       <h1 className="title">Visualizar amenidades</h1>
@@ -96,15 +124,16 @@ function VisualizarAme(props) {
           </tr>
         </thead>
         <tbody>
-          {amenidades && amenidades.map((amenidad, index) => (
-            <tr key={index}>
-              <td>{amenidad.id}</td>
-              <td>{editMode && editedRow === index ? <input type="number" defaultValue={amenidad.costo} onChange={(e) => handleChange(e, index, 'costo')} /> : amenidad.costo}</td>
-              <td>{editMode && editedRow === index ? <input type="text" defaultValue={amenidad.tipo} onChange={(e) => handleChange(e, index, 'tipo')} /> : amenidad.tipo}</td>
-              <td>{editMode && editedRow === index ? <input type="text" defaultValue={amenidad.descripción} onChange={(e) => handleChange(e, index, 'descripción')} /> : amenidad.descripción}</td>
-              <td>{editMode && editedRow === index ? <input type="number" defaultValue={amenidad.estado} onChange={(e) => handleChange(e, index, 'estado')} /> : amenidad.estado}</td>
-              <td>{editMode && editedRow === index ? <input type="number" defaultValue={amenidad.estadoActual} onChange={(e) => handleChange(e, index, 'estadoActual')} /> : amenidad.estadoActual}</td>
-              <td>
+          {amenidades && amenidades.map((amenidad, index) => {  
+            return (
+              <tr key={index}>
+                <td>{amenidad.id}</td>
+                <td>{editMode && editedRow === index ? <input type="number" defaultValue={amenidad.costo} onChange={(e) => handleChange(e, index, 'costo')} /> : amenidad.costo}</td>
+                <td>{editMode && editedRow === index ? <input type="text" defaultValue={amenidad.tipo} onChange={(e) => handleChange(e, index, 'tipo')} /> : amenidad.tipo}</td>
+                <td>{editMode && editedRow === index ? <input type="text" defaultValue={amenidad.descripción} onChange={(e) => handleChange(e, index, 'descripción')} /> : amenidad.descripción}</td>
+                <td>{editMode && editedRow === index ? <input type="number" defaultValue={amenidad.estado} onChange={(e) => handleChange(e, index, 'estado')} /> : amenidad.estado}</td>
+                <td>{editMode && editedRow === index ? <input type="number" defaultValue={amenidad.estadoActual} onChange={(e) => handleChange(e, index, 'estadoActual')} /> : amenidad.estadoActual}</td>
+                <td>
                 {editMode && editedRow === index ? (
                   <a href="#" onClick={() => handleSave(index)}>Guardar</a>
                 ) : (
@@ -115,11 +144,15 @@ function VisualizarAme(props) {
                   </span>
                 )}
               </td>
-            </tr>
-          ))}
+            </tr>)
+          })}
         </tbody>
       </table>
     </div>
+   );
+  }
+  return (
+   <div className="home"></div>
   );
 }
 
