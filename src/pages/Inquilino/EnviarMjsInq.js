@@ -12,7 +12,6 @@ function Enviar(props) {
   if (isLogin) {
     // Lista de etiquetas para los campos de texto y tipos
     const fields = [
-      { label: "ID del mensaje:", type: "number" },
       { label: "Cédula del receptor:", type: "number" },
       { label: "Contenido:", type: "text" },
     ];

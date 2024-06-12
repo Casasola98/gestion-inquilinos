@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios"; // Importar Axios
 import '../../css/Propiedades.css';
 
 function PropiedadesP(props) {
@@ -35,6 +36,48 @@ function PropiedadesP(props) {
           break;
         default:
           break;
+      }
+    };
+
+    function getFecha(date) {
+      const dia = date.getDate().toString().padStart(2, '0'); 
+      const mes = (date.getMonth() + 1).toString().padStart(2, '0'); 
+      const anio = date.getFullYear().toString(); 
+    
+      return `${dia}/${mes}/${anio}`;
+    }
+    // Función para enviar los datos al backend
+    const registrarPago = async () => {
+      const idPago = document.getElementById('inputField0').value;
+      const monto = document.getElementById('inputField1').value;
+      const cedula = localStorage.getItem('user');
+      const fechaActual = new Date();
+      const fechaPago = getFecha(fechaActual);
+
+      const data = {
+        cedula,
+        idPago,
+        monto,
+        tipoPago,
+        estadoPago,
+        metodoPago
+      };
+
+      try {
+        // Realizar la solicitud POST al backend utilizando Axios
+        const response = await axios.post('/registrarPago', data);
+
+        // Verificar la respuesta del servidor
+        if (response.data.registrarPago) {
+          // Registro exitoso
+          alert('Pago registrado correctamente');
+        } else {
+          // Error al registrar
+          alert('Error al registrar el pago');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al intentar registrar el pago');
       }
     };
 
@@ -77,7 +120,7 @@ function PropiedadesP(props) {
               </div>
             ))}
           </div>
-          <button className="option-link" type="button">
+          <button className="option-link" type="button" onClick={registrarPago}>
             Registrar
           </button>
         </div>
