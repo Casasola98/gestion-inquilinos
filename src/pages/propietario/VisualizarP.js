@@ -1,28 +1,44 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+
 import '../../css/Propiedades.css';
 
 function RegistrarP(props) {
-  const { isLogin } = props;
+  const { isLogin,  setIsLogin } = props;
   const [editMode, setEditMode] = useState(false);
   const [editedRow, setEditedRow] = useState(null);
   const [properties, setProperties] = useState([]);
+  const [data, setData] = useState({
+    cedula: localStorage.getItem('user'),
+    idPropiedad: "",
+    idTipoPropiedad: "",
+    numeroHabitaciones: "",
+    tamanoMetros: "",
+    descripcion: "", 
+    estadoActual: "", 
+    precioAlquiler: "",
+    direccion: ""
+
+  });
+
+  if (!isLogin) {
+    window.location.href = '/login';
+  }
 
   useEffect(() => {
-    if (!isLogin) {
-      window.location.href = '/login';
-    } else {
+    
       // Realizar la consulta al backend para obtener las propiedades del propietario
-      axios.post('http://localhost:8080/visualizarPropiedades', { cedula: 'cedulaPropietario' }) 
+      axios.post('http://localhost:8080/visualizarPropiedades', { cedula: localStorage.getItem('user') }) 
         .then((response) => {
           setProperties(response.data.recordset);
         })
         .catch((error) => {
           console.error("Error:", error);
         });
-    }
-  }, [isLogin]);
+    }, []);
+  
 
+  
   const toggleEditMode = () => {
     setEditMode(!editMode);
   };
@@ -44,7 +60,7 @@ function RegistrarP(props) {
           setEditedRow(null);
           toggleEditMode();
         } else {
-          console.error("Error al editar la propiedad");
+          alert("Error al editar la propiedad");
         }
       })
       .catch((error) => {
@@ -60,13 +76,20 @@ function RegistrarP(props) {
           let updatedProperties = properties.filter(property => property.id !== idPropiedad);
           setProperties(updatedProperties);
         } else {
-          console.error("Error al eliminar la propiedad");
+          alert("Error al eliminar la propiedad");
         }
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   };
+
+  const cargarPropiedadades = () => {
+    axios.get('http://localhost:8080/visualizarPropiedades',{ cedula: localStorage.getItem('user') } )
+      .then((respuesta) => {
+      setData(respuesta.data.recordset);
+    })
+  }
 
   return (
     <div className="propiedades">
@@ -89,7 +112,9 @@ function RegistrarP(props) {
           {properties.map((property, index) => (
             <tr key={index}>
               <td>{property.id}</td>
-              <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.tipo} /> : property.tipo}</td>
+              <td>
+               
+                {editMode && editedRow === index ? <input type="text" defaultValue={property.tipo} /> : property.tipo}</td>
               <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.tamaño} /> : property.tamaño}</td>
               <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.descripción} /> : property.descripción}</td>
               <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.precio} /> : property.precio}</td>

@@ -92,10 +92,9 @@ function RegistrarP(props) {
             </div>
           ))}
         </div>
-        <button className="option-link" type="button" onClick={handleSubmit}>
+        <button className= "option-link" type="button" onClick={handleSubmit}>
           Registrar
         </button>
-
       </div>
     </div>
   );
