@@ -465,8 +465,6 @@ app.post('/crearInquilinoPropiedad', jsonParser, (req, res) => {
 			}
 		);
 	});
-	//insertarAlquilerProp(@cedulaUsuario INT, @fechaInicio DATE, @fechaFin DATE, @idPropiedad INT)
-	//cambiarSolicitudAlquilerP(@idPropiedad INT, @estadoSolicitud INT)
 })
 
 app.post('/denegarInquilinoPropiedad', jsonParser, (req, res) => {
@@ -721,7 +719,9 @@ app.post('/eliminarAmenidad', jsonParser, (req, res) => {
 		request.query(query,
 			function (err, records) {
 				if (err) {
-					eliminarAmenidad: false
+					res.send({
+						eliminarAmenidad: false
+					});
 				}
 				else {
 					res.send({
@@ -1200,7 +1200,6 @@ app.post('/visualizarAlquilerIA', jsonParser, (req, res) => {
 			}
 		);
 	});
-
 })
 
 // app.post('/interrumpirSolicitudes', jsonParser, (req, res) => {
@@ -1557,12 +1556,12 @@ app.post('/enviarMensajeAdmin', jsonParser, (req, res) => {
 
 		
 
-
+//corregir
 app.post('/visualizarMsjAdmin', jsonParser, (req, res) => {
 	const datos = req.body;
 	mssql.connect(config, function (err) {
 		let request = new mssql.Request();
-		let query = `EXEC obtenerUsuario ${cedulaEmisor}`;
+		let query = `EXEC obtenerMsjAdmin`;
 		request.query(query,
 			function (err, records) {
 				if (err) {
@@ -1758,7 +1757,11 @@ app.post('/solicitarAlquilerPropiedadAdmin', jsonParser, (req, res) => {
 	});
 })
 
+
+//obtenerAlquileresActivos
+
 ///editarAlquilerAdmin usa el mismo
+//se cambian SOLO LA FECHA FINAL del alquiler que tenga el usuario 
 
 
 
