@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import '../../css/Propiedades.css';
 
+
 function RegistrarP(props) {
   const { isLogin } = props;
   const [formData, setFormData] = useState({
@@ -13,9 +14,8 @@ function RegistrarP(props) {
     descripcion: "",
     estadoActual: "",
     precioAlquiler: "",
-    cedula: ""
+    cedula: localStorage.getItem('user')
   });
-  const [registroExitoso, setRegistroExitoso] = useState(false);
 
   useEffect(() => {
     if (!isLogin) {
@@ -32,17 +32,28 @@ function RegistrarP(props) {
   };
  //conexión con la función del backend
   const handleSubmit = () => {
-    axios.post('http://localhost:8080/crearPropiedad', formData)
+    const { cedula, idPropiedad, direccion, idTipoPropiedad, numeroHabitaciones, tamanoMetros,descripcion, estadoActual,precioAlquiler} = formData;
+    axios.post('http://localhost:8080/crearPropiedad', {
+      cedula:cedula,
+      idPropiedad: idPropiedad,
+      direccion: direccion, 
+      idTipoPropiedad: idTipoPropiedad,
+      numeroHabitaciones: numeroHabitaciones, 
+      tamanoMetros: tamanoMetros, 
+      descripcion: descripcion, 
+      estadoActual: estadoActual,
+      precioAlquiler: precioAlquiler
+    })
       .then((response) => {
         if (response.data.registrarPropiedad) {
-          setRegistroExitoso(true);
+
         } else {
-          setRegistroExitoso(false);
+
         }
       })
       .catch((error) => {
         console.error("Error:", error);
-        setRegistroExitoso(false);
+  
       });
   };
 
@@ -55,7 +66,7 @@ function RegistrarP(props) {
     { label: "Descripción", type: "text", name: "descripcion" },
     { label: "Estado Actual", type: "number", name: "estadoActual" },
     { label: "Precio de Alquiler", type: "number", name: "precioAlquiler" },
-    { label: "Cédula Propietario", type: "number", name: "cedula" }
+  
   ];
 
   return (
