@@ -2,21 +2,28 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import '../../css/Propiedades.css';
 
+const getFecha = (fecha) => {
+	return `${fecha.getFullYear()}/${fecha.getMonth() + 1}/${fecha.getDate()}`;
+}
+
+const getHora = (fecha) => {
+	return `${fecha.getHours()}:${fecha.getMinutes()}:${fecha.getSeconds()}`;
+}
+
 function Enviados(props) {
   const { isLogin } = props;
+  const [messages, setMessages] = useState([]);
+  const cedula = localStorage.getItem('user');
 
   // Si nadie ha iniciado sesión, lo envía a la ventana de login
   if (!isLogin) {
     window.location.href = '/login';
   }
 
-  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     if (isLogin) {
       // Reemplaza "cedulaDelUsuario" con la cédula del usuario logueado
-      const cedula = "cedulaDelUsuario"; 
-
       axios.post('http://localhost:8080/visualizarMsjEnviados', { cedula })
         .then(response => {
           setMessages(response.data.recordset);
@@ -27,7 +34,8 @@ function Enviados(props) {
     }
   }, [isLogin]);
 
-  return (
+  if(isLogin){ 
+    return (
     <div className="comunicaciones">
       <h1 className="title">Mensajes Enviados</h1>
       <table className="table">
@@ -40,18 +48,19 @@ function Enviados(props) {
           </tr>
         </thead>
         <tbody>
-          {messages?.map((message, index) => (
+          {messages?.map(function (message, index) {
+            return (
             <tr key={index}>
               <td>{message.cedulaReceptor}</td>
-              <td>{message.fechaEnvio}</td>
-              <td>{message.horaEnvio}</td>
+              <td>{getFecha(new Date(message.fechaMensaje))}</td>
+              <td>{getHora(new Date(message.horaMensaje))}</td>
               <td>{message.contenido}</td>
-            </tr>
-          ))}
+            </tr>)
+          })}
         </tbody>
       </table>
     </div>
   );
 }
-
+}
 export default Enviados;
