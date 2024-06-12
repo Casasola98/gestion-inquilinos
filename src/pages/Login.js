@@ -35,17 +35,17 @@ function Login(props) {
     } 
     
     //Aca se conecta con la funcion del backend
-    // axios.post('http://localhost:8080/login', {
-    //   cedula: cedula,
-    //   rol: tipoUsuario,
+    axios.post('http://localhost:8080/login', {
+      cedula: cedula,
+      rol: tipoUsuario,
       
-    // }).then((respuesta) => {     
-    //   if (respuesta.data.existeUsuario) {
+    }).then((respuesta) => {     
+      if (respuesta.data.existeUsuario) {
         localStorage.setItem('user', cedula);
         localStorage.setItem('tipoUsuario', tipoUsuario);
         setIsLogin(localStorage.getItem('user'));
-    //   }
-    // })
+      }
+    })
   
   };
   

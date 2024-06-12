@@ -35,7 +35,7 @@ function VisualizarSolicitud(props) {
           </tr>
         </thead>
         <tbody>
-          {properties.map((property, index) => (
+          {properties?.map((property, index) => (
             <tr key={index}>
               <td>{property.fechaInicio}</td>
               <td>{property.fechaFin}</td>

@@ -81,7 +81,7 @@ function VisualizarInquilinos(props) {
           </tr>
         </thead>
         <tbody>
-          {properties.map((property, index) => (
+          { properties?.map((property, index) => (
             <tr key={index}>
               <td>{property.id}</td>
               <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.tipo} className="inputBox" /> : property.tipo}</td>

@@ -40,7 +40,7 @@ function Enviados(props) {
           </tr>
         </thead>
         <tbody>
-          {messages.map((message, index) => (
+          {messages?.map((message, index) => (
             <tr key={index}>
               <td>{message.cedulaReceptor}</td>
               <td>{message.fechaEnvio}</td>

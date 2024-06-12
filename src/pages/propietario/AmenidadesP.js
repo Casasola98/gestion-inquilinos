@@ -76,7 +76,7 @@ function PropiedadesP(props) {
       <h1 className="title">Amenidades</h1>
       <div className="register-section">
         <div className="form-container">
-          {fields.map((field, index) => (
+          {fields?.map((field, index) => (
             <div className="form-group" key={index}>
               <label htmlFor={`inputField${index}`}>{field.label}</label>
               <br />

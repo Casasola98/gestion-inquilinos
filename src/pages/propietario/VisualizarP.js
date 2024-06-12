@@ -3,6 +3,10 @@ import axios from "axios";
 
 import '../../css/Propiedades.css';
 
+
+
+
+
 function RegistrarP(props) {
   const { isLogin,  setIsLogin } = props;
   const [editMode, setEditMode] = useState(false);
@@ -109,7 +113,7 @@ function RegistrarP(props) {
           </tr>
         </thead>
         <tbody>
-          {properties.map((property, index) => (
+          {properties && properties.map((property, index) => (
             <tr key={index}>
               <td>{property.id}</td>
               <td>
