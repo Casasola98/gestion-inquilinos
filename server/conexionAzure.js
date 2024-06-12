@@ -1,4 +1,4 @@
-const sql = require('mssql'); // Se debe ejecutar en terminal: install mssql
+const sql = require('mssql'); // Se debe ejecutar en terminal: npm install mssql
 
 const config = {
     user: 'adminsql',
