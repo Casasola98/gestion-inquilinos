@@ -46,9 +46,10 @@ function RegistrarP(props) {
     })
       .then((response) => {
         if (response.data.registrarPropiedad) {
+          alert("Registro exitoso");
 
         } else {
-
+          alert("Error al registrar la propiedad");
         }
       })
       .catch((error) => {
