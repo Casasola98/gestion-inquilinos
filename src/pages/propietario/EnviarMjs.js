@@ -1,53 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import '../../css/Propiedades.css';
 
 function Enviar(props) {
   const { isLogin } = props;
-
-  // Si nadie ha iniciado sesión, lo envía a la ventana de login
-  if (!isLogin) {
-    window.location.href = '/login';
-  }
-
-  // Estado para los campos del formulario
   const [formData, setFormData] = useState({
     idMensaje: "",
     cedulaReceptor: "",
     contenido: ""
   });
+  const [registroExitoso, setRegistroExitoso] = useState(false);
 
-  // Manejar cambios en los campos del formulario
+  useEffect(() => {
+    if (!isLogin) {
+      window.location.href = '/login';
+    }
+  }, [isLogin]);
+
   const handleChange = (e) => {
-    const { id, value } = e.target;
+    const { name, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [id]: value,
+      [name]: value,
     }));
   };
 
-  // Manejar envío del formulario
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const cedula = "cedulaDelEmisor"; 
-//CONEXION CON BE
-    axios.post('http://localhost:8080/enviarMensaje', {
-      //envia los datos de los campos
-      cedulaReceptor: formData.cedulaReceptor,
-      cedula: cedula,
-      contenido: formData.contenido
-    })
-    .then(response => {
-      if (response.data.enviarMensaje) {
-        alert("Mensaje enviado exitosamente");
+  const handleSubmit = () => {
+    axios.post('http://localhost:8080/enviarMensaje', formData)
+      .then((response) => {
+       if (response.data.enviarMensaje) {
+        setRegistroExitoso(true);
       } else {
-        alert("Error al enviar el mensaje");
+        setRegistroExitoso(false);
       }
     })
-    .catch(error => {
+    .catch((error) => {
       console.error("Error:", error);
-      alert("Error al conectar con el servidor");
+      setRegistroExitoso(false);
     });
   };
 
