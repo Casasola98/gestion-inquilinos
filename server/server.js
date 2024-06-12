@@ -1221,7 +1221,7 @@ app.post('/registrarMantenimiento', jsonParser, (req, res) => {
 			function (err, records) {
 				if (err) {
 					res.send({
-						editarAlquiler: false
+						registrarMantenimiento: false
 					});
 				}
 				else if (records.recordset.length == 0) {

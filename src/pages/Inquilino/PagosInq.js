@@ -3,83 +3,64 @@ import axios from "axios"; // Importar Axios
 import '../../css/Propiedades.css';
 
 function PropiedadesP(props) {
-  const { isLogin, setIsLogin } = props;
-  const [metodoPago, setMetodoPago] = useState("");
-  const [tipoPago, setTipoPago] = useState("");
-  const [estadoPago, setEstadoPago] = useState("");
-
-  // Si nadie ha iniciado sesion lo envia a la ventana de login
-  if (!isLogin) {
-    window.location.href = '/login';
-  }
-
-  if (isLogin) {
-    // Lista de etiquetas para los campos de texto y tipos
-    const fields = [
-      { label: "ID Pago:", type: "number" },
-      { label: "Monto:", type: "number" },
-      { label: "Método de pago:", type: "dropdown", options: ["Efectivo", "Tarjeta", "Transferencia"] },
-      { label: "Tipo de pago:", type: "dropdown", options: ["Alquiler", "Servicios", "Mantenimiento"] },
-      { label: "Estado de pago:", type: "dropdown", options: ["Pendiente", "Realizado", "Atrasado"] }
-    ];
-
-    const handleSelectChange = (index, value) => {
-      switch (index) {
-        case 2: // Método de pago
-          setMetodoPago(value);
-          break;
-        case 3: // Tipo de pago
-          setTipoPago(value);
-          break;
-        case 4: // Estado de pago
-          setEstadoPago(value);
-          break;
-        default:
-          break;
-      }
-    };
-
-    function getFecha(date) {
-      const dia = date.getDate().toString().padStart(2, '0'); 
-      const mes = (date.getMonth() + 1).toString().padStart(2, '0'); 
-      const anio = date.getFullYear().toString(); 
-    
-      return `${dia}/${mes}/${anio}`;
+  const { isLogin} = props;
+  const [formData, setFormData] = useState({ 
+    cedula: localStorage.getItem('user'), 
+    idPago: "",
+    monto: "",
+    tipoPago : "",
+    estadoPago: "",
+    metodoPago: "",
+  });
+  
+  useEffect(() => {
+    if (!isLogin) {
+      window.location.href = '/login';
     }
-    // Función para enviar los datos al backend
-    const registrarPago = async () => {
-      const idPago = document.getElementById('inputField0').value;
-      const monto = document.getElementById('inputField1').value;
-      const cedula = localStorage.getItem('user');
-      const fechaActual = new Date();
-      const fechaPago = getFecha(fechaActual);
+  }, [isLogin]);
 
-      const data = {
-        cedula,
-        idPago,
-        monto,
-        tipoPago,
-        estadoPago,
-        metodoPago
-      };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
 
-      try {
-        // Realizar la solicitud POST al backend utilizando Axios
-        const response = await axios.post('/registrarPago', data);
+  const handleRegister = () => {
+    const {cedula, idPago, monto, tipoPago, estadoPago, metodoPago} = formData;
+    axios.post('http://localhost:8080/registrarPago', {
+      cedula: cedula,
+      idPago: idPago,
+      monto: monto,
+      tipoPago: tipoPago,
+      estadoPago: estadoPago,
+      metodoPago: metodoPago,
 
-        // Verificar la respuesta del servidor
-        if (response.data.registrarPago) {
-          // Registro exitoso
-          alert('Pago registrado correctamente');
-        } else {
-          // Error al registrar
-          alert('Error al registrar el pago');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Error al intentar registrar el pago');
+    })
+    .then((response) => {
+      if (response.data.registrarPago) {
+        alert("Registro exitoso");
+
+      } else {
+       
+        alert("Error al registrar el pago");
       }
-    };
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      //alert("Error al conectar con el servidor");
+    });
+  };
+
+    // Lista de etiquetas para los campos de texto y tipos
+  const fields = [
+      { label: "ID Pago:", type: "number", name: "idPago" },
+      { label: "Monto:", type: "number", name: "monto" },
+      { label: "Método de pago:", type: "number",extraLabel: "1: Efectivo 2: Tarjeta 3: Transferencia", name: "metodoPago"},
+      { label: "Tipo de pago:", type: "number", extraLabel: "1: Alquiler 2: Servicios 3: Mantenimiento", name: "tipoPago" },
+      { label: "Estado de pago:", type: "number", extraLabel: "1: Pendiente 2: Realizado 3:Atrasado", name: "estadoPago"}
+  ];
 
     return (
       <div className="propiedades">
@@ -87,40 +68,30 @@ function PropiedadesP(props) {
         <div className="register-section">
           <div className="form-container">
             {fields.map((field, index) => (
-              <div className="form-group" key={index}>
-                <label htmlFor={`inputField${index}`}>{field.label}</label>
-                <br />
-                {field.type === "dropdown" ? (
-                  <select
-                    id={`inputField${index}`}
-                    className="inputBox"
-                    onChange={(e) => handleSelectChange(index, e.target.value)}
-                    value={index === 2 ? metodoPago : index === 3 ? tipoPago : estadoPago}
-                  >
-                    <option value="" disabled hidden>Seleccione una opción</option>
-                    {field.options.map((option, idx) => (
-                      <option key={idx} value={option}>{option}</option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type={field.type}
-                    id={`inputField${index}`}
-                    className="inputBox"
-                    placeholder={`Ingrese ${field.label.toLowerCase()}`}
-                  />
-                )}
-                <br />
-                {field.extraLabel && (
+               <div className="form-group" key={index}>
+               <label htmlFor={`inputField${index}`}>{field.label}</label>
+               <br />
+               <input
+                 type={field.type}
+                 id={`inputField${index}`}
+                 name={field.name}
+                 className="inputBox"
+                 placeholder={`Ingrese ${field.label}`}
+                 value={formData[field.name]}
+                 onChange={handleChange}
+               />
+               <br />
+               {field.extraLabel && (
                   <>
                     <label htmlFor={`extraLabel${index}`} className="extraLabel">{field.extraLabel}</label>
                     <br />
                   </>
                 )}
-              </div>
+                <br />
+             </div>
             ))}
           </div>
-          <button className="option-link" type="button" onClick={registrarPago}>
+          <button className="option-link" type="button" onClick={handleRegister}>
             Registrar
           </button>
         </div>
@@ -128,9 +99,5 @@ function PropiedadesP(props) {
     );
   }
 
-  return (
-    <div className="home"></div>
-  );
-}
 
 export default PropiedadesP;
