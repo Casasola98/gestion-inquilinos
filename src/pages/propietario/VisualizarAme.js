@@ -9,7 +9,7 @@ function VisualizarAme(props) {
   const [amenidades, setProperties] = useState([]);
 
   const [editProperty, setEditProperties] = useState({
-    cedula: (localStorage.getItem('user')),
+    cedulaPropietario: (localStorage.getItem('user')),
     idAmenidad: "",
     tipoAmenidad: "",
     costoUso: "",
@@ -24,7 +24,7 @@ function VisualizarAme(props) {
 
   useEffect(() => {
     if (isLogin) {  // Realizar la consulta al backend para obtener las propiedades del propietario
-      axios.post('http://localhost:8080/visualizarAmenidad', { cedula: localStorage.getItem('user') })
+      axios.post('http://localhost:8080/visualizarAmenidad', { cedulaPropietario: localStorage.getItem('user') })
         .then((response) => {
           setProperties(response.data.recordset);
         })
@@ -49,7 +49,7 @@ function VisualizarAme(props) {
   const handleEdit = (rowIndex, property) => {
     console.log(property)
     setEditProperties({
-      cedula: localStorage.getItem('user'),
+      cedulaPropietario: localStorage.getItem('user'),
       idAmenidad: property.idAmenidad,
       tipoAmenidad: property.tipoAmenidad,
       costoUso: property.costoUso,
@@ -69,7 +69,7 @@ function VisualizarAme(props) {
           // Actualizar la propiedad en el estado local
           setEditedRow(null);
           toggleEditMode();
-          axios.post('http://localhost:8080/visualizarAmenidad', { cedula: localStorage.getItem('user') })
+          axios.post('http://localhost:8080/visualizarAmenidad', { cedulaPropietario: localStorage.getItem('user') })
             .then((response) => {
               setProperties(response.data.recordset);
             })
@@ -85,12 +85,12 @@ function VisualizarAme(props) {
       });
   };
 
-  const handleDelete = (idPropiedad) => {
-    axios.post('http://localhost:8080/eliminarAmenidad', { idPropiedad: idPropiedad })
+  const handleDelete = (idAmenidad) => {
+    axios.post('http://localhost:8080/eliminarAmenidad', { idAmenidad: idAmenidad })
       .then((response) => {
         if (response.data.eliminarPropiedad) {
           // Eliminar la propiedad del estado local
-          axios.post('http://localhost:8080/visualizarAmenidad', { cedula: localStorage.getItem('user') })
+          axios.post('http://localhost:8080/visualizarAmenidad', { cedulaPropietario: localStorage.getItem('user') })
             .then((response) => {
               setProperties(response.data.recordset);
             })
