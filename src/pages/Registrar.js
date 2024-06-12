@@ -43,11 +43,14 @@ function Registrar(props) {
     })
       .then((response) => {
         if (response.data.registrarAdmin) {
-          localStorage.setItem('user', cedula);
-          localStorage.setItem('tipoUsuario', rol);
-          setIsLogin(localStorage.getItem('user'));
+          //Esto es solo para el login, esto es lo que guarda los datos del usuario al iniciar sesion
+          // localStorage.setItem('user', cedula);
+          // localStorage.setItem('tipoUsuario', rol);
+          // setIsLogin(localStorage.getItem('user'));
+          //En vez de esas 3 lineas de arriba se deberia enseñar una ventanita emergente "popup" que diga que el usuario se creo exitosamente
+          //Y enviar a la ventana de login de nuevo
         } else {
-          
+          //popup que indique que el usuario no se pudo crear
         }
       })
       .catch((error) => {
