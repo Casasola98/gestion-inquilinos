@@ -15,9 +15,9 @@ function PropiedadesP(props) {
       { label: "ID de amenidad:", type: "number" },
       { label: "Descripción", type: "text" },
       { label: "Costo de uso:", type: "number" },
-      { label: "Estado", type: "number", extraLabel: "1: Disponible 2:Ocupado 3:Dañado" },
+      { label: "Estado", type: "text" },
       { label: "Tipo", type: "text" },
-      { label: "Estado actual", type: "number", extraLabel: "1: no lo encontre" }
+      { label: "Estado actual", type: "number", extraLabel: "1: Disponible 2:Ocupado 3:Dañado" }
                                                     //preguntar cuales son los estados actuales
     ];
 

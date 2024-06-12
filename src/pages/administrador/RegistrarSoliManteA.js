@@ -1,15 +1,60 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import '../../css/Propiedades.css';
 
 function PropiedadesP(props) {
-  const { isLogin, setIsLogin } = props;
+  const { isLogin, setIsLogin } = props; 
+  const [formData, setFormData] = useState({
+    idSolicitud: "",
+    idPropiedad: "",
+    cedula: "",
+    descripcionProblema: "",
+    comentarios: "",
+    prioridad: "",
+    proveedor: ""
+  });
 
-  // Si nadie ha iniciado sesion lo envia a la ventana de login
-  if (!isLogin) {
-    window.location.href = '/login';
-  }
+  useEffect(() => {
+    if (isLogin) {
+      window.location.href = "/";
+    }
+  }, [isLogin]);
 
-  if (isLogin) {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = () => {
+    const { idSolicitud, idPropiedad, cedula, descripcionProblema, comentarios, prioridad, proveedor } = formData;
+//conexion con la funcion del backend
+    axios.post('http://localhost:8080/registrarMantenimientoAdmin', {
+      //toma los datos de los campos
+      idSolicitud: idSolicitud,
+      idPropiedad: idPropiedad,
+      cedula: cedula,
+      descripcionProblema: descripcionProblema,
+      comentarios: comentarios,
+      prioridad: prioridad,
+      proveedor: proveedor
+    })
+    .then((response) => {
+      if (response.data.registrarPropiedad) {
+        alert("Registro exitoso");
+
+      } else {
+       
+        alert("Error al registrar la amenidad");
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+    });
+  };
+
     // Lista de etiquetas para los campos de texto y tipos
     const fields = [
       { label: "ID solicitud:", type: "number" },
@@ -36,6 +81,8 @@ function PropiedadesP(props) {
                   id={`inputField${index}`}
                   className="inputBox"
                   placeholder={`Ingrese ${field.label.toLowerCase()}`}
+                  value={formData.rol}
+                  onChange={handleChange}
                 />
                 <br />
                 {field.extraLabel && (
@@ -47,17 +94,12 @@ function PropiedadesP(props) {
               </div>
             ))}
           </div>
-          <button className="option-link" type="button">
+          <button className="option-link" type="button" onClick={handleSubmit}>
             Registrar
           </button>
         </div>
       </div>
     );
   }
-
-  return (
-    <div className="home"></div>
-  );
-}
 
 export default PropiedadesP;

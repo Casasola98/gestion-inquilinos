@@ -1,15 +1,50 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import '../../css/Propiedades.css';
 
 function Enviar(props) {
-  const { isLogin } = props;
+  const { isLogin } = props;  
+  const [formData, setFormData] = useState({
+    cedula: "",
+    cedulaReceptor: "",
+    cedulaEmisor: "",
+    contenido: ""
+  });
 
-  // Si nadie ha iniciado sesión, lo envía a la ventana de login
-  if (!isLogin) {
-    window.location.href = '/login';
-  }
+  useEffect(() => {
+    if (!isLogin) {
+      window.location.href = '/login';
+    }
+  }, [isLogin]);
 
-  if (isLogin) {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = () => {
+    const { cedula, cedulaReceptor,cedulaEmisor, contenido} = formData;
+    axios.post('http://localhost:8080/enviarMensaje', {
+      cedula: cedula,
+      cedulaReceptor: cedulaReceptor,
+      cedulaEmisor: cedulaEmisor,
+      contenido: contenido
+    })
+  
+      .then((response) => {
+       if (response.data.enviarMensaje) {
+        alert("Mensaje enviado");
+      } else {
+        alert("Error al enviar mensaje");
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+  };
     // Lista de etiquetas para los campos de texto y tipos
     const fields = [
       { label: "ID del mensaje:", type: "number" },
@@ -33,6 +68,8 @@ function Enviar(props) {
                   id={`inputField${index}`}
                   className="inputBox"
                   placeholder={`Ingrese ${field.label.toLowerCase()}`}
+                  value={formData[field.name]}
+                  onChange={handleChange}  
                 />
                 <br />
                 {field.extraLabel && (
@@ -51,10 +88,5 @@ function Enviar(props) {
       </div>
     );
   }
-
-  return (
-    <div className="home"></div>
-  );
-}
 
 export default Enviar;

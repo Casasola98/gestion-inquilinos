@@ -69,7 +69,7 @@ function PropiedadesP(props) {
     { label: "Costo de uso:", type: "number", name: "costoUso" },
     { label: "Estado", type: "text", name: "estado"},
     { label: "Tipo", type: "text", name: "tipoAmenidad" },
-    { label: "Estado actual", type: "number", name: "estadoActual" ,extraLabel: "1: Disponible 2:Ocupado 3:Dañado" } 
+    { label: "Estado actual: 1: Disponible 2:Ocupado 3:Dañado", type: "number", name: "estadoActual"} 
   ];
   return (
     <div className="propiedades">

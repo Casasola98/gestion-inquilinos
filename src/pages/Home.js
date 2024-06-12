@@ -34,14 +34,6 @@ function Home(props) {
               </a>
             </div>
             <div className="menu-row">
-              <a className="option-link" href="/crearAmeninidad">
-                Registrar amenidad
-              </a>
-              <a className="option-link" href="/visualizarAmenidad">
-                Visualizar amenidad
-              </a>
-            </div>
-            <div className="menu-row">
               <a className="option-link" href="/visualizarSoliP">
                 Solicitudes propiedades
               </a>
