@@ -1,20 +1,58 @@
 import React, { useState } from "react";
+import axios from "axios";
 import '../../css/Amenidades.css';
 
 function VisualizarAme(props) {
   const { isLogin, setIsLogin } = props;
-  const [amenidades, setAmenidades] = useState([
-    { id: 1, costo: 100, tipo: "Gimnasio", descripción: "Gimnasio completamente equipado", estado: 1 },
-    { id: 2, costo: 50, tipo: "Piscina", descripción: "Piscina climatizada", estado: 2 }
-  ]);
-  const [fechaInicio, setFechaInicio] = useState('');
-  const [fechaFinal, setFechaFinal] = useState('');
+  const [properties, setProperties] = useState([]);
+  const [fechaInicio, setFechaInicio] = useState("none");
+  const [fechaFinal, setFechaFinal] = useState("none");
+
+  if (!isLogin) {
+    window.location.href = '/login';
+  }
 
   const handleConsultar = () => {
-    // Lógica para consultar amenidades en las fechas dadas
-    console.log(`Consultar desde ${fechaInicio} hasta ${fechaFinal}`);
+    if (isLogin) {  // Realizar la consulta al backend para obtener las propiedades del propietario
+      console.log(typeof fechaInicio, typeof fechaFinal);
+      axios.post('http://localhost:8080/obtenerPropiedadesDisponibles', {
+        fechaInicio: fechaInicio,
+        fechaFin: fechaFinal
+      })
+        .then((response) => {
+          console.log(response);
+          setProperties(response.data.recordset);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
   };
 
+  const handleSubmit = () => {
+    // const { cedula, idPropiedad, fechaInicio, fechaFinal} = formData;
+   
+    // axios.post('http://localhost:8080//solicitarAlquilerP', {
+    //   cedula:cedula,
+    //   idPropiedad: idPropiedad,
+    //   fechaInicio : fechaInicio,
+    //   fechaFinal : fechaFinal
+    // })
+    //   .then((response) => {
+    //     if (response.data.registrarPropiedad) {
+    //       alert("Solicitud enviada exitosamente");
+
+    //     } else {
+    //       alert("Error al enviar solicitud");
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error:", error);
+  
+    //   });
+  };
+
+  if (isLogin) {
   return (
     <div className="propiedades">
       <h1 className="title">Solicitar propiedades</h1>
@@ -57,19 +95,19 @@ function VisualizarAme(props) {
           </tr>
         </thead>
         <tbody>
-          {amenidades.map((amenidad, index) => (
+          {properties?.map((propiedad, index) => (
             <tr key={index}>
-              <td>{amenidad.id}</td>
-              <td>{amenidad.tipo}</td>
-              <td>{amenidad.descripción}</td>
-              <td>{amenidad.costo}</td>
-              <td>{amenidad.estado}</td>
-              <td>{amenidad.opciones}</td>
-              <td>Cédula del propietario</td>
-              <td>Nombre del propietario</td>
-              <td>Apellido del propietario</td>
-              <td>Correo del propietario</td>
-              <td>Teléfono del propietario</td>
+              <td>{propiedad.idPropiedad}</td>
+              <td>{propiedad.direccion}</td>
+              <td>{propiedad.tipoPropiedad}</td>
+              <td>{propiedad.numeroHabitaciones}</td>
+              <td>{propiedad.tamanoMetros}</td>
+              <td>{propiedad.descipcion}</td>
+              <td>{propiedad.precioAlquiler}</td>
+              <td>{propiedad.nombre}</td>
+              <td>{propiedad.apellido1}</td>
+              <td>{propiedad.correo}</td>
+              <td>{propiedad.telefono}</td>
               <td>
                 <a href="#">Solicitar</a>
               </td>
@@ -79,6 +117,6 @@ function VisualizarAme(props) {
       </table>
     </div>
   );
-}
+}}
 
 export default VisualizarAme;

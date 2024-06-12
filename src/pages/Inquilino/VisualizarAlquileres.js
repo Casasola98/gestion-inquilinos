@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import '../../css/Propiedades.css';
 
+const getFecha = (fecha) => {
+	return `${fecha.getFullYear()}/${fecha.getMonth() + 1}/${fecha.getDate()}`;
+}
+
+
 function VisualizarAlq(props) {
-  const { isLogin, setIsLogin } = props;
+  const { isLogin } = props;
   const [editMode, setEditMode] = useState(false);
   const [editedRow, setEditedRow] = useState(null);
   const [amenidades, setAmenidades] = useState([

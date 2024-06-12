@@ -773,22 +773,24 @@ app.post('/visualizarMantenimientos', jsonParser, (req, res) => {
 app.post('/actualizarMantenimientos', jsonParser, (req, res) => {
 	const datos = req.body;
 	//variables enviados por el body
+	console.log(datos);
 	let idSolicitud = datos.idSolicitud;
 	let estado = datos.estado
 
 	mssql.connect(config, function (err) {
 		let request = new mssql.Request();
 		let query = `EXEC cambiarEstadoSolMante ${idSolicitud}, ${estado}`;
+		console.log(query);
 		request.query(query,
 			function (err, records) {
 				if (err) {
 					res.send({
-						eliminarAmenidad: false
+						actualizarMantenimiento: false
 					});
 				}
 				else {
 					res.send({
-						eliminarAmenidad: true
+						actualizarMantenimiento: true
 					});
 				}
 			}

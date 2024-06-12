@@ -9,13 +9,13 @@ function VisualizarAme(props) {
   const [amenidades, setProperties] = useState([]);
 
   const [editProperty, setEditProperties] = useState({
-    cedulaPropietario: (localStorage.getItem('user')),
+    cedula: (localStorage.getItem('user')),
     idAmenidad: "",
     tipoAmenidad: "",
     costoUso: "",
     estado: "",
     descripcion: "",
-    estadoActual: "",
+    estadoActual: 1,
   });
 
   if (!isLogin) {
@@ -24,7 +24,7 @@ function VisualizarAme(props) {
 
   useEffect(() => {
     if (isLogin) {  // Realizar la consulta al backend para obtener las propiedades del propietario
-      axios.post('http://localhost:8080/visualizarAmenidad', { cedulaPropietario: localStorage.getItem('user') })
+      axios.post('http://localhost:8080/visualizarAmenidad', { cedula: localStorage.getItem('user') })
         .then((response) => {
           setProperties(response.data.recordset);
         })
@@ -49,7 +49,7 @@ function VisualizarAme(props) {
   const handleEdit = (rowIndex, property) => {
     console.log(property)
     setEditProperties({
-      cedulaPropietario: localStorage.getItem('user'),
+      cedula: localStorage.getItem('user'),
       idAmenidad: property.idAmenidad,
       tipoAmenidad: property.tipoAmenidad,
       costoUso: property.costoUso,
@@ -69,7 +69,7 @@ function VisualizarAme(props) {
           // Actualizar la propiedad en el estado local
           setEditedRow(null);
           toggleEditMode();
-          axios.post('http://localhost:8080/visualizarAmenidad', { cedulaPropietario: localStorage.getItem('user') })
+          axios.post('http://localhost:8080/visualizarAmenidad', { cedula: localStorage.getItem('user') })
             .then((response) => {
               setProperties(response.data.recordset);
             })
@@ -90,7 +90,7 @@ function VisualizarAme(props) {
       .then((response) => {
         if (response.data.eliminarPropiedad) {
           // Eliminar la propiedad del estado local
-          axios.post('http://localhost:8080/visualizarAmenidad', { cedulaPropietario: localStorage.getItem('user') })
+          axios.post('http://localhost:8080/visualizarAmenidad', { cedula: localStorage.getItem('user') })
             .then((response) => {
               setProperties(response.data.recordset);
             })
@@ -127,20 +127,20 @@ if (isLogin) {
           {amenidades && amenidades.map((amenidad, index) => {  
             return (
               <tr key={index}>
-                <td>{amenidad.id}</td>
-                <td>{editMode && editedRow === index ? <input type="number" defaultValue={amenidad.costo} onChange={(e) => handleChange(e, index, 'costo')} /> : amenidad.costo}</td>
-                <td>{editMode && editedRow === index ? <input type="text" defaultValue={amenidad.tipo} onChange={(e) => handleChange(e, index, 'tipo')} /> : amenidad.tipo}</td>
-                <td>{editMode && editedRow === index ? <input type="text" defaultValue={amenidad.descripción} onChange={(e) => handleChange(e, index, 'descripción')} /> : amenidad.descripción}</td>
-                <td>{editMode && editedRow === index ? <input type="number" defaultValue={amenidad.estado} onChange={(e) => handleChange(e, index, 'estado')} /> : amenidad.estado}</td>
+                <td>{amenidad.idAmenidad}</td>
+                <td>{editMode && editedRow === index ? <input type="number" defaultValue={amenidad.costoUso} onChange={(e) => handleChange(e, index, 'costo')} /> : amenidad.costoUso}</td>
+                <td>{editMode && editedRow === index ? <input type="text" defaultValue={amenidad.tipoAmenidad} onChange={(e) => handleChange(e, index, 'tipo')} /> : amenidad.tipoAmenidad}</td>
+                <td>{editMode && editedRow === index ? <input type="text" defaultValue={amenidad.descripcion} onChange={(e) => handleChange(e, index, 'descripcion')} /> : amenidad.descripcion}</td>
+                <td>{editMode && editedRow === index ? <input type="text" defaultValue={amenidad.estado} onChange={(e) => handleChange(e, index, 'estado')} /> : amenidad.estado}</td>
                 <td>{editMode && editedRow === index ? <input type="number" defaultValue={amenidad.estadoActual} onChange={(e) => handleChange(e, index, 'estadoActual')} /> : amenidad.estadoActual}</td>
                 <td>
                 {editMode && editedRow === index ? (
                   <a href="#" onClick={() => handleSave(index)}>Guardar</a>
                 ) : (
                   <span>
-                    <a href="#" onClick={() => handleEdit(index)}>Editar</a>
+                    <a href="#" onClick={() => handleEdit(index,amenidad)}>Editar</a>
                     {" | "}
-                    <a href="#" onClick={() => handleDelete(index)}>Eliminar</a>
+                    <a href="#" onClick={() => handleDelete(amenidad.idAmenidad)}>Eliminar</a>
                   </span>
                 )}
               </td>

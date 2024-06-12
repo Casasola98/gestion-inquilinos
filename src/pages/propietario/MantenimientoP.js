@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import '../../css/Propiedades.css';
 
+const getFecha = (fecha) => {
+	return `${fecha.getFullYear()}/${fecha.getMonth() + 1}/${fecha.getDate()}`;
+}
+
 function MantenimientoP(props) {
   const { isLogin, setIsLogin } = props;
   const [editMode, setEditMode] = useState(false);
@@ -12,18 +16,18 @@ function MantenimientoP(props) {
     cedula: (localStorage.getItem('user')),
     idSolicitud: "",
     idPropiedad: "",
-    descripcion: "",
+    descripcionProblema: "",
     fechaSolicitud: "",
-    estado: "",
+    estadoMantenimiento: "",
     prioridad: "",
     idProveedor: "",
-    nombreProveedor: "",
-    apellido1Proveedor: "",
-    apellido2Proveedor: "",
-    especialidad: "",
-    telefonoProveedor: ""
+    nombre: "",
+    primerApellido: "",
+    segundoApellido: "",
+    telefono: ""
   });
 
+  //idSolicitud, Propiedad.idPropiedad, descripcionProblemaProblema, fechaSolicitud, estadoMantenimientoMantenimiento, prioridad, Proveedores.idProveedor, nombre, primerApellido, segundoApellido, especialidad, telefono FROM SolicitudMantenimiento JOIN Propiedad ON SolicitudMantenimiento.idPropiedad = Propiedad.idPropiedad JOIN PrioridadesPermitidas ON SolicitudMantenimiento.idPrioridad = PrioridadesPermitidas.idPrioridad JOIN Proveedores ON SolicitudMantenimiento.idProveedor = Proveedores.idProveedor JOIN estadoMantenimientosMantenimientoPermitidos ON idestadoMantenimientoMantenimiento = SolicitudMantenimiento.estadoMantenimiento WHERE Propiedad.cedulaPropietario = @cedulaUsuario
   if (!isLogin) {
     window.location.href = '/login';
   }
@@ -57,23 +61,37 @@ function MantenimientoP(props) {
       cedula: localStorage.getItem('user'),
       idSolicitud: property.idSolicitud,
       idPropiedad: property.idPropiedad,
-      descripcion: property.descripcion,
+      descripcionProblema: property.descripcionProblema,
       fechaSolicitud: property.fechaSolicitud,
-      estado: property.estado,
+      estadoMantenimiento: property.estadoMantenimiento == "pendiente" ? 1 : property.estadoMantenimiento == "en proceso" ? 2 : 3 ,
       prioridad: property.prioridad,
       idProveedor: property.idProveedor,
-      nombreProveedor: property.nombreProveedor,
-      apellido1Proveedor: property.apellido1Proveedor,
-      apellido2Proveedor: property.apellido2Proveedor,
+      nombre: property.nombre,
+      primerApellido: property.primerApellido,
+      segundoApellido: property.segundoApellido,
       especialidad: property.especialidad,
-      telefonoProveedor: property.telefonoProveedor
+      telefono: property.telefono
     });
     setEditedRow(rowIndex);
     toggleEditMode();
   };
 
+
+//   //INSERT INTO PrioridadesPermitidas (idPrioridad, prioridad) VALUES
+// (1, 'baja'),
+// (2, 'media'),
+// (3, 'alta');
+
+// INSERT INTO EstadosMantenimientoPermitidos (idEstadoMantenimiento, estadoMantenimiento) VALUES
+// (1, 'pendiente'),
+// (2, 'en proceso'),
+// (3, 'resuelto');
+
   const handleSave = () => {
-    axios.post('http://localhost:8080/actualizarMantenimientos', editProperty)
+    axios.post('http://localhost:8080/actualizarMantenimientos', {
+      idSolicitud: editProperty.idSolicitud,
+      estado: editProperty.estadoMantenimiento
+    })
       .then((response) => {
         if (response.data.actualizarMantenimiento) {
           setEditedRow(null);
@@ -109,7 +127,7 @@ function MantenimientoP(props) {
                 <th>ID Propiedad</th>
                 <th>Descripción</th>
                 <th>Fecha de solicitud</th>
-                <th>Estado</th>
+                <th>estadoMantenimiento</th>
                 <th>Prioridad</th>
                 <th>ID Proveedor</th>
                 <th>Nombre Proveedor</th>
@@ -123,18 +141,28 @@ function MantenimientoP(props) {
             <tbody>
               {properties.map((property, index) => (
                 <tr key={index}>
-                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.idSolicitud} name="idSolicitud" onChange={handleChange} /> : property.idSolicitud}</td>
-                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.idPropiedad} name="idPropiedad" onChange={handleChange} /> : property.idPropiedad}</td>
-                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.descripcion} name="descripcion" onChange={handleChange} /> : property.descripcion}</td>
-                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.fechaSolicitud} name="fechaSolicitud" onChange={handleChange} /> : property.fechaSolicitud}</td>
-                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.estado} name="estado" onChange={handleChange} /> : property.estado}</td>
-                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.prioridad} name="prioridad" onChange={handleChange} /> : property.prioridad}</td>
-                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.idProveedor} name="idProveedor" onChange={handleChange} /> : property.idProveedor}</td>
-                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.nombreProveedor} name="nombreProveedor" onChange={handleChange} /> : property.nombreProveedor}</td>
-                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.apellido1Proveedor} name="apellido1Proveedor" onChange={handleChange} /> : property.apellido1Proveedor}</td>
-                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.apellido2Proveedor} name="apellido2Proveedor" onChange={handleChange} /> : property.apellido2Proveedor}</td>
-                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.especialidad} name="especialidad" onChange={handleChange} /> : property.especialidad}</td>
-                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.telefonoProveedor} name="telefonoProveedor" onChange={handleChange} /> : property.telefonoProveedor}</td>
+                  <td>{property.idSolicitud}</td>
+                  <td>{property.idPropiedad}</td>
+                  <td>{property.descripcionProblema}</td>
+                  <td>{getFecha(new Date(property.fechaSolicitud))}</td>
+                  <td>{editMode && editedRow === index ? 
+                    <select
+                      defaultValue={editProperty.estadoMantenimiento}
+                      onChange={handleChange}
+                      name="estadoMantenimiento"
+                    >
+                      <option value="1">pendiente</option>
+                      <option value="2">en proceso</option>
+                      <option value="3">resuelto</option>
+                    </select>
+                    : property.estadoMantenimiento}</td>
+                  <td>{property.prioridad}</td>
+                  <td>{property.idProveedor}</td>
+                  <td>{property.nombre}</td>
+                  <td>{property.primerApellido}</td>
+                  <td>{property.segundoApellido}</td>
+                  <td>{property.especialidad}</td>
+                  <td>{property.telefono}</td>
                   <td>
                     {editMode && editedRow === index ? (
                       <a href="#" onClick={() => handleSave()}>Guardar</a>
