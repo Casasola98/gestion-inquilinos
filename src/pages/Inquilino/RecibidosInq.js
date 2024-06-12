@@ -1,13 +1,37 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import '../../css/Propiedades.css';
 
-function Recibidos(props) {
+const getFecha = (fecha) => {
+	return `${fecha.getFullYear()}/${fecha.getMonth() + 1}/${fecha.getDate()}`;
+}
+
+const getHora = (fecha) => {
+	return `${fecha.getHours()}:${fecha.getMinutes()}:${fecha.getSeconds()}`;
+}
+
+function PropiedadesP(props) {
   const { isLogin } = props;
+  const [messages, setMessages] = useState([]);
+  const cedula = localStorage.getItem('user');
 
   // Si nadie ha iniciado sesión, lo envía a la ventana de login
   if (!isLogin) {
     window.location.href = '/login';
   }
+
+  useEffect(() => {
+    if (isLogin) {
+      // Reemplaza "cedulaDelUsuario" con la cédula del usuario logueado
+      axios.post('http://localhost:8080/visualizarMsjRecibido', { cedula })
+        .then(response => {
+          setMessages(response.data.recordset);
+        })
+        .catch(error => {
+          console.error("Error fetching messages:", error);
+        });
+    }
+  }, [isLogin]);
 
   if (isLogin) {
     return (
@@ -17,30 +41,21 @@ function Recibidos(props) {
           <thead>
             <tr>
               <th>Cédula del emisor</th>
-              <th>Fecha</th>
-              <th>Hora</th>
+              <th>Fecha de envío</th>
+              <th>Hora de envío</th>
               <th>Contenido</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Alfreds Futterkiste</td>
-              <td>Maria Anders</td>
-              <td>Germany</td>
-              <td>Germany</td>
-            </tr>
-            <tr>
-              <td>Centro comercial Moctezuma</td>
-              <td>Francisco Chang</td>
-              <td>Mexico</td>
-              <td>Mexico</td>
-            </tr>
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
+          {messages?.map(function (message, index) {
+            return (
+            <tr key={index}>
+              <td>{message.cedulaEmisor}</td>
+              <td>{getFecha(new Date(message.fechaMensaje))}</td>
+              <td>{getHora(new Date(message.horaMensaje))}</td>
+              <td>{message.contenido}</td>
+            </tr>)
+          })}
           </tbody>
         </table>
       </div>
@@ -52,4 +67,4 @@ function Recibidos(props) {
   );
 }
 
-export default Recibidos;
+export default PropiedadesP;
