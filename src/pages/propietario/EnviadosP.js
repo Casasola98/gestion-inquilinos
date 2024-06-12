@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import '../../css/Propiedades.css';
 
 function Enviados(props) {
@@ -9,47 +10,47 @@ function Enviados(props) {
     window.location.href = '/login';
   }
 
-  if (isLogin) {
-    return (
-      <div className="comunicaciones">
-        <h1 className="title">Mensajes Enviados</h1>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Cédula del receptor</th>
-              <th>Fecha de envío</th>
-              <th>Hora de envío</th>
-              <th>Contenido</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Alfreds Futterkiste</td>
-              <td>Maria Anders</td>
-              <td>Germany</td>
-              <td>Germany</td>
-            </tr>
-            <tr>
-              <td>Centro comercial Moctezuma</td>
-              <td>Francisco Chang</td>
-              <td>Mexico</td>
-              <td>Mexico</td>
-            </tr>
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-          </tbody>
-        </table>
-      </div>
-    );
-  }
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    if (isLogin) {
+      // Reemplaza "cedulaDelUsuario" con la cédula del usuario logueado
+      const cedula = "cedulaDelUsuario"; 
+
+      axios.post('http://localhost:8080/visualizarMsjEnviados', { cedula })
+        .then(response => {
+          setMessages(response.data.recordset);
+        })
+        .catch(error => {
+          console.error("Error fetching messages:", error);
+        });
+    }
+  }, [isLogin]);
 
   return (
-    <div className="home"></div>
+    <div className="comunicaciones">
+      <h1 className="title">Mensajes Enviados</h1>
+      <table className="table">
+        <thead>
+          <tr>
+            <th>Cédula del receptor</th>
+            <th>Fecha de envío</th>
+            <th>Hora de envío</th>
+            <th>Contenido</th>
+          </tr>
+        </thead>
+        <tbody>
+          {messages.map((message, index) => (
+            <tr key={index}>
+              <td>{message.cedulaReceptor}</td>
+              <td>{message.fechaEnvio}</td>
+              <td>{message.horaEnvio}</td>
+              <td>{message.contenido}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

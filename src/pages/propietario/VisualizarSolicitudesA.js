@@ -1,23 +1,64 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import '../../css/Propiedades.css';
 
 function VisualizarSolicitudA(props) {
-  const { isLogin, setIsLogin } = props;
-  const [properties, setProperties] = useState([
-    { id: 1, cedula: "123456789", estadoSolicitud: "Pendiente", fechaSolicitud: "2023-01-01", fechaInicio: "2023-02-01", fechaFin: "2024-01-31" },
-    { id: 2, cedula: "987654321", estadoSolicitud: "Pendiente", fechaSolicitud: "2023-02-15", fechaInicio: "2023-03-01", fechaFin: "2024-02-28" }
-  ]);
+  const { isLogin, cedula } = props;
+  const [properties, setProperties] = useState([]);
+
+  useEffect(() => {
+    if (isLogin) {
+      axios.post('http://localhost:8080/visualizarSolicitudesA', { cedula })
+        .then(response => {
+          setProperties(response.data.recordset);
+        })
+        .catch(error => {
+          console.error("Error al obtener propiedades:", error);
+        });
+    } else {
+      window.location.href = '/login';
+    }
+  }, [isLogin, cedula]);
 
   const handleAccept = (index) => {
-    const updatedProperties = [...properties];
-    updatedProperties[index].estadoSolicitud = "Aceptado";
-    setProperties(updatedProperties);
+    const property = properties[index];
+    axios.post('http://localhost:8080/crearInquilinoAmenidad', {
+      cedula: property.cedulaInq,
+      fechaInicio: property.fechaInicio,
+      fechaFin: property.fechaFin,
+      idAmenidad: property.id
+    })
+      .then(response => {
+        if (response.data.aceptarAlquiler) {
+          const updatedProperties = [...properties];
+          updatedProperties[index].estadoSolicitud = "Aceptada";
+          setProperties(updatedProperties);
+        } else {
+          console.error("Error al aceptar las solicitudes");
+        }
+      })
+      .catch(error => {
+        console.error("Error al aceptar las solicitudes:", error);
+      });
   };
 
   const handleDeny = (index) => {
-    const updatedProperties = [...properties];
-    updatedProperties[index].estadoSolicitud = "Denegado";
-    setProperties(updatedProperties);
+    const property = properties[index];
+    axios.post('http://localhost:8080/denegarInquilinoAmenidad', {
+      idAmenidad: property.id
+    })
+      .then(response => {
+        if (response.data.denergarInquilino) {
+          const updatedProperties = [...properties];
+          updatedProperties[index].estadoSolicitud = "Denegada";
+          setProperties(updatedProperties);
+        } else {
+          console.error("Error al negar las solicitudes");
+        }
+      })
+      .catch(error => {
+        console.error("Error al negar las solicitudes", error);
+      });
   };
 
   return (
@@ -26,7 +67,7 @@ function VisualizarSolicitudA(props) {
       <table className="table">
         <thead>
           <tr>
-            <th>ID Propiedad</th>
+            <th>ID Amenidad</th>
             <th>Cédula Propietario</th>
             <th>Cédula Inquilino</th>
             <th>Fecha solicitud</th>

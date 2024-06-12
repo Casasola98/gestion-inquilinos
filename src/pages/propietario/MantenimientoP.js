@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import '../../css/Propiedades.css';
 
 function MantenimientoP(props) {
@@ -9,13 +10,24 @@ function MantenimientoP(props) {
     window.location.href = '/login';
   }
 
-  const [properties, setProperties] = useState([
-    { idSolicitud: 1, idPropiedad: 101, descripcion: "Reparar tubería", idProveedor: 201, fechaSolicitud: "2023-01-01", estado: 1, prioridad: "Alta", costo: 100, nombreProveedor: "Juan", apellido1Proveedor: "Pérez", apellido2Proveedor: "Gómez", especialidad: "Plomería", telefonoProveedor: "123456789", comentarios: "" },
-    { idSolicitud: 2, idPropiedad: 102, descripcion: "Pintar paredes", idProveedor: 202, fechaSolicitud: "2023-02-15", estado: 2, prioridad: "Media", costo: 200, nombreProveedor: "Luis", apellido1Proveedor: "Martínez", apellido2Proveedor: "Rodríguez", especialidad: "Pintura", telefonoProveedor: "987654321", comentarios: "" }
-  ]);
-
+  const [properties, setProperties] = useState([]);
   const [editMode, setEditMode] = useState(null);
-  const [updatedProperties, setUpdatedProperties] = useState(properties);
+  const [updatedProperties, setUpdatedProperties] = useState([]);
+
+  useEffect(() => {
+    if (isLogin) {
+      axios.post('http://localhost:8080/visualizarMantenimientos', {
+        cedula: 'cedulaPropietario' // Reemplaza esto con la variable que contiene la cédula del propietario
+      })
+      .then(response => {
+        setProperties(response.data);
+        setUpdatedProperties(response.data);
+      })
+      .catch(error => {
+        console.error("Error:", error);
+      });
+    }
+  }, [isLogin]);
 
   const handleEditClick = (index) => {
     setEditMode(index);
@@ -26,6 +38,23 @@ function MantenimientoP(props) {
     updated[index] = updatedProperties[index];
     setProperties(updated);
     setEditMode(null);
+
+    const updatedProperty = updatedProperties[index];
+    axios.post('http://localhost:8080/actualizarMantenimientos', {
+      idSolicitud: updatedProperty.idSolicitud,
+      estado: updatedProperty.estado
+    })
+    .then(response => {
+      if (response.data.eliminarAmenidad) {
+        alert("Solicitud de mantenimiento actualizada exitosamente");
+      } else {
+        alert("Error al actualizar la solicitud de mantenimiento");
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      alert("Error al conectar con el servidor");
+    });
   };
 
   const handleChange = (index, field, value) => {
@@ -53,6 +82,7 @@ function MantenimientoP(props) {
               <th>Apellido 2 Proveedor</th>
               <th>Especialidad</th>
               <th>Télefono Proveedor</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -61,7 +91,7 @@ function MantenimientoP(props) {
                 {editMode === index ? (
                   <>
                     <td><input type="number" value={updatedProperties[index].idSolicitud} onChange={(e) => handleChange(index, 'idSolicitud', e.target.value)} /></td>
-                    <td><input type="number" value={updatedProperties[index].idPropiedad} onChange={(e) => handleChange(index, 'idPropiedad', e.target.value)} /></td>  
+                    <td><input type="number" value={updatedProperties[index].idPropiedad} onChange={(e) => handleChange(index, 'idPropiedad', e.target.value)} /></td>
                     <td><input type="text" value={updatedProperties[index].descripcion} onChange={(e) => handleChange(index, 'descripcion', e.target.value)} /></td>
                     <td><input type="text" value={updatedProperties[index].fechaSolicitud} onChange={(e) => handleChange(index, 'fechaSolicitud', e.target.value)} /></td>
                     <td><input type="number" value={updatedProperties[index].estado} onChange={(e) => handleChange(index, 'estado', e.target.value)} /></td>
@@ -72,7 +102,6 @@ function MantenimientoP(props) {
                     <td><input type="text" value={updatedProperties[index].apellido2Proveedor} onChange={(e) => handleChange(index, 'apellido2Proveedor', e.target.value)} /></td>
                     <td><input type="text" value={updatedProperties[index].especialidad} onChange={(e) => handleChange(index, 'especialidad', e.target.value)} /></td>
                     <td><input type="text" value={updatedProperties[index].telefonoProveedor} onChange={(e) => handleChange(index, 'telefonoProveedor', e.target.value)} /></td>
-              
                   </>
                 ) : (
                   <>
@@ -88,8 +117,6 @@ function MantenimientoP(props) {
                     <td>{property.apellido2Proveedor}</td>
                     <td>{property.especialidad}</td>
                     <td>{property.telefonoProveedor}</td>
-
-
                   </>
                 )}
                 <td>

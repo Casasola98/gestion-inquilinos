@@ -1,47 +1,66 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import '../../css/Propiedades.css';
 
 function VisualizarInquilinos(props) {
-  const { isLogin, setIsLogin } = props;
+  const { isLogin, cedula } = props;
+  const [properties, setProperties] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [editedRow, setEditedRow] = useState(null);
   const [interruptRow, setInterruptRow] = useState(null);
   const [evictionTime, setEvictionTime] = useState("");
   const [evictionReason, setEvictionReason] = useState("");
-  const [properties, setProperties] = useState([
-    { id: 1, tipo: "Casa", tamaño: "Grande", descripción: "Descripción de la casa", precio: 1000, dirección: "Calle 123", habitaciones: 3, estado: 1, gastosAdicionales: 200 },
-    { id: 2, tipo: "Apartamento", tamaño: "Pequeño", descripción: "Descripción del apartamento", precio: 2000, dirección: "Avenida 456", habitaciones: 2, estado: 2, gastosAdicionales: 300 }
-  ]);
+
+  useEffect(() => {
+    if (isLogin) {
+      axios.post('http://localhost:8080/visualizarInquilinosP', { cedula })
+        .then(response => {
+          setProperties(response.data.recordset);
+        })
+        .catch(error => {
+          console.error("Error al obtener propiedades:", error);
+        });
+    } else {
+      window.location.href = '/login';
+    }
+  }, [isLogin, cedula]);
 
   const toggleEditMode = () => {
     setEditMode(!editMode);
   };
 
-  const handleEdit = (rowIndex) => {
-    setEditedRow(rowIndex);
-    toggleEditMode();
-  };
-
-  const handleSave = () => {
-    // Guardar los cambios
-    setEditedRow(null);
-    toggleEditMode();
-  };
-
-  const handleInterrupt = (rowIndex) => {
-    setInterruptRow(rowIndex);
+  const handleInterrupt = (index) => {
+    setInterruptRow(index);
   };
 
   const handleEvictionSubmit = () => {
     if (evictionTime && evictionReason) {
-      // Guardar la información de desalojo aquí
-      console.log(`Tiempo de desalojo: ${evictionTime}, Razón de desalojo: ${evictionReason}`);
-      setInterruptRow(null);
-      setEvictionTime("");
-      setEvictionReason("");
+      const property = properties[interruptRow];
+      axios.post('http://localhost:8080/editarInquilinoP', {
+        cedulaPropietario: property.cedulaP,
+        cedulaInquilino: property.cedulaInq,
+        newMonth: evictionTime,
+        contenido: evictionReason,
+        idPropiedad: property.id
+      })
+        .then(response => {
+          if (response.data.interrumpirAlquiler) {
+            console.log("Alquiler interrumpido exitosamente");
+          } else {
+            console.error("Error al interrumpir el alquiler");
+          }
+        })
+        .catch(error => {
+          console.error("Error al interrumpir el alquiler:", error);
+        });
     } else {
       alert("Por favor ingrese tanto el tiempo como la razón de desalojo.");
     }
+  };
+
+  const handleSave = () => {
+    setEditedRow(null);
+    setEditMode(false);
   };
 
   return (
@@ -89,7 +108,7 @@ function VisualizarInquilinos(props) {
         <div className="eviction-form">
           <h3>Interrumpir Inquilino</h3>
           <label>
-            Tiempo de desalojo (días):
+            Tiempo de desalojo (meses):
             <input
               type="number"
               value={evictionTime}

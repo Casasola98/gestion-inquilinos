@@ -311,6 +311,8 @@ function App() {
             path="/alquilarA"
             element={<AlquilarA isLogin={isLogin} setIsLogin={setIsLogin} />}
           />
+
+          
           <Route
             path="*"
             element={<Pag404 />}

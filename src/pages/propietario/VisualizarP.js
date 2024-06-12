@@ -1,14 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import '../../css/Propiedades.css';
 
 function RegistrarP(props) {
-  const { isLogin, setIsLogin } = props;
+  const { isLogin } = props;
   const [editMode, setEditMode] = useState(false);
   const [editedRow, setEditedRow] = useState(null);
-  const [properties, setProperties] = useState([
-    { id: 1, tipo: "Casa", tamaño: "Grande", descripción: "Descripción de la casa", precio: 1000, dirección: "Calle 123", habitaciones: 3, estado: 1 },
-    { id: 2, tipo: "Apartamento", tamaño: "Pequeño", descripción: "Descripción del apartamento", precio: 2000, dirección: "Avenida 456", habitaciones: 2, estado: 2 }
-  ]);
+  const [properties, setProperties] = useState([]);
+
+  useEffect(() => {
+    if (!isLogin) {
+      window.location.href = '/login';
+    } else {
+      // Realizar la consulta al backend para obtener las propiedades del propietario
+      axios.post('http://localhost:8080/visualizarPropiedades', { cedula: 'cedulaPropietario' }) 
+        .then((response) => {
+          setProperties(response.data.recordset);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+  }, [isLogin]);
 
   const toggleEditMode = () => {
     setEditMode(!editMode);
@@ -19,10 +32,40 @@ function RegistrarP(props) {
     toggleEditMode();
   };
 
-  const handleSave = () => {
-    // Guardar los cambios
-    setEditedRow(null);
-    toggleEditMode();
+  const handleSave = (property) => {
+    axios.post('http://localhost:8080/editarPropiedad', property)
+      .then((response) => {
+        if (response.data.editarPropiedad) {
+          // Actualizar la propiedad en el estado local
+          let updatedProperties = [...properties];
+          updatedProperties[editedRow] = property;
+          setProperties(updatedProperties);
+
+          setEditedRow(null);
+          toggleEditMode();
+        } else {
+          console.error("Error al editar la propiedad");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  const handleDelete = (idPropiedad) => {
+    axios.post('http://localhost:8080/eliminarPropiedad', { idPropiedad })
+      .then((response) => {
+        if (response.data.eliminarPropiedad) {
+          // Eliminar la propiedad del estado local
+          let updatedProperties = properties.filter(property => property.id !== idPropiedad);
+          setProperties(updatedProperties);
+        } else {
+          console.error("Error al eliminar la propiedad");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   return (
@@ -55,12 +98,12 @@ function RegistrarP(props) {
               <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.estado} /> : property.estado}</td>
               <td>
                 {editMode && editedRow === index ? (
-                  <a href="#" onClick={handleSave}>Guardar</a>
+                  <a href="#" onClick={() => handleSave(property)}>Guardar</a>
                 ) : (
                   <span>
                     <a href="#" onClick={() => handleEdit(index)}>Editar</a>
                     {" | "}
-                    <a href="#">Eliminar</a>
+                    <a href="#" onClick={() => handleDelete(property.id)}>Eliminar</a>
                   </span>
                 )}
               </td>

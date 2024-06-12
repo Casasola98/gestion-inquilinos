@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import '../../css/Propiedades.css';
 
 function Enviar(props) {
@@ -9,49 +10,80 @@ function Enviar(props) {
     window.location.href = '/login';
   }
 
-  if (isLogin) {
-    // Lista de etiquetas para los campos de texto y tipos
-    const fields = [
-      { label: "ID del mensaje:", type: "number" },
-      { label: "Cédula del receptor:", type: "number" },
-      { label: "Contenido:", type: "text" },
-    ];
+  // Estado para los campos del formulario
+  const [formData, setFormData] = useState({
+    idMensaje: "",
+    cedulaReceptor: "",
+    contenido: ""
+  });
 
-    return (
-      <div className="comunicaciones">
-        <div className="register-section">
-          <h2 className="title">Enviar mensaje</h2>
-          <div className="form-container">
-            {fields.map((field, index) => (
-              <div className="form-group" key={index}>
-                <label htmlFor={`inputField${index}`}>{field.label}</label>
-                <br />
-                <input
-                  type={field.type}
-                  id={`inputField${index}`}
-                  className="inputBox"
-                  placeholder={`Ingrese ${field.label.toLowerCase()}`}
-                />
-                <br />
-                {field.extraLabel && (
-                  <>
-                    <label htmlFor={`extraLabel${index}`} className="extraLabel">{field.extraLabel}</label>
-                    <br />
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-          <button className="option-link" type="button">
-            Enviar
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // Manejar cambios en los campos del formulario
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [id]: value,
+    }));
+  };
+
+  // Manejar envío del formulario
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const cedula = "cedulaDelEmisor"; 
+//CONEXION CON BE
+    axios.post('http://localhost:8080/enviarMensaje', {
+      //envia los datos de los campos
+      cedulaReceptor: formData.cedulaReceptor,
+      cedula: cedula,
+      contenido: formData.contenido
+    })
+    .then(response => {
+      if (response.data.enviarMensaje) {
+        alert("Mensaje enviado exitosamente");
+      } else {
+        alert("Error al enviar el mensaje");
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      alert("Error al conectar con el servidor");
+    });
+  };
+
+  // Lista de etiquetas para los campos de texto y tipos
+  const fields = [
+    { label: "ID del mensaje:", type: "number", id: "idMensaje" },
+    { label: "Cédula del receptor:", type: "number", id: "cedulaReceptor" },
+    { label: "Contenido:", type: "text", id: "contenido" }
+  ];
 
   return (
-    <div className="home"></div>
+    <div className="comunicaciones">
+      <div className="register-section">
+        <h2 className="title">Enviar mensaje</h2>
+        <form className="form-container" onSubmit={handleSubmit}>
+          {fields.map((field, index) => (
+            <div className="form-group" key={index}>
+              <label htmlFor={field.id}>{field.label}</label>
+              <br />
+              <input
+                type={field.type}
+                id={field.id}
+                className="inputBox"
+                placeholder={`Ingrese ${field.label.toLowerCase()}`}
+                value={formData[field.id]}
+                onChange={handleChange}
+              />
+              <br />
+            </div>
+          ))}
+          <button className="option-link" type="submit">
+            Enviar
+          </button>
+        </form>
+      </div>
+    </div>
   );
 }
 
