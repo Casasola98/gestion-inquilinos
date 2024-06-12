@@ -261,7 +261,7 @@ app.post('/editarPropiedad', jsonParser, (req, res) => {
 	let numeroHabitaciones = datos.numeroHabitaciones;
 	let tamanoMetros = datos.tamanoMetros;
 	let descripcion = datos.descripcion;
-	let estadoActual = datos.estadoActual;
+	let estadoActual = 1;
 	let precioAlquiler = datos.precioAlquiler;
 	let cedula = datos.cedula;
 

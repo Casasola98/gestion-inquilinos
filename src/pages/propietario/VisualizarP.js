@@ -1,28 +1,23 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
 import '../../css/Propiedades.css';
 
-
-
-
-
 function RegistrarP(props) {
-  const { isLogin,  setIsLogin } = props;
+  const { isLogin, setIsLogin } = props;
   const [editMode, setEditMode] = useState(false);
   const [editedRow, setEditedRow] = useState(null);
   const [properties, setProperties] = useState([]);
-  const [data, setData] = useState({
-    cedula: localStorage.getItem('user'),
+
+  const [editProperty, setEditProperties] = useState({
+    cedula: (localStorage.getItem('user')),
     idPropiedad: "",
     idTipoPropiedad: "",
     numeroHabitaciones: "",
     tamanoMetros: "",
-    descripcion: "", 
-    estadoActual: "", 
+    descripcion: "",
+    estado: 1,
     precioAlquiler: "",
     direccion: ""
-
   });
 
   if (!isLogin) {
@@ -30,39 +25,61 @@ function RegistrarP(props) {
   }
 
   useEffect(() => {
-    
-      // Realizar la consulta al backend para obtener las propiedades del propietario
-      axios.post('http://localhost:8080/visualizarPropiedades', { cedula: localStorage.getItem('user') }) 
+    if (isLogin) {  // Realizar la consulta al backend para obtener las propiedades del propietario
+      axios.post('http://localhost:8080/visualizarPropiedades', { cedula: localStorage.getItem('user') })
         .then((response) => {
           setProperties(response.data.recordset);
         })
         .catch((error) => {
           console.error("Error:", error);
         });
-    }, []);
-  
+    }
+  }, []);
 
-  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditProperties((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
   const toggleEditMode = () => {
     setEditMode(!editMode);
   };
 
-  const handleEdit = (rowIndex) => {
+  const handleEdit = (rowIndex, property) => {
+    console.log(property)
+    setEditProperties({
+      cedula: localStorage.getItem('user'),
+      idPropiedad: property.idPropiedad,
+      idTipoPropiedad: property.idTipoPropiedad,
+      numeroHabitaciones: property.numeroHabitaciones,
+      tamanoMetros: property.tamanoMetros,
+      descripcion: property.descripcion,
+      estado: 1,
+      precioAlquiler: property.precioAlquiler,
+      direccion: property.direccion
+    });
     setEditedRow(rowIndex);
     toggleEditMode();
   };
 
-  const handleSave = (property) => {
-    axios.post('http://localhost:8080/editarPropiedad', property)
+  const handleSave = () => {
+    console.log(editProperty)
+    axios.post('http://localhost:8080/editarPropiedad', editProperty)
       .then((response) => {
         if (response.data.editarPropiedad) {
           // Actualizar la propiedad en el estado local
-          let updatedProperties = [...properties];
-          updatedProperties[editedRow] = property;
-          setProperties(updatedProperties);
-
           setEditedRow(null);
           toggleEditMode();
+          axios.post('http://localhost:8080/visualizarPropiedades', { cedula: localStorage.getItem('user') })
+            .then((response) => {
+              setProperties(response.data.recordset);
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
         } else {
           alert("Error al editar la propiedad");
         }
@@ -73,12 +90,17 @@ function RegistrarP(props) {
   };
 
   const handleDelete = (idPropiedad) => {
-    axios.post('http://localhost:8080/eliminarPropiedad', { idPropiedad })
+    axios.post('http://localhost:8080/eliminarPropiedad', { idPropiedad: idPropiedad })
       .then((response) => {
         if (response.data.eliminarPropiedad) {
           // Eliminar la propiedad del estado local
-          let updatedProperties = properties.filter(property => property.id !== idPropiedad);
-          setProperties(updatedProperties);
+          axios.post('http://localhost:8080/visualizarPropiedades', { cedula: localStorage.getItem('user') })
+            .then((response) => {
+              setProperties(response.data.recordset);
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
         } else {
           alert("Error al eliminar la propiedad");
         }
@@ -88,60 +110,58 @@ function RegistrarP(props) {
       });
   };
 
-  const cargarPropiedadades = () => {
-    axios.get('http://localhost:8080/visualizarPropiedades',{ cedula: localStorage.getItem('user') } )
-      .then((respuesta) => {
-      setData(respuesta.data.recordset);
-    })
-  }
 
-  return (
-    <div className="propiedades">
-      <h1 className="title">Visualizar propiedades</h1>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>ID Propiedad</th>
-            <th>Tipo</th>
-            <th>Tamaño</th>
-            <th>Descripción</th>
-            <th>Precio</th>
-            <th>Dirección</th>
-            <th>Num Habitaciones</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {properties && properties.map((property, index) => (
-            <tr key={index}>
-              <td>{property.id}</td>
-              <td>
-               
-                {editMode && editedRow === index ? <input type="text" defaultValue={property.tipo} /> : property.tipo}</td>
-              <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.tamaño} /> : property.tamaño}</td>
-              <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.descripción} /> : property.descripción}</td>
-              <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.precio} /> : property.precio}</td>
-              <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.dirección} /> : property.dirección}</td>
-              <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.habitaciones} /> : property.habitaciones}</td>
-              <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.estado} /> : property.estado}</td>
-              <td>
-                {editMode && editedRow === index ? (
-                  <a href="#" onClick={() => handleSave(property)}>Guardar</a>
-                ) : (
-                  <span>
-                    <a href="#" onClick={() => handleEdit(index)}>Editar</a>
-                    {" | "}
-                    <a href="#" onClick={() => handleDelete(property.id)}>Eliminar</a>
-                  </span>
-                )}
-              </td>
+
+  if (isLogin) {
+    return (
+      <div className="propiedades">
+        <h1 className="title">Visualizar propiedades</h1>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>ID Propiedad</th>
+              <th>Tipo</th>
+              <th>Tamaño</th>
+              <th>descripcion</th>
+              <th>Precio</th>
+              <th>Dirección</th>
+              <th>Num Habitaciones</th>
+              <th>Estado</th>
+              <th>Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {properties?.map(function (property, index) {
+              return (
+                <tr key={index}>
+                  <td>{property.idPropiedad}</td>
+                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.idTipoPropiedad} name="idTipoPropiedad" onChange={handleChange} /> : property.idTipoPropiedad}</td>
+                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.tamanoMetros} name="tamanoMetros" onChange={handleChange} /> : property.tamanoMetros}</td>
+                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.descripcion} name="descripcion" onChange={handleChange} /> : property.descripcion}</td>
+                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.precioAlquiler} name="precioAlquiler" onChange={handleChange} /> : property.precioAlquiler}</td>
+                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.direccion} name="direccion" onChange={handleChange} /> : property.direccion}</td>
+                  <td>{editMode && editedRow === index ? <input type="text" defaultValue={editProperty.numeroHabitaciones} name="numeroHabitaciones" onChange={handleChange} /> : property.numeroHabitaciones}</td>
+                  <td>{property.estado}</td>
+                  <td>
+                    {editMode && editedRow === index ? (
+                      <a href="#" onClick={() => handleSave()}>Guardar</a>
+                    ) : (
+                      <span>
+                        <a href="#" onClick={() => handleEdit(index, property)}>Editar</a>
+                        {" | "}
+                        <a href="#" onClick={() => handleDelete(property.idPropiedad)}>Eliminar</a>
+                      </span>
+                    )}
+                  </td>
+                </tr>)
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+  return (
+    <div className="home"></div>
   );
 }
-
 export default RegistrarP;
