@@ -1,67 +1,74 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import axios from "axios";
 import '../../css/Propiedades.css';
 
 function PropiedadesP(props) {
   const { isLogin, setIsLogin } = props;
-
-  // Si nadie ha iniciado sesión lo envía a la ventana de login
-  if (!isLogin) {
-    window.location.href = '/login';
-  }
-
-  // Lista de etiquetas para los campos de texto y tipos
-  const fields = [
-    { label: "ID de amenidad:", type: "number" },
-    { label: "Descripción", type: "text" },
-    { label: "Costo de uso:", type: "number" },
-    { label: "Estado", type: "text"},
-    { label: "Tipo", type: "text" },
-    { label: "Estado actual", type: "number", extraLabel: "1: Disponible 2:Ocupado 3:Dañado" } 
-  ];
-
-  // Estado para los valores de los campos de texto
   const [formData, setFormData] = useState({
+    cedula: localStorage.getItem('user'),
     idAmenidad: "",
-    descripcion: "",
+    tipoAmenidad: "",
     costoUso: "",
+    descripcion: "",
+    estadoActual: "",
     estado: "",
-    tipo: "",
-    estadoActual: ""
   });
 
+
+  // Si nadie ha iniciado sesión lo envía a la ventana de login
+  useEffect(() => {
+    if (!isLogin) {
+      window.location.href = '/login';
+    }
+  }, [isLogin]);
+
+
+  // Estado para los valores de los campos de texto
+  
+
   // Manejar el cambio de valor de los campos de texto
-  const handleChange = (e, field) => {
-    setFormData({
-      ...formData,
-      [field]: e.target.value
-    });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
   };
 
   // Manejar el clic en el botón "Registrar"
   const handleRegister = () => {
+    const { idAmenidad, tipoAmenidad, descripcion, costoUso, estado, estadoActual,cedula} = formData;
     axios.post('http://localhost:8080/crearAmenidad', {
-      idAmenidad: formData.idAmenidad,
-      tipoAmenidad: formData.tipo,
-      costoUso: formData.costoUso,
-      descripcion: formData.descripcion,
-      estadoActual: formData.estadoActual,
-      estado: formData.estado,
-      cedula: 'cedulaPropietario' 
+      idAmenidad: idAmenidad,
+      tipoAmenidad: tipoAmenidad,
+      costoUso: costoUso,
+      descripcion: descripcion,
+      estadoActual: estadoActual,
+      estado: estado,
+      cedula: cedula 
     })
     .then(response => {
       if (response.data.registrarPropiedad) {
-        alert("Amenidad registrada exitosamente");
+
       } else {
-        alert("Error al registrar la amenidad");
+        //alert("Error al registrar la amenidad");
       }
     })
     .catch(error => {
       console.error("Error:", error);
-      alert("Error al conectar con el servidor");
+      //alert("Error al conectar con el servidor");
     });
   };
 
+  // Lista de etiquetas para los campos de texto y tipos
+  const fields = [
+    { label: "ID de amenidad:", type: "number", name: "idAmenidad"},
+    { label: "Descripción", type: "text",  name: "descripcion" },
+    { label: "Costo de uso:", type: "number", name: "costoUso" },
+    { label: "Estado", type: "text", name: "estado"},
+    { label: "Tipo", type: "text", name: "tipoAmenidad" },
+    { label: "Estado actual", type: "number", name: "estadoActual" ,extraLabel: "1: Disponible 2:Ocupado 3:Dañado" } 
+  ];
   return (
     <div className="propiedades">
       <h1 className="title">Amenidades</h1>
@@ -74,18 +81,13 @@ function PropiedadesP(props) {
               <input
                 type={field.type}
                 id={`inputField${index}`}
+                name={field.name}
                 className="inputBox"
                 placeholder={`Ingrese ${field.label.toLowerCase()}`}
-                value={formData[field.label.split(' ')[0].toLowerCase()]} // Asigna el valor correspondiente del estado
-                onChange={(e) => handleChange(e, field.label.split(' ')[0].toLowerCase())} // Maneja el cambio de valor
+                value={formData[field.name]} // Asigna el valor correspondiente del estado
+                onChange={handleChange}
               />
               <br />
-              {field.extraLabel && (
-                <>
-                  <label htmlFor={`extraLabel${index}`} className="extraLabel">{field.extraLabel}</label>
-                  <br />
-                </>
-              )}
             </div>
           ))}
         </div>
