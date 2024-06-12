@@ -1221,7 +1221,7 @@ app.post('/registrarMantenimiento', jsonParser, (req, res) => {
 			function (err, records) {
 				if (err) {
 					res.send({
-						editarAlquiler: false
+						registrarMantenimiento: false
 					});
 				}
 				else if (records.recordset.length == 0) {
@@ -1234,14 +1234,14 @@ app.post('/registrarMantenimiento', jsonParser, (req, res) => {
 									registrarMantenimiento: false
 								});
 							}
-							else if (records.recordset.length > 0) {
+							else if (records2.recordset.length > 0) {
 								let fechaActual = new Date();
 								let fechaSolicitud = getFecha(fechaActual);
 								let estado = 1;
 								let descripcionProblema = datos.descripcionProblema;
 								let idProveedor = datos.idProveedor;
 								let idPrioridad = datos.idPrioridad;
-								let costoMantenimiento = datos.costoMantenimiento
+								let costoMantenimiento = datos.costoMantenimiento;
 								let request3 = new mssql.Request();
 								let query3 = `EXEC insertarMantenimiento ${idSolicitud}, ${idPropiedad}, '${descripcionProblema}', ${idProveedor}, '${fechaSolicitud}', ${estado}, ${idPrioridad}, ${costoMantenimiento}`;
 								request3.query(query3,
@@ -1258,6 +1258,11 @@ app.post('/registrarMantenimiento', jsonParser, (req, res) => {
 										}
 									}
 								);
+							} 
+							else {
+								res.send({
+									registrarMantenimiento: false
+								});
 							}
 						}
 					);

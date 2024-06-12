@@ -3,13 +3,12 @@ import axios from "axios";
 import '../../css/Propiedades.css';
 
 function PropiedadesP(props) {
-  const { isLogin, setIsLogin } = props;
+  const { isLogin} = props;
   const [formData, setFormData] = useState({ 
     cedula: localStorage.getItem('user'), 
     idSolicitud: "",
     idPropiedad: "",
     descripcionProblema: "",
-    comentarios: "",
     idPrioridad: "",
     idProveedor: "",
     costoMantenimiento: "",
@@ -32,19 +31,20 @@ function PropiedadesP(props) {
 
   // Manejar el clic en el botón "Registrar"
   const handleRegister = () => {
-    const { idSolicitud, idPropiedad, descripcionProblema, comentarios, idPrioridad, idProveedor, cedula, costoMantenimiento} = formData;
+    console.log(4,4,4,4,4,4);
+    const { idSolicitud, idPropiedad, descripcionProblema, idPrioridad, idProveedor, cedula, costoMantenimiento} = formData;
     axios.post('http://localhost:8080/registrarMantenimiento', {
       idSolicitud: idSolicitud,
       idPropiedad: idPropiedad,
       descripcionProblema: descripcionProblema,
-      comentarios: comentarios,
       idPrioridad: idPrioridad,
       idProveedor: idProveedor,
       cedula: cedula,
       costoMantenimiento: costoMantenimiento
     })
     .then((response) => {
-      if (response.data.editarAlquiler) {
+      console.log(4, response)
+      if (response.data.registrarMantenimiento) {
         alert("Registro exitoso");
 
       } else {
@@ -63,7 +63,6 @@ function PropiedadesP(props) {
       { label: "ID solicitud:", type: "number", name:"idSolicitud" },
       { label: "ID propiedad:", type: "number", name: "idPropiedad" },
       { label: "Descripción del problema:", type: "text", name: "descripcionProblema" },
-      { label: "Comentarios:", type: "text", name: "comentarios" },
       { label: "Prioridad:", type: "number", extraLabel: "1: Baja 2: Media 3: Alta", name: "idPrioridad" },
       { label: "Proveedor:", type: "number", extraLabel: "1: Electricista 2: Jardinero 3: Carpintero 4: Plomero 5: Pintor", name:"idProveedor" },
       { label: "Costo:", type: "number",  name:"costoMantenimiento" },
@@ -81,10 +80,11 @@ function PropiedadesP(props) {
                 <input
                   type={field.type}
                   id={`inputField${index}`}
+                  name={field.name}
                   className="inputBox"
-                  placeholder={`Ingrese ${field.label.toLowerCase()}`}
-                  value={formData[field.name]} // Asigna el valor correspondiente del estado
-                  onChange={handleChange}                
+                  placeholder={`Ingrese ${field.label}`}
+                  value={formData[field.name]} // Asigna el valor correspondiente del estado 
+                  onChange={handleChange}              
                 />
                 <br />
                 {field.extraLabel && (
@@ -93,6 +93,7 @@ function PropiedadesP(props) {
                     <br />
                   </>
                 )}
+                <br />
               </div>
             ))}
           </div>
