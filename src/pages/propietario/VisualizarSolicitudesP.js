@@ -77,7 +77,7 @@ function VisualizarSolicitud(props) {
           </tr>
         </thead>
         <tbody>
-          {properties.map((property, index) => (
+          {properties && properties.map((property, index) => (
             <tr key={index}>
               <td>{property.id}</td>
               <td>{property.cedulaP}</td>

@@ -96,7 +96,7 @@ function VisualizarAme(props) {
           </tr>
         </thead>
         <tbody>
-          {amenidades.map((amenidad, index) => (
+          {amenidades && amenidades.map((amenidad, index) => (
             <tr key={index}>
               <td>{amenidad.id}</td>
               <td>{editMode && editedRow === index ? <input type="number" defaultValue={amenidad.costo} onChange={(e) => handleChange(e, index, 'costo')} /> : amenidad.costo}</td>

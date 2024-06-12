@@ -5,12 +5,14 @@ import '../../css/Propiedades.css';
 function PropiedadesP(props) {
   const { isLogin, setIsLogin } = props;
   const [formData, setFormData] = useState({ 
-     idSolicitud: "",
-     idpropiedad: "",
-     descripcionProblema: "",
-     comentarios: "",
-     prioridad: "",
-     proveedor: "",
+    cedula: localStorage.getItem('user'), 
+    idSolicitud: "",
+    idPropiedad: "",
+    descripcionProblema: "",
+    comentarios: "",
+    idPrioridad: "",
+    idProveedor: "",
+    costoMantenimiento: "",
   });
 
  // Si nadie ha iniciado sesión lo envía a la ventana de login
@@ -30,17 +32,19 @@ function PropiedadesP(props) {
 
   // Manejar el clic en el botón "Registrar"
   const handleRegister = () => {
-    const { idSolicitud, idpropiedad, descripcionProblema, comentarios, prioridad, proveedor} = formData;
+    const { idSolicitud, idPropiedad, descripcionProblema, comentarios, idPrioridad, idProveedor, cedula, costoMantenimiento} = formData;
     axios.post('http://localhost:8080/registrarMantenimiento', {
       idSolicitud: idSolicitud,
-      idpropiedad: idpropiedad,
+      idPropiedad: idPropiedad,
       descripcionProblema: descripcionProblema,
       comentarios: comentarios,
-      prioridad: prioridad,
-      proveedor: proveedor,
+      idPrioridad: idPrioridad,
+      idProveedor: idProveedor,
+      cedula: cedula,
+      costoMantenimiento: costoMantenimiento
     })
     .then((response) => {
-      if (response.data.registrarPropiedad) {
+      if (response.data.editarAlquiler) {
         alert("Registro exitoso");
 
       } else {
@@ -56,14 +60,14 @@ function PropiedadesP(props) {
 
     // Lista de etiquetas para los campos de texto y tipos
     const fields = [
-      { label: "ID solicitud:", type: "number" },
-      { label: "ID propiedad:", type: "number" },
-      { label: "Descripción del problema:", type: "text" },
-      { label: "Comentarios:", type: "text" },
-      { label: "Prioridad:", type: "number", extraLabel: "1: Baja 2: Media 3: Alta" },
-      { label: "Proveedor:", type: "number", extraLabel: "1: Electricista 2: Jardinero 3: Carpintero 4: Plomero 5: Pintor" },
-
-    ]
+      { label: "ID solicitud:", type: "number", name:"idSolicitud" },
+      { label: "ID propiedad:", type: "number", name: "idPropiedad" },
+      { label: "Descripción del problema:", type: "text", name: "descripcionProblema" },
+      { label: "Comentarios:", type: "text", name: "comentarios" },
+      { label: "Prioridad:", type: "number", extraLabel: "1: Baja 2: Media 3: Alta", name: "idPrioridad" },
+      { label: "Proveedor:", type: "number", extraLabel: "1: Electricista 2: Jardinero 3: Carpintero 4: Plomero 5: Pintor", name:"idProveedor" },
+      { label: "Costo:", type: "number",  name:"costoMantenimiento" },
+    ];
 
     return (
       <div className="propiedades">
@@ -79,6 +83,8 @@ function PropiedadesP(props) {
                   id={`inputField${index}`}
                   className="inputBox"
                   placeholder={`Ingrese ${field.label.toLowerCase()}`}
+                  value={formData[field.name]} // Asigna el valor correspondiente del estado
+                  onChange={handleChange}                
                 />
                 <br />
                 {field.extraLabel && (
@@ -90,7 +96,7 @@ function PropiedadesP(props) {
               </div>
             ))}
           </div>
-          <button className="option-link" type="button">
+          <button className="option-link" type="button" onClick={handleRegister}>
             Registrar
           </button>
         </div>
