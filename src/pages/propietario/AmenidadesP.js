@@ -47,11 +47,13 @@ function PropiedadesP(props) {
       estado: estado,
       cedula: cedula 
     })
-    .then(response => {
+    .then((response) => {
       if (response.data.registrarPropiedad) {
+        alert("Registro exitoso");
 
       } else {
-        //alert("Error al registrar la amenidad");
+       
+        alert("Error al registrar la amenidad");
       }
     })
     .catch(error => {
