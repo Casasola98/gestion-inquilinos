@@ -26,19 +26,11 @@ function Home(props) {
         {tipoUsuario === 'admin' && (
           <div className="menu">
             <div className="menu-row">
-              <a className="option-link" href="/crearPropiedadAdmin">
-                Registrar propiedades
+              <a className="option-link" href="/visualizarAme">
+              Visualizar amenidades
               </a>
-              <a className="option-link" href="/visualizarPropiedadA">
+              <a className="option-link" href="/VisualizarP">
                 Visualizar propiedades
-              </a>
-            </div>
-            <div className="menu-row">
-              <a className="option-link" href="/visualizarSoliP">
-                Solicitudes propiedades
-              </a>
-              <a className="option-link" href="/visualizarSoliA">
-              Solicitudes amenidades
               </a>
             </div>
             <div className="menu-row">
@@ -50,24 +42,8 @@ function Home(props) {
               </a>
             </div>
             <div className="menu-row">
-              <a className="option-link" href="/solicitudesManteA">
+              <a className="option-link" href="/mantenimientoP">
                 Solicitudes mantenimiento
-              </a>
-            </div>
-            <div className="menu-row">
-              <a className="option-link" href="/registrarPagoA">
-                Registrar Pago
-              </a>
-              <a className="option-link" href="/registrarSoliManteA">
-                Registrar mantenimiento
-              </a>
-            </div>
-            <div className="menu-row">
-              <a className="option-link" href="/alquilarP">
-                Alquilar propiedad
-              </a>
-              <a className="option-link" href="/alquilarA">
-                Alquilar amenidad
               </a>
               </div>
           </div>
@@ -94,9 +70,6 @@ function Home(props) {
               <a className="option-link" href="/mantenimientoP">
                 Mantenimiento
               </a>
-              <a className="option-link" href="/reporteP">
-                Reportes
-              </a>
             </div>
           </div>
         )}
@@ -106,21 +79,20 @@ function Home(props) {
               <a className="option-link" href="/pagosInq">
                 Pagos
               </a>
-              <a className="option-link" href="/mantenimientoInq">
-                Mantenimiento
-              </a>
             </div>
             <div className="menu-row">
               <a className="option-link" href="/opcionesComInq">
                 Comunicación
               </a>
-              <a className="option-link" href="/reporteInq">
-                Reporte
-              </a>
             </div>
             <div className="menu-row">
               <a className="option-link" href="/opcionesAlq">
                 Alquileres
+              </a>
+            </div>
+            <div className="menu-row">
+              <a className="option-link" href="/mantenimientoInq">
+              Mantenimiento
               </a>
             </div>
           </div>
