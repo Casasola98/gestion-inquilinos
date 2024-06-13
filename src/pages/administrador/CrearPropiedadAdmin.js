@@ -29,8 +29,10 @@ function RegistrarP(props) {
       [name]: value
     }));
   };
+
  //conexión con la función del backend
-  const handleSubmit = () => {
+  const handleRegister = () => {
+    console.log(4,4,4,4,4,4);
     const { cedula, idPropiedad, direccion, idTipoPropiedad, numeroHabitaciones, tamanoMetros,descripcion, estadoActual,precioAlquiler} = formData;
     axios.post('http://localhost:8080/crearPropiedadAdmin', {
       cedula:cedula,
@@ -58,15 +60,15 @@ function RegistrarP(props) {
   };
     // Lista de etiquetas para los campos de texto y tipos
     const fields = [
-      { label: "ID Propiedad", type: "number" },
-      { label: "Tipo de Propiedad", type: "text", extraLabel: "1: Apartamento 2:Casa 3:Oficina", pattern: "^[1-3]$" },
-      { label: "Tamaño", type: "text" },
-      { label: "Descripción", type: "text" },
-      { label: "Precio", type: "number" },
-      { label: "Dirección", type: "text" },
-      { label: "Número de Habitaciones", type: "number" },
-      { label: "Estado actual", type: "number", extraLabel: "1: Disponible 2:Ocupado 3:En mantenimiento", pattern: "^[1-3]$" },
-      { label: "Cédula:", type: "number" },
+      { label: "ID Propiedad", type: "number", name:"idPropiedad"  },
+      { label: "Tipo de Propiedad", type: "number", extraLabel: "1: Apartamento 2:Casa 3:Oficina", pattern: "^[1-3]$", name:"idTipoPropiedad"  },
+      { label: "Tamaño", type: "text", name:"tamanoMetros"  },
+      { label: "Descripción", type: "text", name:"descripcion"  },
+      { label: "Precio", type: "number", name:"precioAlquiler" },
+      { label: "Dirección", type: "text" , name:"direccion" },
+      { label: "Número de Habitaciones", type: "number", name:"numeroHabitaciones"  },
+      { label: "Estado actual", type: "number", extraLabel: "1: Disponible 2:Ocupado 3:En mantenimiento", pattern: "^[1-3]$", name:"estadoActual" },
+      { label: "Cédula:", type: "number", name:"cedula" },
     ];
 
 

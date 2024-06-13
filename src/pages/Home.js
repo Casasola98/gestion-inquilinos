@@ -67,7 +67,7 @@ function Home(props) {
                 Alquilar propiedad
               </a>
               <a className="option-link" href="/alquilarA">
-                Alquiar amenidad
+                Alquilar amenidad
               </a>
               </div>
           </div>
@@ -135,3 +135,6 @@ function Home(props) {
 }
 
 export default Home;
+
+
+
