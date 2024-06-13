@@ -1120,12 +1120,12 @@ app.post('/solicitarAlquilerP', jsonParser, (req, res) => {
 			function (err, records) {
 				if (err) {
 					res.send({
-						enviarSolicitud: false
+						registrarPropiedad: false
 					});
 				}
 				else {
 					res.send({
-						enviarSolicitud: true
+						registrarPropiedad: true
 					});
 				}
 			}
