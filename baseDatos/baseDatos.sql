@@ -349,7 +349,6 @@ CREATE TABLE admin (
 -- INSERT INTO Propiedad (idPropiedad, direccion, idTipoPropiedad, numeroHabitaciones, tamanoMetros, descripcion, estadoActual, precioAlquiler, cedulaPropietario) 
 -- VALUES (1, 'Calle Principal 123', 1, 2, 100, 'Apartamento acogedor', 1, 1000, 123456789);
 
-
 -- -- Insertar gastos adicionales de propiedad
 -- INSERT INTO GastosAdicionalesPropiedad (idPropiedad, idTipoGasto, monto) 
 -- VALUES (1, 1, 50), (1, 3, 80);
@@ -394,7 +393,7 @@ SELECT * FROM Amenidades;
 CREATE PROCEDURE obtenerUsuario(@cedula INT)
 AS
 BEGIN
-    (SELECT * FROM Usuario WHERE cedula= @cedula)
+    (SELECT * FROM Usuario WHERE cedula = @cedula)
 END
 
 --EXEC obtenerUsuario 7;
@@ -704,7 +703,6 @@ BEGIN
 END
 -- EXEC insertarAlquilerAmen 7, '2027/01/01', '2028/01/01', 2 
 
-
 --insertarPago
 
 CREATE PROCEDURE insertarPago(@idPago INT, @cedulaUsuario INT, @fechaPago DATE, @monto INT, @tipoPago INT, @estadoPago INT, @metodoPago VARCHAR(20))
@@ -743,7 +741,7 @@ CREATE PROCEDURE insertarSolicitudAlquilerA(@idAmenidad INT, @cedula INT, @fecha
 AS
 BEGIN
     DECLARE @estadoSolicitud VARCHAR(50)
-    SET @estadoSolicitud  = 'Pendiente'
+    SET @estadoSolicitud  = 'PENDIENTE'
     INSERT INTO solicitudesAlquierAmenidad (idAmenidad, cedula, estadoSolicitud, fechaSolicitud, fechaInicio, FechaFin) 
     VALUES (@idAmenidad, @cedula, @estadoSolicitud, @fechaSolicitud, @fechaInicio, @FechaFin)  
 END
@@ -811,6 +809,25 @@ BEGIN
     SELECT cedulaReceptor, fechaMensaje, horaMensaje, contenido, estado FROM Comunicacion WHERE cedulaEmisor = @cedulaUsuario  
 END
 
+-- obtenerMsjAdmin
+
+CREATE PROCEDURE obtenerMsjAdmin
+AS
+BEGIN
+    SELECT cedulaReceptor, cedulaEmisor, horaMensaje, contenido, estado FROM Comunicacion  
+END
+
+-- obtenerPagosAdmin
+
+CREATE PROCEDURE obtenerPagosAdmin
+AS
+BEGIN
+    SELECT idPago, fechaPago, monto, EstadosPagoPermitidos.estadoPago, TiposPagoPermitidos.tipoPago, metodoPago
+    FROM Pagos JOIN EstadosPagoPermitidos 
+    ON Pagos.estadoPago = EstadosPagoPermitidos.idEstadoPago 
+    JOIN TiposPagoPermitidos ON TiposPagoPermitidos.idTipoPago = Pagos.tipoPago
+END
+
 -- cambiarPropiedad
 CREATE PROCEDURE cambiarPropiedad (@idPropiedad INT, @direccion VARCHAR(90), @idTipoPropiedad INT, @numeroHabitaciones INT, @tamanoMetros INT, @descripcion VARCHAR(90), @estadoActual INT, @precioAlquiler INT, @cedulaPropietario INT)
 AS
@@ -848,16 +865,16 @@ END
 
 -- cambiarSolicitudAlquiler (aceptar/ denegar)
 
-CREATE PROCEDURE cambiarSolicitudAlquilerP(@idPropiedad INT, @estadoSolicitud VARCHAR(50))
+CREATE PROCEDURE cambiarSolicitudAlquilerP(@idPropiedad INT, @estadoSolicitud VARCHAR(50), @cedula INT, @fechaSolicitud DATE, @fechaInicio DATE, @FechaFin DATE)
 AS
 BEGIN
-    UPDATE solicitudesAlquierPropiedad SET estadoSolicitud = @estadoSolicitud WHERE idPropiedad = @idPropiedad
+    UPDATE solicitudesAlquierPropiedad SET estadoSolicitud = @estadoSolicitud WHERE idPropiedad = @idPropiedad AND cedula = @cedula AND fechaSolicitud = @fechaSolicitud AND fechaInicio = @fechaInicio AND FechaFin = @FechaFin
 END
 
-CREATE PROCEDURE cambiarSolicitudAlquilerA(@idAmenidad INT, @estadoSolicitud VARCHAR(50))
+CREATE PROCEDURE cambiarSolicitudAlquilerA(@idAmenidad INT, @estadoSolicitud VARCHAR(50), @cedula INT, @fechaSolicitud DATE, @fechaInicio DATE, @FechaFin DATE)
 AS
 BEGIN
-    UPDATE solicitudesAlquierAmenidad SET estadoSolicitud = @estadoSolicitud WHERE idAmenidad = @idAmenidad
+    UPDATE solicitudesAlquierAmenidad SET estadoSolicitud = @estadoSolicitud WHERE idAmenidad = @idAmenidad AND cedula = @cedula AND fechaSolicitud = @fechaSolicitud AND fechaInicio = @fechaInicio AND FechaFin = @FechaFin
 END
 
 --EXEC insertarSolicitudAlquilerP 23,7, '2024/05/06', '2024/07/01', '2025/07/01'
@@ -1018,7 +1035,7 @@ BEGIN
     FROM solicitudesAlquierPropiedad 
     JOIN Propiedad 
     ON solicitudesAlquierPropiedad.idPropiedad = Propiedad.idPropiedad 
-    WHERE Propiedad.cedulaPropietario = @cedulaPropietario
+    WHERE Propiedad.cedulaPropietario = @cedulaPropietario AND solicitudesAlquierPropiedad.estadoSolicitud = 'PENDIENTE'
 END
 
 CREATE PROCEDURE obtenerSolicitudesPropietarioA(@cedulaPropietario INT)
@@ -1028,7 +1045,7 @@ BEGIN
     FROM solicitudesAlquierAmenidad 
     JOIN Amenidades 
     ON solicitudesAlquierAmenidad.idAmenidad = Amenidades.idAmenidad 
-    WHERE Amenidades.cedulaPropietario = @cedulaPropietario
+    WHERE Amenidades.cedulaPropietario = @cedulaPropietario AND solicitudesAlquierAmenidad.estadoSolicitud = 'PENDIENTE'
 END
 
 --obtener solicitudes admin

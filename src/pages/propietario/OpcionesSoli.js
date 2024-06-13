@@ -32,7 +32,7 @@ function OpcionesSoli(props) {
               Solicitudes propiedades 
             </a>
             <a className="option-link" href="/visualizarSolicitudesA">
-              Solicitudes amenindades
+              Solicitudes amenidades
             </a>
           </div>
         </div>

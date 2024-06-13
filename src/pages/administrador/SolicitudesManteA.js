@@ -1,110 +1,187 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import '../../css/Propiedades.css';
+
+const getFecha = (fecha) => {
+	return `${fecha.getFullYear()}/${fecha.getMonth() + 1}/${fecha.getDate()}`;
+}
 
 function MantenimientoP(props) {
   const { isLogin, setIsLogin } = props;
+  const [editMode, setEditMode] = useState(false);
+  const [editedRow, setEditedRow] = useState(null);
+  const [properties, setProperties] = useState([]);
 
-  // Si nadie ha iniciado sesion lo envia a la ventana de login
+  const [editProperty, setEditProperties] = useState({
+    cedula: (localStorage.getItem('user')),
+    idSolicitud: "",
+    idPropiedad: "",
+    descripcionProblema: "",
+    fechaSolicitud: "",
+    estadoMantenimiento: "",
+    prioridad: "",
+    idProveedor: "",
+    nombre: "",
+    primerApellido: "",
+    segundoApellido: "",
+    telefono: ""
+  });
+
+  //idSolicitud, Propiedad.idPropiedad, descripcionProblemaProblema, fechaSolicitud, estadoMantenimientoMantenimiento, prioridad, Proveedores.idProveedor, nombre, primerApellido, segundoApellido, especialidad, telefono FROM SolicitudMantenimiento JOIN Propiedad ON SolicitudMantenimiento.idPropiedad = Propiedad.idPropiedad JOIN PrioridadesPermitidas ON SolicitudMantenimiento.idPrioridad = PrioridadesPermitidas.idPrioridad JOIN Proveedores ON SolicitudMantenimiento.idProveedor = Proveedores.idProveedor JOIN estadoMantenimientosMantenimientoPermitidos ON idestadoMantenimientoMantenimiento = SolicitudMantenimiento.estadoMantenimiento WHERE Propiedad.cedulaPropietario = @cedulaUsuario
   if (!isLogin) {
     window.location.href = '/login';
   }
 
-  const [properties, setProperties] = useState([
-    { idSolicitud: 1, idPropiedad: 101, descripcion: "Reparar tubería", idProveedor: 201, fechaSolicitud: "2023-01-01", estado: 1, prioridad: "Alta", costo: 100, nombreProveedor: "Juan", apellido1Proveedor: "Pérez", apellido2Proveedor: "Gómez", especialidad: "Plomería", telefonoProveedor: "123456789", comentarios: "" },
-    { idSolicitud: 2, idPropiedad: 102, descripcion: "Pintar paredes", idProveedor: 202, fechaSolicitud: "2023-02-15", estado: 2, prioridad: "Media", costo: 200, nombreProveedor: "Luis", apellido1Proveedor: "Martínez", apellido2Proveedor: "Rodríguez", especialidad: "Pintura", telefonoProveedor: "987654321", comentarios: "" }
-  ]);
+  useEffect(() => {
+    if (isLogin) {
+      axios.post('http://localhost:8080/visualizarMantenimientos', { cedula: localStorage.getItem('user') })
+      .then((response) => {
+        setProperties(response.data.recordset);
+      })
+      .catch(error => {
+        console.error("Error:", error);
+      });
+    }
+  }, [isLogin]);
 
-  const [editMode, setEditMode] = useState(null);
-  const [updatedProperties, setUpdatedProperties] = useState(properties);
-
-  const handleEditClick = (index) => {
-    setEditMode(index);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditProperties((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
   };
 
-  const handleSaveClick = (index) => {
-    const updated = [...properties];
-    updated[index] = updatedProperties[index];
-    setProperties(updated);
-    setEditMode(null);
+  const toggleEditMode = () => {
+    setEditMode(!editMode);
   };
 
-  const handleChange = (index, field, value) => {
-    const updated = [...updatedProperties];
-    updated[index][field] = value;
-    setUpdatedProperties(updated);
+  const handleEdit = (rowIndex, property) => {
+    setEditProperties({
+      cedula: localStorage.getItem('user'),
+      idSolicitud: property.idSolicitud,
+      idPropiedad: property.idPropiedad,
+      descripcionProblema: property.descripcionProblema,
+      fechaSolicitud: property.fechaSolicitud,
+      estadoMantenimiento: property.estadoMantenimiento == "pendiente" ? 1 : property.estadoMantenimiento == "en proceso" ? 2 : 3 ,
+      prioridad: property.prioridad,
+      idProveedor: property.idProveedor,
+      nombre: property.nombre,
+      primerApellido: property.primerApellido,
+      segundoApellido: property.segundoApellido,
+      especialidad: property.especialidad,
+      telefono: property.telefono
+    });
+    setEditedRow(rowIndex);
+    toggleEditMode();
   };
 
-  return (
-    <div className="propiedades">
-      <h1 className="title">Solicitudes de mantenimiento</h1>
-      <div className="table-contenedor">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>ID Solicitud</th>
-              <th>ID Propiedad</th>
-              <th>Descripción</th>
-              <th>Fecha de solicitud</th>
-              <th>Estado</th>
-              <th>Prioridad</th>
-              <th>ID Proveedor</th>
-              <th>Nombre Proveedor</th>
-              <th>Apellido 1 Proveedor</th>
-              <th>Apellido 2 Proveedor</th>
-              <th>Especialidad</th>
-              <th>Télefono Proveedor</th>
-            </tr>
-          </thead>
-          <tbody>
-            {properties.map((property, index) => (
-              <tr key={index}>
-                {editMode === index ? (
-                  <>
-                    <td><input type="number" value={updatedProperties[index].idSolicitud} onChange={(e) => handleChange(index, 'idSolicitud', e.target.value)} /></td>
-                    <td><input type="number" value={updatedProperties[index].idPropiedad} onChange={(e) => handleChange(index, 'idPropiedad', e.target.value)} /></td>  
-                    <td><input type="text" value={updatedProperties[index].descripcion} onChange={(e) => handleChange(index, 'descripcion', e.target.value)} /></td>
-                    <td><input type="text" value={updatedProperties[index].fechaSolicitud} onChange={(e) => handleChange(index, 'fechaSolicitud', e.target.value)} /></td>
-                    <td><input type="number" value={updatedProperties[index].estado} onChange={(e) => handleChange(index, 'estado', e.target.value)} /></td>
-                    <td><input type="text" value={updatedProperties[index].prioridad} onChange={(e) => handleChange(index, 'prioridad', e.target.value)} /></td>
-                    <td><input type="number" value={updatedProperties[index].idProveedor} onChange={(e) => handleChange(index, 'idProveedor', e.target.value)} /></td>
-                    <td><input type="text" value={updatedProperties[index].nombreProveedor} onChange={(e) => handleChange(index, 'nombreProveedor', e.target.value)} /></td>
-                    <td><input type="text" value={updatedProperties[index].apellido1Proveedor} onChange={(e) => handleChange(index, 'apellido1Proveedor', e.target.value)} /></td>
-                    <td><input type="text" value={updatedProperties[index].apellido2Proveedor} onChange={(e) => handleChange(index, 'apellido2Proveedor', e.target.value)} /></td>
-                    <td><input type="text" value={updatedProperties[index].especialidad} onChange={(e) => handleChange(index, 'especialidad', e.target.value)} /></td>
-                    <td><input type="text" value={updatedProperties[index].telefonoProveedor} onChange={(e) => handleChange(index, 'telefonoProveedor', e.target.value)} /></td>
-              
-                  </>
-                ) : (
-                  <>
-                    <td>{property.idSolicitud}</td>
-                    <td>{property.idPropiedad}</td>
-                    <td>{property.descripcion}</td>
-                    <td>{property.fechaSolicitud}</td>
-                    <td>{property.estado}</td>
-                    <td>{property.prioridad}</td>
-                    <td>{property.idProveedor}</td>
-                    <td>{property.nombreProveedor}</td>
-                    <td>{property.apellido1Proveedor}</td>
-                    <td>{property.apellido2Proveedor}</td>
-                    <td>{property.especialidad}</td>
-                    <td>{property.telefonoProveedor}</td>
 
+//   //INSERT INTO PrioridadesPermitidas (idPrioridad, prioridad) VALUES
+// (1, 'baja'),
+// (2, 'media'),
+// (3, 'alta');
 
-                  </>
-                )}
-                <td>
-                  {editMode === index ? (
-                    <a href="#" onClick={() => handleSaveClick(index)}>Guardar</a>
-                  ) : (
-                    <a href="#" onClick={() => handleEditClick(index)}>Actualizar</a>
-                  )}
-                </td>
+// INSERT INTO EstadosMantenimientoPermitidos (idEstadoMantenimiento, estadoMantenimiento) VALUES
+// (1, 'pendiente'),
+// (2, 'en proceso'),
+// (3, 'resuelto');
+
+  const handleSave = () => {
+    axios.post('http://localhost:8080/actualizarMantenimientos', {
+      idSolicitud: editProperty.idSolicitud,
+      estado: editProperty.estadoMantenimiento
+    })
+      .then((response) => {
+        if (response.data.actualizarMantenimiento) {
+          setEditedRow(null);
+          toggleEditMode();
+          axios.post('http://localhost:8080/visualizarMantenimientos', {
+            cedula: localStorage.getItem('user')
+          })
+          .then((response) => {
+            setProperties(response.data.recordset);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+        } else {
+          alert("Error al actualizar la solicitud de mantenimiento");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("Error al conectar con el servidor");
+      });
+  };
+
+  if (isLogin) {
+    return (
+      <div className="propiedades">
+        <h1 className="title">Solicitudes de mantenimiento</h1>
+        <div className="table-contenedor">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>ID Solicitud</th>
+                <th>ID Propiedad</th>
+                <th>Descripción</th>
+                <th>Fecha de solicitud</th>
+                <th>estadoMantenimiento</th>
+                <th>Prioridad</th>
+                <th>ID Proveedor</th>
+                <th>Nombre Proveedor</th>
+                <th>Apellido 1 Proveedor</th>
+                <th>Apellido 2 Proveedor</th>
+                <th>Especialidad</th>
+                <th>Teléfono Proveedor</th>
+                <th>Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {properties.map((property, index) => (
+                <tr key={index}>
+                  <td>{property.idSolicitud}</td>
+                  <td>{property.idPropiedad}</td>
+                  <td>{property.descripcionProblema}</td>
+                  <td>{getFecha(new Date(property.fechaSolicitud))}</td>
+                  <td>{editMode && editedRow === index ? 
+                    <select
+                      defaultValue={editProperty.estadoMantenimiento}
+                      onChange={handleChange}
+                      name="estadoMantenimiento"
+                    >
+                      <option value="1">pendiente</option>
+                      <option value="2">en proceso</option>
+                      <option value="3">resuelto</option>
+                    </select>
+                    : property.estadoMantenimiento}</td>
+                  <td>{property.prioridad}</td>
+                  <td>{property.idProveedor}</td>
+                  <td>{property.nombre}</td>
+                  <td>{property.primerApellido}</td>
+                  <td>{property.segundoApellido}</td>
+                  <td>{property.especialidad}</td>
+                  <td>{property.telefono}</td>
+                  <td>
+                    {editMode && editedRow === index ? (
+                      <a href="#" onClick={() => handleSave()}>Guardar</a>
+                    ) : (
+                      <span>
+                        <a href="#" onClick={() => handleEdit(index, property)}>Editar</a>
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    );
+  }
+  return (
+    <div className="home"></div>
   );
 }
 

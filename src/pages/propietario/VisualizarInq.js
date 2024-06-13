@@ -2,20 +2,40 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import '../../css/Propiedades.css';
 
+const getFecha = (fechaString) => {
+  let fecha = new Date(fechaString.replaceAll("-", "/").replaceAll("T00:00:00.000Z", ""));
+  return `${fecha.getFullYear()}/${fecha.getMonth() + 1}/${fecha.getDate()}`;
+}
+
 function VisualizarInquilinos(props) {
-  const { isLogin, cedula } = props;
+  const { isLogin, setIsLogin } = props;
   const [properties, setProperties] = useState([]);
-  const [editMode, setEditMode] = useState(false);
+  const [amenidades, setAmenidades] = useState([]);
   const [editedRow, setEditedRow] = useState(null);
   const [interruptRow, setInterruptRow] = useState(null);
   const [evictionTime, setEvictionTime] = useState("");
   const [evictionReason, setEvictionReason] = useState("");
+  const cedula = localStorage.getItem('user');
 
   useEffect(() => {
     if (isLogin) {
-      axios.post('http://localhost:8080/visualizarInquilinosP', { cedula })
+      axios.post('http://localhost:8080/visualizarInquilinosP', 
+        { 
+          cedula: cedula 
+        })
         .then(response => {
           setProperties(response.data.recordset);
+        })
+        .catch(error => {
+          console.error("Error al obtener propiedades:", error);
+        });
+      
+      axios.post('http://localhost:8080/visualizarInquilinosA', 
+        { 
+          cedula: cedula 
+        })
+        .then(response => {
+          setAmenidades(response.data.recordset);
         })
         .catch(error => {
           console.error("Error al obtener propiedades:", error);
@@ -23,11 +43,7 @@ function VisualizarInquilinos(props) {
     } else {
       window.location.href = '/login';
     }
-  }, [isLogin, cedula]);
-
-  const toggleEditMode = () => {
-    setEditMode(!editMode);
-  };
+  }, [isLogin, setIsLogin]);
 
   const handleInterrupt = (index) => {
     setInterruptRow(index);
@@ -58,52 +74,112 @@ function VisualizarInquilinos(props) {
     }
   };
 
-  const handleSave = () => {
-    setEditedRow(null);
-    setEditMode(false);
-  };
-
   return (
     <div className="propiedades">
       <h1 className="title">Visualizar inquilinos</h1>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>ID Propiedad</th>
-            <th>Dirección</th>
-            <th>Tipo</th>
-            <th>Num Habitaciones</th>
-            <th>Tamaño</th>
-            <th>Descripción</th>
-            <th>Estado</th>
-            <th>Precio</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          { properties?.map((property, index) => (
-            <tr key={index}>
-              <td>{property.id}</td>
-              <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.tipo} className="inputBox" /> : property.tipo}</td>
-              <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.tamaño} className="inputBox" /> : property.tamaño}</td>
-              <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.descripción} className="inputBox" /> : property.descripción}</td>
-              <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.precio} className="inputBox" /> : property.precio}</td>
-              <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.dirección} className="inputBox" /> : property.dirección}</td>
-              <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.habitaciones} className="inputBox" /> : property.habitaciones}</td>
-              <td>{editMode && editedRow === index ? <input type="text" defaultValue={property.estado} className="inputBox" /> : property.estado}</td>
-              <td>
-                {editMode && editedRow === index ? (
-                  <a href="#" onClick={handleSave}>Guardar</a>
-                ) : (
+      <h2 className="subtitle">Propiedades</h2>
+      <div className="table-contenedor">
+        <table className="table">
+          <thead>
+            <tr>
+              <th>ID Propiedad</th>
+              <th>Cedula</th>
+              <th>Correo</th>
+              <th>Nombre</th>
+              <th>Primer apellido</th>
+              <th>Segundo apellido</th>
+              <th>Telefono</th>
+              <th>Fecha Inicio</th>
+              <th>Fecha Final</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            { properties?.map((property, index) => (
+              <tr key={index}>
+                <td>{property.idPropiedad}</td>
+                <td>{property.cedula}</td>
+                <td>{property.correo}</td>
+                <td>{property.nombre}</td>
+                <td>{property.apellido1}</td>
+                <td>{property.apellido2}</td>
+                <td>{property.telefono}</td>
+                <td>{getFecha(property.fechaInicio)}</td>
+                <td>{getFecha(property.fechaFin)}</td>
+                <td>
                   <span>
                     <a href="#" onClick={() => handleInterrupt(index)}>Interrumpir</a>
                   </span>
-                )}
-              </td>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {interruptRow !== null && (
+        <div className="eviction-form">
+          <h3>Interrumpir Inquilino</h3>
+          <label>
+            Tiempo de desalojo (meses):
+            <input
+              type="number"
+              value={evictionTime}
+              onChange={(e) => setEvictionTime(e.target.value)}
+              className="inputBox"
+            />
+          </label>
+          <label>
+            Razón de desalojo:
+            <textarea
+              value={evictionReason}
+              onChange={(e) => setEvictionReason(e.target.value)}
+              className="inputBox"
+            />
+          </label>
+          <button onClick={handleEvictionSubmit}>Enviar</button>
+        </div>
+      )}
+      <br/>
+      <h2 className="subtitle">Amenidades</h2>
+      <div className="table-contenedor">
+        <table className="table">
+          <thead>
+            <tr>
+              <th>ID Amenidad</th>
+              <th>Cedula</th>
+              <th>Correo</th>
+              <th>Nombre</th>
+              <th>Primer apellido</th>
+              <th>Segundo apellido</th>
+              <th>Telefono</th>
+              <th>Fecha Inicio</th>
+              <th>Fecha Final</th>
+              <th>Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            { amenidades?.map((property, index) => (
+              <tr key={index}>
+                <td>{property.idAmenidad}</td>
+                <td>{property.cedula}</td>
+                <td>{property.correo}</td>
+                <td>{property.nombre}</td>
+                <td>{property.apellido1}</td>
+                <td>{property.apellido2}</td>
+                <td>{property.telefono}</td>
+                <td>{getFecha(property.fechaInicio)}</td>
+                <td>{getFecha(property.fechaFin)}</td>
+                <td>
+                  {/* TODO: Duplicar todo lo de interrumpir para que funcione para amenidades, no solo para propiedades  */}
+                  <span>
+                    <a href="#" onClick={() => handleInterrupt(index)}>Interrumpir</a>
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {interruptRow !== null && (
         <div className="eviction-form">
           <h3>Interrumpir Inquilino</h3>

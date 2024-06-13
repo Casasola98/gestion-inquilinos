@@ -2,13 +2,22 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import '../../css/Propiedades.css';
 
+const getFecha = (fechaString) => {
+  let fecha = new Date(fechaString.replaceAll("-", "/").replaceAll("T00:00:00.000Z", ""));
+  return `${fecha.getFullYear()}/${fecha.getMonth() + 1}/${fecha.getDate()}`;
+}
+
 function VisualizarSolicitud(props) {
-  const { isLogin, cedula } = props;
+  const { isLogin, setIsLogin } = props;
   const [properties, setProperties] = useState([]);
+  const cedula = localStorage.getItem('user');
 
   useEffect(() => {
     if (isLogin) {
-      axios.post('http://localhost:8080/visualizarSolicitudesP', { cedula })
+      axios.post('http://localhost:8080/visualizarSolicitudesP',
+        {
+          cedula: cedula
+        })
         .then(response => {
           setProperties(response.data.recordset);
         })
@@ -18,21 +27,28 @@ function VisualizarSolicitud(props) {
     } else {
       window.location.href = '/login';
     }
-  }, [isLogin, cedula]);
+  }, [isLogin, setIsLogin]);
 
-  const handleAccept = (index) => {
-    const property = properties[index];
+  const handleAccept = (property) => {
     axios.post('http://localhost:8080/crearInquilinoPropiedad', {
-      cedula: property.cedulaInq,
-      fechaInicio: property.fechaInicio,
-      fechaFin: property.fechaFin,
-      idPropiedad: property.id
+      cedula: property.cedulaInquilino,
+      fechaInicio: getFecha((property.fechaInicio)),
+      fechaFin: getFecha((property.FechaFin)),
+      fechaSolicitud: getFecha((property.fechaSolicitud)),
+      idPropiedad: property.idPropiedad
     })
       .then(response => {
         if (response.data.editarPropiedad) {
-          const updatedProperties = [...properties];
-          updatedProperties[index].estadoSolicitud = "Aceptada";
-          setProperties(updatedProperties);
+          axios.post('http://localhost:8080/visualizarSolicitudesP',
+            {
+              cedula: cedula
+            })
+            .then(response => {
+              setProperties(response.data.recordset);
+            })
+            .catch(error => {
+              console.error("Error al obtener propiedades:", error);
+            });
         } else {
           console.error("Error al aceptar las solicitudes");
         }
@@ -42,16 +58,26 @@ function VisualizarSolicitud(props) {
       });
   };
 
-  const handleDeny = (index) => {
-    const property = properties[index];
+  const handleDeny = (property) => {
     axios.post('http://localhost:8080/denegarInquilinoPropiedad', {
-      idPropiedad: property.id
+      cedula: property.cedulaInquilino,
+      fechaInicio: getFecha((property.fechaInicio)),
+      fechaFin: getFecha((property.FechaFin)),
+      fechaSolicitud: getFecha((property.fechaSolicitud)),
+      idPropiedad: property.idPropiedad
     })
       .then(response => {
         if (response.data.denergarInquilino) {
-          const updatedProperties = [...properties];
-          updatedProperties[index].estadoSolicitud = "Denegada";
-          setProperties(updatedProperties);
+          axios.post('http://localhost:8080/visualizarSolicitudesP',
+            {
+              cedula: cedula
+            })
+            .then(response => {
+              setProperties(response.data.recordset);
+            })
+            .catch(error => {
+              console.error("Error al obtener propiedades:", error);
+            });
         } else {
           console.error("Error al negar las solicitudes");
         }
@@ -79,17 +105,17 @@ function VisualizarSolicitud(props) {
         <tbody>
           {properties && properties.map((property, index) => (
             <tr key={index}>
-              <td>{property.id}</td>
-              <td>{property.cedulaP}</td>
-              <td>{property.cedulaInq}</td>
-              <td>{property.fechaSolicitud}</td>
-              <td>{property.fechaInicio}</td>
-              <td>{property.fechaFin}</td>
+              <td>{property.idPropiedad}</td>
+              <td>{property.cedulaPropietario}</td>
+              <td>{property.cedulaInquilino}</td>
+              <td>{getFecha((property.fechaSolicitud))}</td>
+              <td>{getFecha((property.fechaInicio))}</td>
+              <td>{getFecha((property.FechaFin))}</td>
               <td>
                 <span>
-                  <a href="#" onClick={() => handleAccept(index)}>Aceptar</a>
+                  <a href="#" onClick={() => handleAccept(property)}>Aceptar</a>
                   {" | "}
-                  <a href="#" onClick={() => handleDeny(index)}>Denegar</a>
+                  <a href="#" onClick={() => handleDeny(property)}>Denegar</a>
                 </span>
               </td>
             </tr>

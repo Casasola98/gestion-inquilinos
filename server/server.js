@@ -360,6 +360,7 @@ app.post('/crearInquilinoAmenidad', jsonParser, (req, res) => {
 	let cedula = datos.cedula;
 	let fechaInicio = datos.fechaInicio;
 	let fechaFin = datos.fechaFin;
+	let fechaSolicitud = datos.fechaSolicitud;
 	let idAmenidad = datos.idAmenidad;
 	let estadoSolicitud = 'ACEPTADA';
 
@@ -374,7 +375,7 @@ app.post('/crearInquilinoAmenidad', jsonParser, (req, res) => {
 					});
 				}
 				else {
-					let query2 = `EXEC cambiarSolicitudAlquilerA ${idAmenidad}, '${estadoSolicitud}'`
+					let query2 = `EXEC cambiarSolicitudAlquilerA ${idAmenidad}, '${estadoSolicitud}', ${cedula}, '${fechaSolicitud}', '${fechaInicio}', '${fechaFin}'`
 					let request2 = new mssql.Request();
 					request2.query(query2,
 						function (err2, records) {
@@ -401,18 +402,21 @@ app.post('/denegarInquilinoAmenidad', jsonParser, (req, res) => {
 	const datos = req.body;
 	//variables enviados por el body
 	let idAmenidad = datos.idAmenidad;
+	let cedula = datos.cedula;
+	let fechaInicio = datos.fechaInicio;
+	let fechaFin = datos.fechaFin;
+	let fechaSolicitud = datos.fechaSolicitud;
 	let estadoSolicitud = 'DENEGADA';
 
 	mssql.connect(config, function (err) {
 		let request = new mssql.Request();
-		let query = `EXEC cambiarSolicitudAlquilerA ${idAmenidad}, '${estadoSolicitud}'`;
+		let query = `EXEC cambiarSolicitudAlquilerA ${idAmenidad}, '${estadoSolicitud}', ${cedula}, '${fechaSolicitud}', '${fechaInicio}', '${fechaFin}'`;
 		request.query(query,
 			function (err, records) {
 				if (err) {
 					res.send({
 						denergarInquilino: false
 					});
-
 				}
 				else {
 					res.send({
@@ -432,6 +436,7 @@ app.post('/crearInquilinoPropiedad', jsonParser, (req, res) => {
 	let cedula = datos.cedula;
 	let fechaInicio = datos.fechaInicio;
 	let fechaFin = datos.fechaFin;
+	let fechaSolicitud = datos.fechaSolicitud;
 	let idPropiedad = datos.idPropiedad;
 	let estadoSolicitud = 'ACEPTADA';
 	mssql.connect(config, function (err) {
@@ -445,10 +450,10 @@ app.post('/crearInquilinoPropiedad', jsonParser, (req, res) => {
 					});
 				}
 				else {
-					let query2 = ` EXEC cambiarSolicitudAlquilerP ${idPropiedad}, '${estadoSolicitud}'`
+					let query2 = `EXEC cambiarSolicitudAlquilerP ${idPropiedad}, '${estadoSolicitud}', ${cedula}, '${fechaSolicitud}', '${fechaInicio}', '${fechaFin}'`
 					let request2 = new mssql.Request();
 					request2.query(query2,
-						function (err2, records) {
+						function (err2, records2) {
 							if (err2) {
 								res.send({
 									editarPropiedad: false
@@ -472,11 +477,15 @@ app.post('/denegarInquilinoPropiedad', jsonParser, (req, res) => {
 	const datos = req.body;
 	//variables enviados por el body
 	let idPropiedad = datos.idPropiedad;
+	let cedula = datos.cedula;
+	let fechaInicio = datos.fechaInicio;
+	let fechaFin = datos.fechaFin;
+	let fechaSolicitud = datos.fechaSolicitud;
 	let estadoSolicitud = 'DENEGADA';
 
 	mssql.connect(config, function (err) {
 		let request = new mssql.Request();
-		let query = `EXEC cambiarSolicitudAlquilerP ${idPropiedad}, '${estadoSolicitud}'`;
+		let query = `EXEC cambiarSolicitudAlquilerP ${idPropiedad}, '${estadoSolicitud}', ${cedula}, '${fechaSolicitud}', '${fechaInicio}', '${fechaFin}'`;
 		request.query(query,
 			function (err, records) {
 				if (err) {
@@ -1260,7 +1269,7 @@ app.post('/registrarMantenimiento', jsonParser, (req, res) => {
 										}
 									}
 								);
-							} 
+							}
 							else {
 								res.send({
 									registrarMantenimiento: false
@@ -1516,7 +1525,7 @@ app.post('/enviarMensajeAdmin', jsonParser, (req, res) => {
 		let query = `EXEC obtenerUsuario ${cedulaEmisor}`;
 		request.query(query,
 			function (err, records) {
-			
+
 				if (err) {
 					res.send({
 						enviarMensaje: false
@@ -1532,7 +1541,7 @@ app.post('/enviarMensajeAdmin', jsonParser, (req, res) => {
 									enviarMensaje: false
 								});
 							}
-							else if (records2.recordset.length > 0){
+							else if (records2.recordset.length > 0) {
 								let fechaActual = new Date();
 								let fechaMensaje = getFecha(fechaActual);
 								let horaMensaje = getHora(fechaActual);
@@ -1558,10 +1567,10 @@ app.post('/enviarMensajeAdmin', jsonParser, (req, res) => {
 				}
 			}
 		);
-	})		
+	})
 });
 
-		
+
 
 //corregir
 app.post('/visualizarMsjAdmin', jsonParser, (req, res) => {
@@ -1604,13 +1613,12 @@ app.post('/registrarPagoAdmin', jsonParser, (req, res) => {
 				if (err) {
 					console.log(err)
 				}
-				else if (records.recordset.length > 0){
+				else if (records.recordset.length > 0) {
 					let request2 = new mssql.Request();
 					let query2 = `EXEC obtenerPago ${idPago}`;
 					request2.query(query2,
 						function (err2, records2) {
 							if (err2) {
-								console.log(err)
 								res.send({
 									registrarPago: false
 								});
@@ -1686,19 +1694,17 @@ app.post('/solicitarAlquilerAmenidadAdmin', jsonParser, (req, res) => {
 		request.query(query,
 			function (err, records) {
 				if (err) {
-					console.log(err)
 					res.send({
 						enviarSolicitud: false
 					});
 				}
-				else if(records.recordset.length > 0){
+				else if (records.recordset.length > 0) {
 
 					let request2 = new mssql.Request();
 					let query2 = `EXEC insertarSolicitudAlquilerA ${idAmenidad}, ${cedula}, '${fechaSolicitud}', '${fechaInicio}', '${fechaFin}'`;
 					request2.query(query2,
 						function (err2, records2) {
 							if (err2) {
-								console.log(err2)
 								res.send({
 									enviarSolicitud: false
 								});
@@ -1739,14 +1745,12 @@ app.post('/solicitarAlquilerPropiedadAdmin', jsonParser, (req, res) => {
 						enviarSolicitud: false
 					});
 				}
-				else if(records.recordset.length > 0){
-
+				else if (records.recordset.length > 0) {
 					let request2 = new mssql.Request();
 					let query2 = `EXEC insertarSolicitudAlquilerP ${idPropiedad}, ${cedula}, '${fechaSolicitud}', '${fechaInicio}', '${fechaFin}'`;
 					request2.query(query2,
 						function (err2, records2) {
 							if (err2) {
-								console.log(err2)
 								res.send({
 									enviarSolicitud: false
 								});
@@ -1777,7 +1781,7 @@ app.post('/solicitarAlquilerPropiedadAdmin', jsonParser, (req, res) => {
 // })
 
 
-	//Hace que en Backend se encuentre escuchando solicitudes en el puesto 8080 de la compu
-	app.listen(8080, () => {
-		console.log('server listening on port 8080')
-	})
+//Hace que en Backend se encuentre escuchando solicitudes en el puesto 8080 de la compu
+app.listen(8080, () => {
+	console.log('server listening on port 8080')
+})

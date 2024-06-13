@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import '../../css/Propiedades.css';
 
-const getFecha = (fecha) => {
-	return `${fecha.getFullYear()}/${fecha.getMonth() + 1}/${fecha.getDate()}`;
-}
+
 
 const getHora = (fecha) => {
 	return `${fecha.getHours()}:${fecha.getMinutes()}:${fecha.getSeconds()}`;
@@ -41,8 +39,8 @@ function Enviados(props) {
       <table className="table">
         <thead>
           <tr>
-            <th>Cédula del receptor</th>
-            <th>Fecha de envío</th>
+            <th>Cedula del receptor</th>
+            <th>Cedula del emisor</th>
             <th>Hora de envío</th>
             <th>Contenido</th>
           </tr>
@@ -52,7 +50,7 @@ function Enviados(props) {
             return (
             <tr key={index}>
               <td>{message.cedulaReceptor}</td>
-              <td>{getFecha(new Date(message.fechaMensaje))}</td>
+              <td>{message.cedulaEmisor}</td>
               <td>{getHora(new Date(message.horaMensaje))}</td>
               <td>{message.contenido}</td>
             </tr>)
