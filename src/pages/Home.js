@@ -26,10 +26,10 @@ function Home(props) {
         {tipoUsuario === 'admin' && (
           <div className="menu">
             <div className="menu-row">
-              <a className="option-link" href="/visualizarAme">
+              <a className="option-link" href="/visualizarAmenidad">
               Visualizar amenidades
               </a>
-              <a className="option-link" href="/VisualizarP">
+              <a className="option-link" href="/VisualizarPropiedadA">
                 Visualizar propiedades
               </a>
             </div>
@@ -42,7 +42,7 @@ function Home(props) {
               </a>
             </div>
             <div className="menu-row">
-              <a className="option-link" href="/mantenimientoP">
+              <a className="option-link" href="/solicitudesManteA">
                 Solicitudes mantenimiento
               </a>
               </div>
