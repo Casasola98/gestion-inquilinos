@@ -61,11 +61,11 @@ function RegistrarP(props) {
   const fields = [
     { label: "ID Propiedad", type: "number", name: "idPropiedad" },
     { label: "Dirección", type: "text", name: "direccion" },
-    { label: "Tipo de Propiedad", type: "number", name: "idTipoPropiedad" },
+    { label: "Tipo de Propiedad", type: "number", extraLabel: "1: Apartamento 2: Casa 3: Oficina", name: "idTipoPropiedad" },
     { label: "Número de Habitaciones", type: "number", name: "numeroHabitaciones" },
     { label: "Tamaño (metros)", type: "number", name: "tamanoMetros" },
     { label: "Descripción", type: "text", name: "descripcion" },
-    { label: "Estado Actual", type: "number", name: "estadoActual" },
+    { label: "Estado Actual", type: "number", extraLabel: "1: Disponible 2: Ocupado 3: En mantenimiento", name: "estadoActual" },
     { label: "Precio de Alquiler", type: "number", name: "precioAlquiler" },
   
   ];
@@ -89,6 +89,12 @@ function RegistrarP(props) {
                 onChange={handleChange}
               />
               <br />
+              {field.extraLabel && (
+                  <>
+                    <label htmlFor={`extraLabel${index}`} className="extraLabel">{field.extraLabel}</label>
+                    <br />
+                  </>
+                )}
             </div>
           ))}
         </div>

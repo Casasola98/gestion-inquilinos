@@ -178,7 +178,6 @@ CREATE TABLE alquilerAmenidades (
     FOREIGN KEY (idAmenidad) REFERENCES Amenidades(idAmenidad) ON DELETE CASCADE,
 ); 
 
-DROP TABLE alquilerAmenidades
 -- Tabla para la entidad Pagos
 CREATE TABLE Pagos (
     idPago INT PRIMARY KEY,
@@ -329,62 +328,6 @@ CREATE TABLE admin (
     correo varchar(100) UNIQUE, 
 )
 
-
-
---Ejmeplos *** hay que actualizarlo según los cambios
--- Insertar datos de ejemplo en la base de datos Proyecto1
-
--- -- Insertar usuarios
--- INSERT INTO Usuario (cedula, nombre, apellido1, apellido2, telefono, correo) 
--- VALUES 
--- --(123456789, 'Juan', 'Perez', 'Garcia', '5551234567', 'juan@example.com'),
--- (987654321, 'Maria', 'Gomez', 'Lopez', '5559876543', 'maria@example.com');
-
--- -- Insertar propietarios e inquilinos
--- INSERT INTO Propietario (cedula) VALUES (123456789);
---INSERT INTO Inquilino (cedula) VALUES (987654321);
-
-
--- -- Insertar propiedades
--- INSERT INTO Propiedad (idPropiedad, direccion, idTipoPropiedad, numeroHabitaciones, tamanoMetros, descripcion, estadoActual, precioAlquiler, cedulaPropietario) 
--- VALUES (1, 'Calle Principal 123', 1, 2, 100, 'Apartamento acogedor', 1, 1000, 123456789);
-
--- -- Insertar gastos adicionales de propiedad
--- INSERT INTO GastosAdicionalesPropiedad (idPropiedad, idTipoGasto, monto) 
--- VALUES (1, 1, 50), (1, 3, 80);
-
-
-
--- -- Insertar solicitud de mantenimiento
--- INSERT INTO SolicitudMantenimiento (idSolicitud, idPropiedad, descripcionProblema, idProveedor, fechaSolicitud, estado, idPrioridad, costoMantenimiento) 
--- VALUES (1, 1, 'Fuga de agua en el bano', 1, '2024-05-25', 1, 2, 80);
-
--- -- Insertar amenidades
--- INSERT INTO Amenidades (idAmenidad, descripcion, costoUso, estado) 
--- VALUES (1, 'Piscina', 10, 'Disponible');
-
--- Seleccionar todos los usuarios
-SELECT * FROM Usuario;
-
--- Seleccionar todas las propiedades
-SELECT * FROM Propiedad;
-
--- Seleccionar todos los tipos de propiedad
-SELECT * FROM TiposPropiedad;
-
--- Seleccionar todos los gastos adicionales de una propiedad espec�fica
-SELECT * FROM GastosAdicionalesPropiedad WHERE idPropiedad = 1;
-
--- Seleccionar todas las solicitudes de mantenimiento
-SELECT * FROM SolicitudMantenimiento;
-
--- Seleccionar todos los proveedores
-SELECT * FROM Proveedores;
-
--- Seleccionar todas las amenidades
-SELECT * FROM Amenidades;
-
-
 --- PROCEDURE
 
 -- EXISTEN 
@@ -415,9 +358,6 @@ END
 
 -- EXEC obtenerInquilino 987654321;
 
-
-SELECT * FROM Alquiler
-SELECT * FROM alquilerPropiedad
 --existePropietario
 
 CREATE PROCEDURE obtenerPropietario (@cedula int)
@@ -538,36 +478,7 @@ END
 
 -- existenReportesPropietario / No se probó
 
-
--- CREATE PROCEDURE obtenerReportesPropietario (@cedulaUsuario int, @fechaInicial date, @fechaFinal date)
--- AS
--- BEGIN
---     SELECT idPago, Alquiler.cedulaUsuario, Pagos.fechaPago, Pagos.monto, TiposPagoPermitidos.tipoPago, EstadosPagoPermitidos.estadoPago, Pagos.metodoPago 
---     FROM Pagos 
---     JOIN TiposPagoPermitidos 
---     ON Pagos.tipoPago = TiposPagoPermitidos.idTipoPago 
---     JOIN EstadosPagoPermitidos 
---     ON EstadosPagoPermitidos.idEstadoPago  = Pagos.estadoPago 
---     JOIN Alquiler 
---     ON Pagos.cedulaInquilino = Alquiler.cedulaUsuario 
---     JOIN Propiedad 
---     ON alquilerPropiedad.idPropiedad = Propiedad.idPropiedad
---     JOIN Amenidades
---     ON alquilerAmenidades.idAmenidad = Amenidades.idAmenidad
---     WHERE (Propiedad.cedulaPropietario = @cedulaUsuario) AND (Pagos.fechaPago BETWEEN @fechaInicial AND @fechaFinal)
--- END
-
-
-
 -- --existeReportesInquilino / No se probó
-
-
--- CREATE PROCEDURE obtenerReportesInquilino (@cedulaUsuario int, @fechaInicial date, @fechaFinal date)
--- AS
--- BEGIN
---     SELECT * FROM Pagos 
---     WHERE (Pagos.cedulaInquilino = @cedulaUsuario) AND (Pagos.fechaPago BETWEEN @fechaInicial AND @fechaFinal)
--- END
 
 -- EXEC obtenerReportesInquilino 123, '2024-01-01', '2025-01-01' 
 
@@ -753,7 +664,6 @@ BEGIN
     INSERT INTO Amenidades(idAmenidad, tipoAmenidad, descripcion, costoUso, estado, estadoActual, cedulaPropietario) 
     VALUES (@idAmenidad, @tipoAmenidad, @descripcion, @costoUso, @estado, @estadoActual, @cedulaPropietario)  
 END
-
 
 -- EXEC insertarAmenidades 5, 'cocina', 'dos hornos', 100, "Bueno", 1,  15
 
@@ -1083,11 +993,4 @@ BEGIN
     ON idEstadoMantenimiento = SolicitudMantenimiento.estado 
 END
 
-
-
---insertar gasto
---insertar ingreso
---obtener gastosUsuario
---obtener ingresosUsuario
-
-
+INSERT INTO admin (idUsuario, correo) VALUES (1123, 'admin@gmail.com');

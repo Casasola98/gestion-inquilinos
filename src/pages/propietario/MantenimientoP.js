@@ -77,15 +77,6 @@ function MantenimientoP(props) {
   };
 
 
-//   //INSERT INTO PrioridadesPermitidas (idPrioridad, prioridad) VALUES
-// (1, 'baja'),
-// (2, 'media'),
-// (3, 'alta');
-
-// INSERT INTO EstadosMantenimientoPermitidos (idEstadoMantenimiento, estadoMantenimiento) VALUES
-// (1, 'pendiente'),
-// (2, 'en proceso'),
-// (3, 'resuelto');
 
   const handleSave = () => {
     axios.post('http://localhost:8080/actualizarMantenimientos', {
@@ -139,7 +130,7 @@ function MantenimientoP(props) {
               </tr>
             </thead>
             <tbody>
-              {properties.map((property, index) => (
+              {properties?.map((property, index) => (
                 <tr key={index}>
                   <td>{property.idSolicitud}</td>
                   <td>{property.idPropiedad}</td>

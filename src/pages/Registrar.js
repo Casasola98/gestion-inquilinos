@@ -11,7 +11,7 @@ function Registrar(props) {
     apellido2: "",
     telefono: "",
     correo: "",
-    rol: "inquilino"
+    rol: ""
   });
 
   useEffect(() => {
@@ -39,18 +39,14 @@ function Registrar(props) {
       apellido2: apellido2,
       telefono: telefono,
       correo: correo,
-      rol: rol
+      rol: rol 
     })
       .then((response) => {
         if (response.data.registrarAdmin) {
-          //Esto es solo para el login, esto es lo que guarda los datos del usuario al iniciar sesion
-          // localStorage.setItem('user', cedula);
-          // localStorage.setItem('tipoUsuario', rol);
-          // setIsLogin(localStorage.getItem('user'));
-          //En vez de esas 3 lineas de arriba se deberia enseñar una ventanita emergente "popup" que diga que el usuario se creo exitosamente
-          //Y enviar a la ventana de login de nuevo
+          alert("El usuario registrado")
+          window.location.href = "/login";
         } else {
-          //popup que indique que el usuario no se pudo crear
+          alert("El usuario no se pudo crear")
         }
       })
       .catch((error) => {
@@ -98,7 +94,6 @@ function Registrar(props) {
               value={formData.rol}
               onChange={handleChange}
             >
-              <option value="admin">Administrador</option>
               <option value="propietario">Propietario</option>
               <option value="inquilino">Inquilino</option>
             </select>
